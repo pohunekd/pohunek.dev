@@ -135,8 +135,14 @@ const rows = [
 </MarketingLayout>
 
 <style>
-	.essay {
+	/* Same container as every page; only running text keeps a readable line length. */
+	.essay :is(p, h1, h2, h3, blockquote, ul, ol) {
 		max-width: 46rem;
+	}
+	/* Section rules span the container padding, as on pages built from container sections. */
+	.essay > .section {
+		margin-inline: calc(-1 * var(--gutter));
+		padding-inline: var(--gutter);
 	}
 	.essay section.section h2 {
 		margin-bottom: 0.9rem;
