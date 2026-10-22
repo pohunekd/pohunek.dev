@@ -3,7 +3,7 @@
 // so new whitelisted pages appear without editing this file.
 /** @type {import('@astrojs/starlight/types').StarlightUserConfig['sidebar']} */
 export const docsSidebar = [
-	{ label: 'Overview', slug: 'docs' },
+	{ label: 'Overview', link: '/docs/' },
 	{
 		label: 'Start here',
 		items: [

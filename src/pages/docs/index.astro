@@ -1,0 +1,44 @@
+---
+/**
+ * Docs home. The synced pages come from zajca/pohunek; this overview only
+ * routes readers into them, so it is owned by the website.
+ */
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { site } from '../../config/site';
+---
+
+<StarlightPage
+	frontmatter={{
+		title: 'pohunek documentation',
+		description: 'Install pohunek, learn its concepts, and drive it from the CLI, the SDKs or your own agents.',
+	}}
+>
+	<p>
+		pohunek is a headless, multihost backbone for coding agents: one small daemon per machine, one durable
+		terminal per agent session, and one versioned JSON contract for everything you build on top. These pages
+		are rendered from the <a href={site.repoUrl}>pohunek repository</a> at release <code>{site.release}</code>.
+	</p>
+
+	<h2>Start here</h2>
+	<CardGrid>
+		<LinkCard title="Install" href="/docs/install/" description="Release archives, the login service, upgrades and a first session." />
+		<LinkCard title="Features" href="/docs/features/" description="Everything the core does, the daemon and worker split, and the trust boundary." />
+		<LinkCard title="Remote hosts" href="/docs/guides/remote-hosts/" description="Reach daemons on other machines over a NetBird overlay." />
+		<LinkCard title="Install with your agent" href="/install/" description="Let the coding agent you already use install and verify pohunek." />
+	</CardGrid>
+
+	<h2>Learn and build</h2>
+	<CardGrid>
+		<LinkCard title="Sessions" href="/docs/concepts/sessions/" description="Durable PTYs, runtime state, activity, and what survives a restart." />
+		<LinkCard title="CLI" href="/docs/cli/" description="Every command, multihost targeting, automation and notifications." />
+		<LinkCard title="SDKs" href="/docs/sdk/" description="Rust and TypeScript clients, connection and event subscriptions." />
+		<LinkCard title="Protocol" href="/docs/protocol/" description="The versioned wire protocol behind the CLI and SDKs." />
+	</CardGrid>
+
+	<h2>When something breaks</h2>
+	<CardGrid>
+		<LinkCard title="Debug the daemon" href="/docs/runbooks/debug-daemon/" description="Find out why the daemon does not start or answer." />
+		<LinkCard title="Trust model" href="/docs/safety/trust-model/" description="Who pohunek trusts, and what it never does on your behalf." />
+	</CardGrid>
+</StarlightPage>
