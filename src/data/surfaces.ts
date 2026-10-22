@@ -43,19 +43,6 @@ const workRepo = 'https://github.com/zajca/pohunek-work';
 
 export const surfaces: readonly Surface[] = [
 	{
-		slug: 'sway',
-		featured: true,
-		name: 'Sway + rofi launcher',
-		summary: 'Quick-switch attached agent terminals with a keybind and start work on Linear issues or GitHub PRs from rofi.',
-		status: 'shipped',
-		statusNote: 'launchers-v0.4.0',
-		platform: 'Linux · Wayland (Sway)',
-		repoUrl: workRepo,
-		release: 'launchers-v0.4.0',
-		icon: 'window',
-		screenshots: [],
-	},
-	{
 		slug: 'companion',
 		featured: true,
 		name: 'Desktop companion',
@@ -133,6 +120,19 @@ export const surfaces: readonly Surface[] = [
 		repoUrl: workRepo,
 		release: 'plugin-v0.7.1',
 		icon: 'terminal',
+		screenshots: [],
+	},
+	{
+		slug: 'sway',
+		featured: true,
+		name: 'Sway + rofi launcher',
+		summary: 'Quick-switch attached agent terminals with a keybind and start work on Linear issues or GitHub PRs from rofi.',
+		status: 'shipped',
+		statusNote: 'launchers-v0.4.0',
+		platform: 'Linux · Wayland (Sway)',
+		repoUrl: workRepo,
+		release: 'launchers-v0.4.0',
+		icon: 'window',
 		screenshots: [],
 	},
 	{
