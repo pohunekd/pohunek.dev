@@ -6,6 +6,8 @@ import { docsSidebar } from './src/config/sidebar.mjs';
 export default defineConfig({
 	site: 'https://pohunek.dev',
 	trailingSlash: 'always',
+	// Compression drops line breaks between text and inline links, which glues words to them.
+	compressHTML: false,
 	integrations: [
 		starlight({
 			title: 'pohunek docs',

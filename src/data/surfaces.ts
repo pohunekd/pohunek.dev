@@ -134,7 +134,7 @@ export const surfaces: readonly Surface[] = [
 		name: 'Web control center',
 		summary: 'A self-hosted owner dashboard: a session rail across all hosts, with attach over WebSocket.',
 		status: 'shipped',
-		statusNote: 'web-v0.3.1, Linux archive',
+		statusNote: 'web-v0.3.1',
 		platform: 'Linux · macOS (not yet published)',
 		repoUrl: workRepo,
 		release: 'web-v0.3.1',

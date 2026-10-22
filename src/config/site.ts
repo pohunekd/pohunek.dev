@@ -10,6 +10,7 @@ const repoUrl = `https://github.com/${pohunek.repository}`;
 export const site = {
 	name: 'pohunek',
 	domain: 'pohunek.dev',
+	repository: pohunek.repository,
 	tagline: 'I herd. They code.',
 	description:
 		'A headless, multihost backbone for coding agents. One small daemon per machine, one durable terminal per agent, one JSON contract.',

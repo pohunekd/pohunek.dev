@@ -6,6 +6,7 @@ import installDone from '../assets/screenshots/companion/install-done.png';
 import installOffer from '../assets/screenshots/companion/install-offer.png';
 import installPlan from '../assets/screenshots/companion/install-plan.png';
 import { site } from '../config/site';
+import { installCommands } from '../data/releases';
 import installPrompt from '../data/generated/install-prompt.txt?raw';
 ---
 
@@ -73,23 +74,20 @@ import installPrompt from '../data/generated/install-prompt.txt?raw';
 			<span class="eyebrow">Manual</span>
 			<h2>Install by hand</h2>
 		</div>
-		<div class="grid cols-2">
+		<div class="grid manual">
 			<article class="card">
 				<h3>Linux x86_64</h3>
 				<p>
-					Each release publishes glibc and musl archives. Verify the download with its <code>.sha256</code> file and
-					<code>gh attestation verify</code>, unpack the daemon archive and run its installer.
+					Verified download of the daemon archive (glibc; a <code>-musl</code> archive is published too), then the bundled
+					installer copies the binaries under <code>~/.local</code> and registers the login service. It needs systemd 255 or
+					newer.
 				</p>
-				<div class="card-foot">
-					<a class="text-link" href={site.releasesUrl}>Releases</a>
-				</div>
+				<CopyBox title="linux" text={installCommands.pohunekLinux.join('\n')} />
 			</article>
 			<article class="card">
 				<h3>macOS (Apple Silicon)</h3>
-				<p>
-					macOS 14 or newer, tested on macOS 15. Install from the tap, then install the login service.
-				</p>
-				<CopyBox title="macOS" text={`${site.homebrewInstall}\npohunek service install`} />
+				<p>macOS 14 or newer, tested on macOS 15. Install from the tap, then install the login service.</p>
+				<CopyBox title="macos" text={installCommands.pohunekMacos.join('\n')} />
 			</article>
 		</div>
 	</section>
@@ -118,6 +116,9 @@ import installPrompt from '../data/generated/install-prompt.txt?raw';
 		display: grid;
 		gap: 1rem;
 		grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+	}
+	.manual {
+		align-items: start;
 	}
 	.note {
 		margin-top: 1rem;

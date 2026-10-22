@@ -5,6 +5,7 @@ import Icon from '../../components/Icon.astro';
 import StatusBadge from '../../components/StatusBadge.astro';
 import CopyBox from '../../components/CopyBox.astro';
 import { site } from '../../config/site';
+import { installCommands } from '../../data/releases';
 import { surfaces, getSurface } from '../../data/surfaces';
 
 export function getStaticPaths() {
@@ -15,40 +16,62 @@ interface Detail {
 	/** Longer paragraph under the hero. */
 	body: string;
 	features: readonly { title: string; text: string }[];
-	/** Shell lines or prose to show in the install area. */
-	install: { title: string; lines: readonly string[] }[];
+	/** Install routes: a heading, an optional sentence of context, and shell lines. */
+	install: { title: string; intro?: string; lines: readonly string[] }[];
 	notes?: readonly string[];
 }
 
 const details: Record<string, Detail> = {
 	sway: {
-		body: 'A rofi switcher, a new-session keybind and issue launchers for Sway, installed by pohunek-work. They are local scripts that call the pohunek CLI.',
+		body: 'A set of small shell scripts that put your agents on Sway keybindings: a rofi switcher over the sessions of every host, launchers that start an agent on a Linear issue or GitHub PR, and a new-session form. They call the pohunek CLI and nothing else, so they install on their own; pohunek-work is optional. Sway is the window manager they ship for today, and the same scripts are meant to drive other window managers too.',
 		features: [
 			{
-				title: 'Switch between attached agents',
-				text: 'The rofi switcher lists your sessions with host, project, branch, agent, state and activity, and focuses the attach terminal that is already open. --filter key=value narrows the list before it reaches rofi.',
+				title: 'Switch between agents with $mod+p',
+				text: 'pohunek-rofi lists the sessions of every reachable host with project, branch, agent, state and activity. Pick one or several: their attach terminals open, and the attach windows you did not pick close, which only detaches you. --filter key=value narrows the list before it reaches rofi, for example only blocked sessions.',
 			},
 			{
-				title: 'New session on $mod+n',
-				text: 'The default keybind opens the standalone new-session form from pohunek-work, in the terminal you configure.',
-			},
-			{
-				title: 'Start work on a Linear issue or GitHub PR',
-				text: 'pohunek-rofi-issue lists your actionable Linear or GitHub issues and starts the work in a terminal. A separate launcher starts work on a GitHub PR.',
-			},
-			{
-				title: 'Closing an attach window detaches',
+				title: 'Closing a window detaches, never stops',
 				text: 'The switcher only opens terminals that run pohunek attach. Closing one detaches you; the agent keeps running on its durable worker.',
+			},
+			{
+				title: 'Start an agent on an issue or a PR',
+				text: 'pohunek-rofi-issue <project> linear lists your actionable Linear issues and pohunek-launch-issue starts an agent on the one you pick, with its prompt rendered by pohunek prompt render and the issue link stored as session metadata. pohunek-launch-pr does the same for a GitHub pull request. The GitHub issue source goes through pohunek-work.',
+			},
+			{
+				title: 'New session form on $mod+n',
+				text: 'pohunek-new-session opens the pohunek-work new-session form in your terminal. This binding is the one part that needs pohunek-work; pohunek-work setup sway adds it.',
 			},
 		],
 		install: [
 			{
-				title: 'Install',
-				lines: ['pohunek-work setup sway', 'pohunek-work doctor'],
+				title: 'Requirements',
+				intro: 'pohunek installed and running, plus rofi, swaymsg, python3 and a terminal emulator.',
+				lines: ['command -v pohunek rofi swaymsg python3'],
+			},
+			{
+				title: 'Get the scripts: release archive',
+				intro: 'Verified download of the launcher release.',
+				lines: installCommands.launchersFromRelease,
+			},
+			{
+				title: 'Or get the scripts: from source',
+				intro: 'The same files live in the launchers/ directory of the repository.',
+				lines: installCommands.launchersFromSource,
+			},
+			{
+				title: 'Install them (from either directory)',
+				intro: 'Copies the scripts, launcher.conf and prompt templates into the same XDG paths pohunek-work setup uses, and binds the switcher to $mod+p. Existing config files are kept. Your sway config must include ~/.config/sway/config.d/*, and terminal= in launcher.conf names your terminal.',
+				lines: installCommands.launchersCopy,
+			},
+			{
+				title: 'Or let pohunek-work do it',
+				intro: 'With pohunek-work installed (see the Terminal TUI page), setup writes the same files and adds the $mod+n new-session binding; doctor checks every requirement.',
+				lines: installCommands.launchersWithWork,
 			},
 		],
 		notes: [
-			'The scripts are shell and Bun, and they are designed to work with other window managers too. Sway is the only one shipped so far.',
+			'Optional bindings: bindsym $mod+i exec exec ~/.local/share/pohunek/bin/pohunek-rofi-issue <project> linear starts the issue picker for one project.',
+			'The scripts read ~/.config/pohunek/launcher.conf: host, terminal, list timeout, the Linear CLI and the pohunek-work binary. pohunek attach reads its own attach keys from the same file.',
 		],
 	},
 	companion: {
@@ -143,13 +166,14 @@ const details: Record<string, Detail> = {
 		],
 		install: [
 			{
-				title: 'Run the plugin archive',
-				lines: [
-					'gh release download plugin-v0.7.1 -R zajca/pohunek-work -p "pohunek-work-plugin*"',
-					'sha256sum -c <archive>.sha256',
-					'gh attestation verify <archive> --repo zajca/pohunek-work',
-					'bun plugin/pohunek-work.js tui',
-				],
+				title: 'Install pohunek-work (Linux and macOS, needs Bun)',
+				intro: 'The release archive is a Bun program. These lines verify it, put it under ~/.local/lib and add a pohunek-work command to ~/.local/bin.',
+				lines: installCommands.pluginLinux,
+			},
+			{
+				title: 'Configure and run',
+				intro: 'doctor reports a missing config until you write ~/.config/pohunek/plugins/work/config.toml. Every key is required, there are no hidden defaults; the plugin guide lists them. Projects go in ~/.config/pohunek/plugins/work/projects/<label>.toml.',
+				lines: ['pohunek-work doctor', 'pohunek-work tui'],
 			},
 		],
 		notes: [
@@ -174,20 +198,18 @@ const details: Record<string, Detail> = {
 		],
 		install: [
 			{
-				title: 'Linux',
-				lines: [
-					'gh release download web-v0.3.1 -R zajca/pohunek-work -p "pohunek-web*"',
-					'sha256sum -c <archive>.sha256',
-					'gh attestation verify <archive> --repo zajca/pohunek-work',
-				],
+				title: 'Linux x86_64',
+				intro: 'Verified download, then install.sh puts the backend and the browser app under your XDG data directory and writes a systemd user unit. The backend binds only to your NetBird address.',
+				lines: installCommands.webLinux,
 			},
 			{
-				title: 'macOS',
-				lines: ['brew install zajca/pohunek/pohunek-web'],
+				title: 'macOS (Apple Silicon)',
+				intro: 'Then set the bind address and port in ~/.config/pohunek/backend.env and run the installer again, as the formula output describes.',
+				lines: installCommands.webMacos,
 			},
 		],
 		notes: [
-			'Status: web-v0.3.1 is released for Linux. The macOS archive is ad hoc signed and is not yet a published platform.',
+			'Released as web-v0.3.1 for Linux x86_64 and macOS on Apple Silicon. The macOS build is ad hoc signed; Homebrew installs it without a Gatekeeper prompt.',
 		],
 	},
 };
@@ -257,7 +279,11 @@ const repoLabel = surface.repoUrl.replace('https://github.com/', '');
 				</div>
 				<div class="install-stack">
 					{detail.install.map((block) => (
-						<CopyBox title={block.title} text={block.lines.join('\n')} />
+						<div class="install-block">
+							<h3>{block.title}</h3>
+							{block.intro && <p class="muted">{block.intro}</p>}
+							<CopyBox title="shell" text={block.lines.join('\n')} />
+						</div>
 					))}
 				</div>
 			</section>
@@ -288,7 +314,17 @@ const repoLabel = surface.repoUrl.replace('https://github.com/', '');
 <style>
 	.install-stack {
 		display: grid;
-		gap: 1.25rem;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 2rem;
+	}
+	.install-block {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0.6rem;
+		min-width: 0;
+	}
+	.install-block p {
+		overflow-wrap: anywhere;
 	}
 	.notes {
 		margin: 0;
