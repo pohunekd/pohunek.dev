@@ -1,10 +1,12 @@
 // @ts-check
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
+import starlightLlmsTxt from 'starlight-llms-txt';
+import { llmsTxt, siteUrl } from './src/config/agents.mjs';
 import { docsSidebar } from './src/config/sidebar.mjs';
 
 export default defineConfig({
-	site: 'https://pohunek.dev',
+	site: siteUrl,
 	trailingSlash: 'always',
 	// Compression drops line breaks between text and inline links, which glues words to them.
 	compressHTML: false,
@@ -28,6 +30,7 @@ export default defineConfig({
 			},
 			sidebar: docsSidebar,
 			disable404Route: true,
+			plugins: [starlightLlmsTxt(llmsTxt)],
 		}),
 	],
 });
