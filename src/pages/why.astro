@@ -1,4 +1,6 @@
 ---
+import Banner from '../components/Banner.astro';
+import { banners } from '../data/banners';
 import MarketingLayout from '../layouts/MarketingLayout.astro';
 import CopyBox from '../components/CopyBox.astro';
 import Icon from '../components/Icon.astro';
@@ -46,14 +48,17 @@ const rows = [
 	description="The agent is pohunek's user. A human does not stare at the terminal, and a multiplexer and ssh are not enough."
 >
 	<article class="container essay">
-		<header class="page-hero">
-			<span class="eyebrow">Why</span>
-			<h1>You don't need an agentic IDE</h1>
-			<p class="lead">
-				The usual answer to running coding agents is a bigger window: an IDE with panes, tabs and a chat box. pohunek takes
-				the other path. The agent is the user of pohunek, and you are the owner who hears about it when it needs you.
-			</p>
-		</header>
+		<div class="hero-with-banner">
+			<header class="page-hero">
+				<span class="eyebrow">Why</span>
+				<h1>You don't need an agentic IDE</h1>
+				<p class="lead">
+					The usual answer to running coding agents is a bigger window: an IDE with panes, tabs and a chat box. pohunek takes
+					the other path. The agent is the user of pohunek, and you are the owner who hears about it when it needs you.
+				</p>
+			</header>
+			<Banner banner={banners.why} />
+		</div>
 
 		<section class="section">
 			<h2>A pohunek is a farmhand</h2>

@@ -5,7 +5,9 @@
  */
 import { CardGrid, LinkCard } from '@astrojs/starlight/components';
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import Banner from '../../components/Banner.astro';
 import { site } from '../../config/site';
+import { banners } from '../../data/banners';
 ---
 
 <StarlightPage
@@ -19,6 +21,8 @@ import { site } from '../../config/site';
 		terminal per agent session, and one versioned JSON contract for everything you build on top. These pages
 		are rendered from the <a href={site.repoUrl}>pohunek repository</a> at release <code>{site.release}</code>.
 	</p>
+
+	<div class="docs-banner"><Banner banner={banners.docs} /></div>
 
 	<h2>Start here</h2>
 	<CardGrid>
@@ -42,3 +46,9 @@ import { site } from '../../config/site';
 		<LinkCard title="Trust model" href="/docs/safety/trust-model/" description="Who pohunek trusts, and what it never does on your behalf." />
 	</CardGrid>
 </StarlightPage>
+
+<style>
+	.docs-banner {
+		max-width: 34rem;
+	}
+</style>

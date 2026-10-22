@@ -144,6 +144,18 @@ kbd {
 	gap: 1.1rem;
 }
 
+/* Page hero with an engraved banner beside it */
+.hero-with-banner {
+	display: grid;
+	gap: 0 2.5rem;
+	align-items: center;
+}
+@media (min-width: 60rem) {
+	.hero-with-banner {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	}
+}
+
 /* Buttons */
 .actions {
 	display: flex;

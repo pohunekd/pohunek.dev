@@ -1,0 +1,38 @@
+---
+import { Image } from 'astro:assets';
+import type { Banner } from '../data/banners';
+
+interface Props {
+	banner: Banner;
+	/** Above-the-fold banners load eagerly; ones further down the page stay lazy. */
+	eager?: boolean;
+}
+
+const { banner, eager = true } = Astro.props;
+---
+
+<figure class="plate banner">
+	<Image
+		class="engraving"
+		src={banner.image}
+		alt={banner.alt}
+		widths={[434, 868]}
+		sizes="(max-width: 60rem) 100vw, 34rem"
+		loading={eager ? 'eager' : 'lazy'}
+	/>
+	<figcaption>
+		<span><em>{banner.caption}</em></span>
+	</figcaption>
+	{banner.credit && <p class="credit">{banner.credit}</p>}
+</figure>
+
+<style>
+	.banner {
+		margin: 0 0 2.5rem;
+	}
+	.credit {
+		margin-top: 0.5rem;
+		font-size: 0.7rem;
+		color: var(--ink-faint);
+	}
+</style>

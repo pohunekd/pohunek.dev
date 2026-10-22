@@ -1,4 +1,6 @@
 ---
+import Banner from '../components/Banner.astro';
+import { banners } from '../data/banners';
 import MarketingLayout from '../layouts/MarketingLayout.astro';
 import CopyBox from '../components/CopyBox.astro';
 import Screenshot from '../components/Screenshot.astro';
@@ -14,7 +16,7 @@ import installPrompt from '../data/generated/install-prompt.txt?raw';
 	title="Install"
 	description="Install pohunek with the coding agent you already use, or by hand on Linux x86_64 and macOS on Apple Silicon."
 >
-	<section class="container">
+	<section class="container hero-with-banner">
 		<header class="page-hero">
 			<span class="eyebrow">Install</span>
 			<h1>Install with your agent</h1>
@@ -24,6 +26,7 @@ import installPrompt from '../data/generated/install-prompt.txt?raw';
 				the login service or any runtime hook.
 			</p>
 		</header>
+		<Banner banner={banners.install} />
 	</section>
 
 	<section class="container section">

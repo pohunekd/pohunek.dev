@@ -1,4 +1,6 @@
 ---
+import Banner from '../../components/Banner.astro';
+import { banners } from '../../data/banners';
 import MarketingLayout from '../../layouts/MarketingLayout.astro';
 import Icon from '../../components/Icon.astro';
 import StatusBadge from '../../components/StatusBadge.astro';
@@ -9,7 +11,7 @@ import { surfaces } from '../../data/surfaces';
 	title="Surfaces"
 	description="pohunek ships no UI. Every window, sidebar, terminal and dashboard is an optional client of the same public contract."
 >
-	<section class="container">
+	<section class="container hero-with-banner">
 		<header class="page-hero">
 			<span class="eyebrow">Surfaces</span>
 			<h1>Ways to look over the fence</h1>
@@ -18,6 +20,7 @@ import { surfaces } from '../../data/surfaces';
 				surface below is an optional client of that same public contract, and the CLI keeps working without any of them.
 			</p>
 		</header>
+		<Banner banner={banners.surfaces} />
 	</section>
 	<section class="container section">
 		<div class="grid cols-2">

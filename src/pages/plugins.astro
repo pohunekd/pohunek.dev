@@ -1,4 +1,6 @@
 ---
+import Banner from '../components/Banner.astro';
+import { banners } from '../data/banners';
 import MarketingLayout from '../layouts/MarketingLayout.astro';
 import CopyBox from '../components/CopyBox.astro';
 import Icon from '../components/Icon.astro';
@@ -50,7 +52,7 @@ pohunek plugin doctor`;
 	title="Plugins"
 	description="Runtime packages add agent CLIs to a host. Workflow plugins add owner tooling that acts through the public CLI and SDK."
 >
-	<section class="container">
+	<section class="container hero-with-banner">
 		<header class="page-hero">
 			<span class="eyebrow">Plugins</span>
 			<h1>Two kinds of plugin, one trust model</h1>
@@ -59,6 +61,7 @@ pohunek plugin doctor`;
 				public CLI and SDK. They are separate on purpose: a workflow plugin never extends the daemon.
 			</p>
 		</header>
+		<Banner banner={banners.plugins} />
 	</section>
 
 	<section class="container section">
