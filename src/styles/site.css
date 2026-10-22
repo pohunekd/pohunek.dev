@@ -390,6 +390,13 @@ a.card:hover {
 .badge[data-status='in-progress']::before {
 	background: linear-gradient(90deg, currentColor 50%, transparent 50%);
 }
+.badge[data-status='experimental'] {
+	border-style: dotted;
+	color: var(--ink-muted);
+}
+.badge[data-status='experimental']::before {
+	border-style: dotted;
+}
 .badge[data-status='planned'] {
 	border-style: dashed;
 }

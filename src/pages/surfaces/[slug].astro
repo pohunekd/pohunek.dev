@@ -19,6 +19,8 @@ interface Detail {
 	/** Install routes: a heading, an optional sentence of context, and shell lines. */
 	install: { title: string; intro?: string; lines: readonly string[] }[];
 	notes?: readonly string[];
+	/** A caution shown under the hero, for surfaces that are not ready for daily use. */
+	notice?: string;
 }
 
 const details: Record<string, Detail> = {
@@ -181,6 +183,7 @@ const details: Record<string, Detail> = {
 		],
 	},
 	web: {
+		notice: 'Experimental. The web control center works, but it needs a lot of love before it is pleasant to use every day. For daily work use the desktop companion, the Sway launchers or the terminal TUI.',
 		body: 'A self-hosted owner web control center: one backend origin serves a Svelte single-page app and reports your hosts. It is a client over the public protocol, and the CLI and launchers keep working when it is down.',
 		features: [
 			{
@@ -228,6 +231,7 @@ const repoLabel = surface.repoUrl.replace('https://github.com/', '');
 			<span class="eyebrow"><Icon name={surface.icon} label="" /> {surface.platform}</span>
 			<h1>{surface.name}</h1>
 			<p class="lead">{detail.body}</p>
+			{detail.notice && <p class="notice">{detail.notice}</p>}
 			<div><StatusBadge status={surface.status} note={surface.statusNote} /></div>
 			<div class="actions">
 				<a class="button secondary" href={surface.repoUrl}>Source on GitHub ({repoLabel})</a>
@@ -312,6 +316,14 @@ const repoLabel = surface.repoUrl.replace('https://github.com/', '');
 </MarketingLayout>
 
 <style>
+	.notice {
+		max-width: 46rem;
+		padding: 0.9rem 1.1rem;
+		border: 1px dotted var(--rule-strong);
+		border-left: 3px solid var(--leather);
+		background: var(--paper-sunk);
+		color: var(--ink);
+	}
 	.install-stack {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);

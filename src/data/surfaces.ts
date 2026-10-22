@@ -26,6 +26,8 @@ export interface Surface {
 	status: Status;
 	/** Short qualifier shown next to the status badge. */
 	statusNote: string;
+	/** Shown on the landing page; experimental surfaces stay on the surfaces page only. */
+	featured: boolean;
 	/** Short platform line, for example "Linux · macOS". */
 	platform: string;
 	repoUrl: string;
@@ -42,6 +44,7 @@ const workRepo = 'https://github.com/zajca/pohunek-work';
 export const surfaces: readonly Surface[] = [
 	{
 		slug: 'sway',
+		featured: true,
 		name: 'Sway + rofi launcher',
 		summary: 'Quick-switch attached agent terminals with a keybind and start work on Linear issues or GitHub PRs from rofi.',
 		status: 'shipped',
@@ -54,6 +57,7 @@ export const surfaces: readonly Surface[] = [
 	},
 	{
 		slug: 'companion',
+		featured: true,
 		name: 'Desktop companion',
 		summary: 'A narrow native sidebar that lifts the sessions needing you to the top, with a tray badge and one-click attach.',
 		status: 'shipped',
@@ -108,6 +112,7 @@ export const surfaces: readonly Surface[] = [
 	},
 	{
 		slug: 'android',
+		featured: true,
 		name: 'Android companion',
 		summary: 'A remote session list with live state and an embedded terminal over the NetBird overlay.',
 		status: 'planned',
@@ -119,6 +124,7 @@ export const surfaces: readonly Surface[] = [
 	},
 	{
 		slug: 'tui',
+		featured: true,
 		name: 'Terminal TUI',
 		summary: 'pohunek-work tui: Work, Sessions, Hosts and Activity views in one full-screen terminal interface.',
 		status: 'in-progress',
@@ -131,11 +137,12 @@ export const surfaces: readonly Surface[] = [
 	},
 	{
 		slug: 'web',
+		featured: false,
 		name: 'Web control center',
-		summary: 'A self-hosted owner dashboard: a session rail across all hosts, with attach over WebSocket.',
-		status: 'shipped',
+		summary: 'An experimental self-hosted dashboard with a session rail across all hosts. It works, but it still needs a lot of polish.',
+		status: 'experimental',
 		statusNote: 'web-v0.3.1',
-		platform: 'Linux · macOS (not yet published)',
+		platform: 'Linux · macOS',
 		repoUrl: workRepo,
 		release: 'web-v0.3.1',
 		icon: 'globe',

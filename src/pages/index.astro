@@ -197,7 +197,7 @@ import MarketingLayout from '../layouts/MarketingLayout.astro';
 			</div>
 			<div class="grid cols-3">
 				{
-					surfaces.map((surface) => (
+					surfaces.filter((surface) => surface.featured).map((surface) => (
 						<a class="card" href={`/surfaces/${surface.slug}/`}>
 							<span class="card-kicker">
 								<span>{surface.platform}</span>
