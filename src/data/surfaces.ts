@@ -14,6 +14,8 @@ export interface SurfaceScreenshot {
 	image: ImageMetadata;
 	alt: string;
 	caption: string;
+	/** Device pixel ratio of the capture; omitted means 2 (HiDPI). */
+	density?: number;
 }
 
 export interface Surface {
@@ -54,8 +56,8 @@ export const surfaces: readonly Surface[] = [
 		slug: 'companion',
 		name: 'Desktop companion',
 		summary: 'A narrow native sidebar that lifts the sessions needing you to the top, with a tray badge and one-click attach.',
-		status: 'in-progress',
-		statusNote: 'early development, v0.1.4',
+		status: 'shipped',
+		statusNote: 'v0.1.4',
 		platform: 'Linux · Wayland · macOS',
 		repoUrl: companionRepo,
 		release: 'v0.1.4',
@@ -100,6 +102,7 @@ export const surfaces: readonly Surface[] = [
 				image: companionInstallPlan,
 				alt: 'Setup screen after the release was downloaded and verified, showing checksum evidence and what the installer will write',
 				caption: 'Verified install',
+				density: 1,
 			},
 		],
 	},

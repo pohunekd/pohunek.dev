@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import Screenshot from '../../components/Screenshot.astro';
 import MarketingLayout from '../../layouts/MarketingLayout.astro';
 import Icon from '../../components/Icon.astro';
 import StatusBadge from '../../components/StatusBadge.astro';
@@ -105,7 +105,7 @@ const details: Record<string, Detail> = {
 			},
 		],
 		notes: [
-			'Status: early development. The companion needs a running Pohunek daemon on the same machine.',
+			'The companion needs a running pohunek daemon on the same machine. Without one it opens a setup screen that installs pohunek for you, see Install.',
 		],
 	},
 	android: {
@@ -222,12 +222,9 @@ const repoLabel = surface.repoUrl.replace('https://github.com/', '');
 					<h2>What the app shows</h2>
 					<p class="muted">Captured from an isolated daemon filled with synthetic sessions, not from real work.</p>
 				</div>
-				<div class="grid cols-2">
+				<div class="shots">
 					{shots.map((shot) => (
-						<figure class="plate">
-							<Image src={shot.image} alt={shot.alt} />
-							<figcaption><span>{shot.caption}</span></figcaption>
-						</figure>
+						<Screenshot image={shot.image} alt={shot.alt} caption={shot.caption} density={shot.density} />
 					))}
 				</div>
 			</section>
@@ -300,11 +297,9 @@ const repoLabel = surface.repoUrl.replace('https://github.com/', '');
 		gap: 0.6rem;
 		color: var(--ink-muted);
 	}
-	.plate {
-		margin: 0;
-	}
-	.plate :global(img) {
-		width: 100%;
-		height: auto;
+	.shots {
+		display: grid;
+		gap: 1.25rem;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
 	}
 </style>

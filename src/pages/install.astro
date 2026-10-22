@@ -1,6 +1,10 @@
 ---
 import MarketingLayout from '../layouts/MarketingLayout.astro';
 import CopyBox from '../components/CopyBox.astro';
+import Screenshot from '../components/Screenshot.astro';
+import installDone from '../assets/screenshots/companion/install-done.png';
+import installOffer from '../assets/screenshots/companion/install-offer.png';
+import installPlan from '../assets/screenshots/companion/install-plan.png';
 import { site } from '../config/site';
 import installPrompt from '../data/generated/install-prompt.txt?raw';
 ---
@@ -24,6 +28,44 @@ import installPrompt from '../data/generated/install-prompt.txt?raw';
 	<section class="container section">
 		<CopyBox title="install prompt" text={installPrompt.trimEnd()} />
 		<p class="muted note">Repeat it on every machine that should host sessions. Remote hosts must join the same NetBird network.</p>
+	</section>
+
+	<section class="container section" id="companion">
+		<div class="section-head">
+			<span class="eyebrow">Desktop companion</span>
+			<h2>Install from the companion</h2>
+			<p class="lead">
+				Start the <a class="text-link" href="/surfaces/companion/">desktop companion</a> on a machine without pohunek and
+				it opens a setup screen instead of the session list. It names what is missing: the <code>pohunek</code> command,
+				the login service, or a running daemon, and offers to fix it after showing the exact command and what it touches.
+			</p>
+		</div>
+		<div class="grid companion-install">
+			<ol class="steps">
+				<li>
+					<strong>Install the companion.</strong> On macOS <code>brew install zajca/pohunek/pohunek-companion</code>; on
+					Linux x86_64 the release archive from
+					<a class="text-link" href="https://github.com/pohunekd/pohunek-companion/releases">pohunekd/pohunek-companion</a>.
+				</li>
+				<li>
+					<strong>Press Install.</strong> On Linux it downloads the pohunek release the companion is built against (never
+					"latest") over HTTPS and checks its sha256, and its build attestation when <code>gh</code> is signed in. On macOS
+					it runs <code>{site.homebrewInstall}</code>.
+				</li>
+				<li>
+					<strong>Review, then Run.</strong> It shows what the installer will write and runs it only after you press Run and
+					confirm. A checksum mismatch refuses the install.
+				</li>
+				<li>
+					<strong>Done.</strong> The setup screen gives way to the session list as soon as the daemon answers.
+				</li>
+			</ol>
+			<div class="install-shots">
+				<Screenshot image={installOffer} alt="Companion setup screen offering to install pohunek because the pohunek command is missing" caption="pohunek is missing" />
+				<Screenshot image={installPlan} alt="Companion setup screen after the release was downloaded and verified, showing the checksum evidence and what the installer will write" caption="Verified, ready to run" density={1} />
+				<Screenshot image={installDone} alt="Companion setup screen after the install finished" caption="Installed" density={1} />
+			</div>
+		</div>
 	</section>
 
 	<section class="container section">
@@ -61,6 +103,22 @@ import installPrompt from '../data/generated/install-prompt.txt?raw';
 </MarketingLayout>
 
 <style>
+	.steps {
+		margin: 0;
+		padding-left: 1.3rem;
+		display: grid;
+		gap: 1rem;
+		align-content: start;
+		color: var(--ink-muted);
+	}
+	.steps strong {
+		color: var(--ink-strong);
+	}
+	.install-shots {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+	}
 	.note {
 		margin-top: 1rem;
 	}

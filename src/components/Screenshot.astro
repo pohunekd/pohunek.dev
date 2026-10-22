@@ -1,0 +1,46 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+	image: ImageMetadata;
+	alt: string;
+	caption?: string;
+	/** Device pixel ratio the image was captured at; it is shown at its pixel size divided by this. */
+	density?: number;
+}
+
+const { image, alt, caption, density = 2 } = Astro.props;
+const width = Math.round(image.width / density);
+---
+
+<figure class="shot">
+	<!-- UI text must stay crisp: lossless PNG at the captured density, never scaled up. -->
+	<Image src={image} alt={alt} width={width} densities={[density]} format="png" />
+	{caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+	.shot {
+		margin: 0;
+		display: grid;
+		gap: 0.6rem;
+		justify-items: center;
+		align-content: start;
+		padding: 1rem;
+		background: var(--paper-raised);
+		border: 1px solid var(--rule);
+	}
+	.shot :global(img) {
+		max-width: 100%;
+		height: auto;
+		border-radius: 6px;
+		box-shadow: 0 0 0 1px var(--rule-strong);
+	}
+	figcaption {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: var(--ink-faint);
+		text-align: center;
+	}
+</style>
