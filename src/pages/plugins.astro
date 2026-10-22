@@ -1,0 +1,208 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import CopyBox from '../components/CopyBox.astro';
+import Icon from '../components/Icon.astro';
+import StatusBadge from '../components/StatusBadge.astro';
+import { site } from '../config/site';
+import { getSurface } from '../data/surfaces';
+
+const work = getSurface('tui');
+
+const runtimes = [
+	{ name: 'Codex', status: 'shipped' as const, note: 'official runtime package' },
+	{ name: 'Claude Code', status: 'shipped' as const, note: 'official runtime package' },
+	{ name: 'Hermes', status: 'shipped' as const, note: 'official runtime package' },
+	{ name: 'Pi', status: 'shipped' as const, note: 'official runtime package' },
+	{ name: 'shell', status: 'shipped' as const, note: 'the only built-in runtime' },
+	{ name: 'OpenCode 2.x', status: 'planned' as const, note: 'planned, zajca/pohunek#227' },
+];
+
+const manifest = `schema = 1
+
+[plugin]
+id = "acme.work"
+version = "1.2.0"
+description = "Work overview"
+
+[actions.overview]
+argv = ["bin/work", "overview"]
+args = "passthrough"
+timeout_ms = 30000
+
+[jobs.poll]
+argv = ["bin/work", "poll"]
+every_s = 300`;
+
+const workflowCommands = `pohunek workflow install work.tar.zst --sha256 <digest>        # review, nothing installed
+pohunek workflow install work.tar.zst --sha256 <digest> --yes  # install, enabled
+pohunek workflow list [--json]
+pohunek workflow run [--json] acme.work overview --since 1d
+pohunek workflow disable acme.work`;
+
+const runtimeCommands = `pohunek plugin list
+pohunek plugin install ./acme-pi-1.0.0.tar.zst --sha256 sha256:<64 hex>
+pohunek plugin inspect acme.pi
+pohunek plugin update acme.pi ./acme-pi-1.1.0.tar.zst --sha256 sha256:<64 hex> --yes
+pohunek plugin doctor`;
+---
+
+<MarketingLayout
+	title="Plugins"
+	description="Runtime packages add agent CLIs to a host. Workflow plugins add owner tooling that acts through the public CLI and SDK."
+>
+	<section class="container">
+		<header class="page-hero">
+			<span class="eyebrow">Plugins</span>
+			<h1>Two kinds of plugin, one trust model</h1>
+			<p class="lead">
+				Runtime packages teach the daemon a new agent CLI. Workflow plugins are owner tooling that runs as you, over the
+				public CLI and SDK. They are separate on purpose: a workflow plugin never extends the daemon.
+			</p>
+		</header>
+	</section>
+
+	<section class="container section">
+		<div class="section-head">
+			<span class="eyebrow">Runtime packages</span>
+			<h2>Agents the daemon can run</h2>
+			<p class="muted">
+				Each package is a signed, content-addressed archive installed per host. Official packages come from the signed
+				runtime catalog that ships with each release. Any other agent CLI can be added as a runtime package with a TOML
+				runtime and detection manifest, without recompiling pohunek.
+			</p>
+		</div>
+		<div class="table-wrap">
+			<table class="ledger">
+				<thead>
+					<tr><th>Runtime</th><th>Status</th><th>Note</th></tr>
+				</thead>
+				<tbody>
+					{
+						runtimes.map((runtime) => (
+							<tr>
+								<td>{runtime.name}</td>
+								<td><StatusBadge status={runtime.status} /></td>
+								<td>{runtime.note}</td>
+							</tr>
+						))
+					}
+				</tbody>
+			</table>
+		</div>
+		<div class="stack">
+			<CopyBox title="pohunek plugin" text={runtimeCommands} />
+		</div>
+	</section>
+
+	<section class="container section">
+		<div class="section-head">
+			<span class="eyebrow">Workflow plugins</span>
+			<h2>Owner tooling with declared actions</h2>
+			<p class="muted">
+				A workflow plugin declares named actions as argv arrays, plus optional periodic jobs, long-running services and
+				event reactions. It is pinned by the digest you approve. The install step prints every argv before anything is
+				created.
+			</p>
+		</div>
+		<div class="grid cols-2">
+			<div class="stack">
+				<h3>workflow.toml</h3>
+				<CopyBox title="workflow.toml" text={manifest} />
+			</div>
+			<div class="stack">
+				<h3>Commands</h3>
+				<CopyBox title="pohunek workflow" text={workflowCommands} />
+			</div>
+		</div>
+	</section>
+
+	<section class="container section">
+		<div class="section-head">
+			<span class="eyebrow">Featured</span>
+			<h2>pohunek-work</h2>
+		</div>
+		<article class="card featured">
+			<div class="card-kicker"><Icon name="package" label="" /><span>Workflow plugin</span></div>
+			<h3>{work.name}</h3>
+			<p>
+				A workflow plugin that answers who has to act next on every open work item, joining Linear, GitHub and pohunek
+				sessions. It ships a terminal interface, a rofi and sway launcher and a web control center.
+			</p>
+			<div class="card-foot">
+				<StatusBadge status={work.status} note={work.statusNote} />
+				<a class="text-link" href={work.repoUrl}>Source on GitHub</a>
+			</div>
+		</article>
+	</section>
+
+	<section class="container section">
+		<div class="trust strip">
+			<Icon name="shield" label="" />
+			<div>
+				<h3>Trust boundary</h3>
+				<p>
+					Both kinds of plugin run with your account's full authority, the same owner trust boundary as any script you run.
+					The digest proves which bytes you approved. It does not confine them. Install only plugins whose source you trust,
+					and read the argv the consent step prints.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<section class="container section">
+		<div class="section-head">
+			<span class="eyebrow">Write your own</span>
+			<h2>Build a plugin</h2>
+		</div>
+		<div class="actions">
+			<a class="button" href="/docs/guides/workflow-plugins/">Workflow plugins guide</a>
+			<a class="button secondary" href="/docs/guides/runtime-packages/">Runtime packages guide</a>
+			<a class="button secondary" href="/docs/guides/ts-sdk/">TypeScript SDK guide</a>
+		</div>
+	</section>
+</MarketingLayout>
+
+<style>
+	.stack {
+		display: grid;
+		gap: 0.9rem;
+		align-content: start;
+		margin-top: 1rem;
+	}
+	.card.featured {
+		max-width: 48rem;
+	}
+	.card-kicker {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+	.card-kicker :global(svg) {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+	.trust {
+		display: flex;
+		gap: 1.1rem;
+		align-items: flex-start;
+		padding: 1.4rem;
+		border: 1px solid var(--rule-strong);
+		background: var(--paper-sunk);
+		border-radius: var(--radius);
+	}
+	.trust :global(svg) {
+		width: 2rem;
+		height: 2rem;
+		flex: none;
+		color: var(--leather);
+	}
+	.trust p {
+		margin-top: 0.4rem;
+		color: var(--ink-muted);
+	}
+</style>

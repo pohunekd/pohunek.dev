@@ -1,0 +1,61 @@
+---
+import '@fontsource/domine/400.css';
+import '@fontsource/domine/700.css';
+import '@fontsource/karla/400.css';
+import '@fontsource/karla/400-italic.css';
+import '@fontsource/karla/700.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/700.css';
+import '../styles/site.css';
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import { site } from '../config/site';
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description = site.description } = Astro.props;
+const fullTitle = title === site.name ? `${site.name} · ${site.tagline}` : `${title} · ${site.name}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{fullTitle}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+		<link rel="icon" href="/favicon.png" type="image/png" />
+		<meta property="og:title" content={fullTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:image" content={new URL('/og.png', Astro.site)} />
+		<meta name="theme-color" content="#fcf9f2" />
+		<script is:inline>
+			// Same key and fallback as Starlight, so marketing pages and docs share one theme choice.
+			(() => {
+				let stored = null;
+				try {
+					stored = localStorage.getItem('starlight-theme');
+				} catch {
+					stored = null;
+				}
+				const theme = stored || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+				document.documentElement.dataset.theme = theme === 'dark' ? 'dark' : 'light';
+			})();
+		</script>
+	</head>
+	<body>
+		<a class="skip-link" href="#main">Skip to content</a>
+		<SiteHeader />
+		<main id="main">
+			<slot />
+		</main>
+		<SiteFooter />
+	</body>
+</html>

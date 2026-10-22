@@ -1,0 +1,76 @@
+/*
+ * Design tokens for pohunek.dev. Light values come from the Stitch design
+ * system "Engraver & Phosphor" (see DESIGN.md); dark values are the same
+ * roles redrawn as a night field. Starlight and the marketing pages both read
+ * these, and both switch on :root[data-theme].
+ */
+:root {
+	--font-display: 'Domine', 'Georgia', serif;
+	--font-body: 'Karla', system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+	--paper: #fcf9f2;
+	--paper-raised: #f6f3ec;
+	--paper-sunk: #f0eee7;
+	--paper-strong: #ebe8e1;
+	--ink: #1c1c18;
+	--ink-strong: #140b05;
+	--ink-muted: #4d453f;
+	--ink-faint: #7f756e;
+	--rule: #d0c4bc;
+	--rule-strong: #7f756e;
+	--leather: #775935;
+	--leather-soft: #ffd6a9;
+	--leather-strong: #5d4120;
+	--button-bg: #2b2118;
+	--button-ink: #fcf9f2;
+
+	--terminal-bg: #1b1a17;
+	--terminal-rule: #3a362f;
+	--terminal-ink: #e9e4d8;
+	--terminal-muted: #9b9282;
+	--phosphor: #7dda91;
+	--phosphor-dim: #3f9c5a;
+	--amber: #e7c094;
+
+	--state-blocked: #b26b00;
+	--state-working: #2f8a4c;
+	--state-idle: #3d6fb6;
+
+	--radius: 2px;
+	--measure: 72rem;
+	--gutter: 1rem;
+	color-scheme: light;
+}
+
+@media (min-width: 48rem) {
+	:root {
+		--gutter: 2rem;
+	}
+}
+
+:root[data-theme='dark'] {
+	--paper: #15130f;
+	--paper-raised: #1d1a15;
+	--paper-sunk: #221e18;
+	--paper-strong: #2a251e;
+	--ink: #ece4d3;
+	--ink-strong: #f7f0e1;
+	--ink-muted: #c2b6a2;
+	--ink-faint: #8f8472;
+	--rule: #3a332a;
+	--rule-strong: #6b5f4f;
+	--leather: #d6ae7c;
+	--leather-soft: #4a3721;
+	--leather-strong: #f0d3ad;
+	--button-bg: #ece4d3;
+	--button-ink: #15130f;
+
+	--terminal-bg: #0d0c0a;
+	--terminal-rule: #2f2b25;
+
+	--state-blocked: #e7a33e;
+	--state-working: #7dda91;
+	--state-idle: #8fb3ea;
+	color-scheme: dark;
+}

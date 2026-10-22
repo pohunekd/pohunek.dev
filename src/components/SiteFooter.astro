@@ -1,0 +1,24 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/logo-mark.png';
+import { footerLinks, site } from '../config/site';
+---
+
+<footer class="site-footer">
+	<div class="container">
+		<div class="row">
+			<a class="brand" href="/">
+				<Image src={logo} alt="" width={64} height={64} />
+				pohunek
+			</a>
+			<span class="command-pill"><span class="prompt">$</span> {site.homebrewInstall}</span>
+		</div>
+		<nav aria-label="Footer">
+			{footerLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+		</nav>
+		<div class="row fine">
+			<span>pohunek is MIT licensed. <a href={site.licenseUrl}>License</a></span>
+			<span>No cookies, no trackers, no third-party requests.</span>
+		</div>
+	</div>
+</footer>

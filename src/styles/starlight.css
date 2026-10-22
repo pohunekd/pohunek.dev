@@ -1,0 +1,39 @@
+/* Maps the site tokens onto Starlight's palette. Starlight's gray scale runs
+ * from the strongest text (white) to the page background (black) in both
+ * themes, so one mapping covers light and dark. */
+@import './tokens.css';
+
+:root,
+:root[data-theme='light'],
+:root[data-theme='dark'] {
+	--sl-font: var(--font-body);
+	--sl-font-mono: var(--font-mono);
+	--sl-color-white: var(--ink-strong);
+	--sl-color-gray-1: var(--ink);
+	--sl-color-gray-2: var(--ink-muted);
+	--sl-color-gray-3: var(--ink-faint);
+	--sl-color-gray-4: var(--rule-strong);
+	--sl-color-gray-5: var(--rule);
+	--sl-color-gray-6: var(--paper-strong);
+	--sl-color-gray-7: var(--paper-sunk);
+	--sl-color-black: var(--paper);
+	--sl-color-accent-low: var(--leather-soft);
+	--sl-color-accent: var(--leather);
+	--sl-color-accent-high: var(--leather-strong);
+	--sl-color-bg-nav: var(--paper);
+	--sl-color-bg-sidebar: var(--paper);
+	--sl-color-hairline: var(--rule);
+	--sl-color-hairline-light: var(--rule);
+	--sl-color-hairline-shade: var(--rule);
+}
+
+.sl-markdown-content :is(h1, h2, h3, h4),
+h1#_top {
+	font-family: var(--font-display);
+	letter-spacing: -0.01em;
+}
+
+.sl-markdown-content :not(pre) > code {
+	border: 1px solid var(--rule);
+	border-radius: var(--radius);
+}

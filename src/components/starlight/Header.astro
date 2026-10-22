@@ -1,0 +1,84 @@
+---
+/**
+ * Starlight header override: the docs keep Starlight's search and theme
+ * picker, and gain the same primary navigation as the marketing pages.
+ */
+import Search from 'virtual:starlight/components/Search';
+import SiteTitle from 'virtual:starlight/components/SiteTitle';
+import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+import { nav, site } from '../../config/site';
+import Icon from '../Icon.astro';
+
+const current = Astro.url.pathname;
+---
+
+<div class="header">
+	<div class="title-wrapper sl-flex">
+		<SiteTitle />
+	</div>
+	<div class="sl-flex print:hidden">
+		<Search />
+	</div>
+	<div class="sl-hidden md:sl-flex print:hidden right-group">
+		<nav class="docs-nav" aria-label="Main">
+			{nav.map((link) => (
+				<a href={link.href} aria-current={current.startsWith(link.href) ? 'page' : undefined}>
+					{link.label}
+				</a>
+			))}
+		</nav>
+		<a class="gh" href={site.repoUrl} aria-label="pohunek on GitHub"><Icon name="github" /></a>
+		<ThemeSelect />
+	</div>
+</div>
+
+<style>
+	.header {
+		display: flex;
+		gap: var(--sl-nav-gap);
+		justify-content: space-between;
+		align-items: center;
+		height: 100%;
+	}
+	.title-wrapper {
+		overflow: clip;
+		padding: 0.25rem;
+		margin: -0.25rem;
+		min-width: 0;
+	}
+	.right-group {
+		gap: 1.1rem;
+		align-items: center;
+	}
+	.docs-nav {
+		display: flex;
+		gap: 1.1rem;
+	}
+	.docs-nav a {
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		color: var(--ink-muted);
+		text-decoration: none;
+	}
+	.docs-nav a:hover,
+	.docs-nav a[aria-current='page'] {
+		color: var(--ink-strong);
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.gh {
+		color: var(--ink-muted);
+		display: inline-flex;
+	}
+	.gh :global(svg) {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+	@media (min-width: 50rem) {
+		.header {
+			display: grid;
+			grid-template-columns: auto 1fr auto;
+			align-content: center;
+		}
+	}
+</style>

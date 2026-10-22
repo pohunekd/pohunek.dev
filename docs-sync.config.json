@@ -1,0 +1,28 @@
+{
+  "$comment": "Source docs rendered by scripts/sync-docs.ts. Only files matched by pages are published. Every other file of the pinned repository ref is linked to its GitHub URL. The pinned repository and ref live in pohunek.config.json.",
+  "editBranch": "main",
+  "routePrefix": "docs",
+  "contentRoot": "src/content/docs",
+  "generatedDir": "src/data/generated",
+  "cacheDir": ".cache/docs-sync",
+  "githubUrl": "https://github.com",
+  "rawUrl": "https://raw.githubusercontent.com",
+  "pages": [
+    { "source": "docs/install.md", "route": "install" },
+    { "source": "docs/cli.md", "route": "cli" },
+    { "source": "docs/sdk.md", "route": "sdk" },
+    { "source": "docs/public-api.md", "route": "protocol" },
+    { "source": "docs/features.md", "route": "features" },
+    { "source": "docs/architecture.md", "route": "architecture" },
+    { "source": "docs/knowledge/index.md", "route": "", "title": "Pohunek documentation" },
+    { "source": "docs/knowledge/concepts/**/*.md", "routeBase": "docs/knowledge" },
+    { "source": "docs/knowledge/guides/**/*.md", "routeBase": "docs/knowledge" },
+    { "source": "docs/knowledge/runbooks/**/*.md", "routeBase": "docs/knowledge" },
+    { "source": "docs/knowledge/safety/**/*.md", "routeBase": "docs/knowledge" }
+  ],
+  "installPrompt": {
+    "readme": "README.md",
+    "heading": "## Install with an agent",
+    "output": "install-prompt.txt"
+  }
+}

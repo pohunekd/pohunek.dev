@@ -1,0 +1,46 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/logo-mark.png';
+import { nav, site } from '../config/site';
+import Icon from './Icon.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+const current = Astro.url.pathname;
+const isCurrent = (href: string): boolean => current === href || current.startsWith(href);
+---
+
+<header class="site-header">
+	<div class="container bar">
+		<a class="brand" href="/">
+			<Image src={logo} alt="" width={64} height={64} loading="eager" />
+			pohunek
+		</a>
+		<a class="release-badge" href={`${site.releasesUrl}/tag/${site.release}`}>{site.release}</a>
+		<nav class="site-nav" aria-label="Main">
+			{nav.map((link) => (
+				<a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>
+					{link.label}
+				</a>
+			))}
+		</nav>
+		<div class="header-tools">
+			<a class="icon-button" href={site.repoUrl} aria-label="pohunek on GitHub">
+				<Icon name="github" />
+			</a>
+			<ThemeToggle />
+			<button class="icon-button menu-toggle" type="button" aria-label="Menu" aria-expanded="false">
+				<Icon name="menu" />
+			</button>
+		</div>
+	</div>
+</header>
+
+<script>
+	const header = document.querySelector<HTMLElement>('.site-header');
+	const toggle = header?.querySelector<HTMLButtonElement>('.menu-toggle');
+	toggle?.addEventListener('click', () => {
+		const open = !header?.hasAttribute('data-open');
+		header?.toggleAttribute('data-open', open);
+		toggle.setAttribute('aria-expanded', String(open));
+	});
+</script>

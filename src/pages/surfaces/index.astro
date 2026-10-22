@@ -1,0 +1,62 @@
+---
+import MarketingLayout from '../../layouts/MarketingLayout.astro';
+import Icon from '../../components/Icon.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import { surfaces } from '../../data/surfaces';
+---
+
+<MarketingLayout
+	title="Surfaces"
+	description="pohunek ships no UI. Every window, sidebar, terminal and dashboard is an optional client of the same public contract."
+>
+	<section class="container">
+		<header class="page-hero">
+			<span class="eyebrow">Surfaces</span>
+			<h1>Ways to look over the fence</h1>
+			<p class="lead">
+				pohunek ships no UI. The daemon, its protocol, the <code>--json</code> CLI and the SDKs are the product. Every
+				surface below is an optional client of that same public contract, and the CLI keeps working without any of them.
+			</p>
+		</header>
+	</section>
+	<section class="container section">
+		<div class="grid cols-2">
+			{
+				surfaces.map((surface) => (
+					<a class="card surface-card" href={`/surfaces/${surface.slug}/`}>
+						<div class="card-kicker">
+							<Icon name={surface.icon} label="" />
+							<span>{surface.platform}</span>
+						</div>
+						<h3>{surface.name}</h3>
+						<p>{surface.summary}</p>
+						<div class="card-foot">
+							<StatusBadge status={surface.status} note={surface.statusNote} />
+							<span class="text-link">Details</span>
+						</div>
+					</a>
+				))
+			}
+		</div>
+	</section>
+</MarketingLayout>
+
+<style>
+	.surface-card {
+		text-decoration: none;
+	}
+	.card-kicker {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+	.card-kicker :global(svg) {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+</style>

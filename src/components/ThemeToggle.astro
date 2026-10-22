@@ -1,0 +1,31 @@
+---
+import Icon from './Icon.astro';
+---
+
+<button class="icon-button theme-toggle" type="button" aria-label="Toggle dark mode">
+	<Icon name="moon" class="theme-icon-dark" />
+	<Icon name="sun" class="theme-icon-light" />
+</button>
+
+<style>
+	:global(:root[data-theme='dark']) .theme-icon-dark,
+	:global(:root:not([data-theme='dark'])) .theme-icon-light {
+		display: none;
+	}
+</style>
+
+<script>
+	// Shares Starlight's storage key so the choice carries into the docs.
+	const storageKey = 'starlight-theme';
+	for (const button of document.querySelectorAll<HTMLButtonElement>('.theme-toggle')) {
+		button.addEventListener('click', () => {
+			const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+			document.documentElement.dataset.theme = next;
+			try {
+				localStorage.setItem(storageKey, next);
+			} catch {
+				// Storage can be unavailable (private mode, blocked site data); the theme still applies for this page.
+			}
+		});
+	}
+</script>

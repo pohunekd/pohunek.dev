@@ -1,0 +1,310 @@
+---
+import { Image } from 'astro:assets';
+import MarketingLayout from '../../layouts/MarketingLayout.astro';
+import Icon from '../../components/Icon.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import CopyBox from '../../components/CopyBox.astro';
+import { site } from '../../config/site';
+import { surfaces, getSurface } from '../../data/surfaces';
+
+export function getStaticPaths() {
+	return surfaces.map((surface) => ({ params: { slug: surface.slug } }));
+}
+
+interface Detail {
+	/** Longer paragraph under the hero. */
+	body: string;
+	features: readonly { title: string; text: string }[];
+	/** Shell lines or prose to show in the install area. */
+	install: { title: string; lines: readonly string[] }[];
+	notes?: readonly string[];
+}
+
+const details: Record<string, Detail> = {
+	sway: {
+		body: 'A rofi switcher, a new-session keybind and issue launchers for Sway, installed by pohunek-work. They are local scripts that call the pohunek CLI.',
+		features: [
+			{
+				title: 'Switch between attached agents',
+				text: 'The rofi switcher lists your sessions with host, project, branch, agent, state and activity, and focuses the attach terminal that is already open. --filter key=value narrows the list before it reaches rofi.',
+			},
+			{
+				title: 'New session on $mod+n',
+				text: 'The default keybind opens the standalone new-session form from pohunek-work, in the terminal you configure.',
+			},
+			{
+				title: 'Start work on a Linear issue or GitHub PR',
+				text: 'pohunek-rofi-issue lists your actionable Linear or GitHub issues and starts the work in a terminal. A separate launcher starts work on a GitHub PR.',
+			},
+			{
+				title: 'Closing an attach window detaches',
+				text: 'The switcher only opens terminals that run pohunek attach. Closing one detaches you; the agent keeps running on its durable worker.',
+			},
+		],
+		install: [
+			{
+				title: 'Install',
+				lines: ['pohunek-work setup sway', 'pohunek-work doctor'],
+			},
+		],
+		notes: [
+			'The scripts are shell and Bun, and they are designed to work with other window managers too. Sway is the only one shipped so far.',
+		],
+	},
+	companion: {
+		body: 'A small native app (Rust and Slint) for the owner of a daemon. It owns no session state: the daemon runs the sessions and the companion shows them and starts new ones.',
+		features: [
+			{
+				title: 'Live state and attention',
+				text: 'Every row shows the agent, its state (working, idle, needs owner, ended) and its Work link. Sessions that need you sit in a Needs you section at the top. An idle session counts as idle only after a configurable threshold.',
+			},
+			{
+				title: 'Tray badge',
+				text: 'The tray icon carries a badge with the number of sessions that need you, colored by the most urgent state. Its menu attaches to them directly. A Linux tray needs a StatusNotifierItem host.',
+			},
+			{
+				title: 'Groups by drag and drop',
+				text: 'Drag rows and group headers into your own groups. Groups can be renamed, collapsed and deleted. The layout is stored per user, never in the daemon.',
+			},
+			{
+				title: 'Filters and search',
+				text: 'Chips narrow the list by project and by state. A text filter (Ctrl+F, or Cmd+F on macOS) searches names. Ended sessions stay hidden until their chip is on.',
+			},
+			{
+				title: 'Session detail',
+				text: 'The details view lists the session id, host, agent, state, working directory, project and Work metadata, each with a copy button. An ended session that the daemon can resume gets a Resume action.',
+			},
+			{
+				title: 'New session and Assistant',
+				text: 'Both dialogs are separate processes, so they can also be bound to a desktop keybinding with pohunek-companion new-session or assistant.',
+			},
+			{
+				title: 'Other hosts',
+				text: 'The companion can follow daemons on other machines over the NetBird overlay. A host that drops off keeps its last rows dimmed and marked unreachable.',
+			},
+			{
+				title: 'Install from the app',
+				text: 'Without a daemon the window shows a setup screen. On Linux x86_64 its Install button downloads the matching Pohunek release from GitHub, checks the sha256 and attestation when gh is signed in, shows what the installer will write, and runs it only after you confirm.',
+			},
+		],
+		install: [
+			{
+				title: 'Linux x86_64',
+				lines: [
+					'v=0.1.4',
+					'a=pohunek-companion-$v-x86_64-unknown-linux-gnu.tar.gz',
+					'gh release download v$v -R pohunekd/pohunek-companion -p "$a*"',
+					'sha256sum -c $a.sha256',
+					'gh attestation verify $a --repo pohunekd/pohunek-companion',
+					'tar -xzf $a && ./pohunek-companion-$v-x86_64-unknown-linux-gnu/pohunek-companion desktop install',
+				],
+			},
+			{
+				title: 'macOS (Apple Silicon)',
+				lines: ['brew install zajca/pohunek/pohunek-companion'],
+			},
+		],
+		notes: [
+			'Status: early development. The companion needs a running Pohunek daemon on the same machine.',
+		],
+	},
+	android: {
+		body: 'A native Android companion for the same daemons, planned as a remote session list with live state and an embedded terminal over the NetBird overlay.',
+		features: [
+			{
+				title: 'Session list with live state',
+				text: 'Sessions from your hosts, with their live state, so you can see which ones need you from your phone.',
+			},
+			{
+				title: 'Embedded terminal over NetBird',
+				text: 'Attach to a session through the same overlay the daemons already use. No central server is involved.',
+			},
+		],
+		install: [],
+		notes: [
+			'Coming soon. The repository exists, but it has no release yet and no screenshots.',
+		],
+	},
+	tui: {
+		body: 'pohunek-work is a Bun plugin with an Ink terminal interface. It answers one question for every open work item: who has to act next, me, an agent or a reviewer?',
+		features: [
+			{
+				title: 'Work',
+				text: 'Joins Linear, GitHub and pohunek sessions into one list of work items, with the next action for each.',
+			},
+			{
+				title: 'Sessions, Hosts and Activity',
+				text: 'Sessions grouped by Needs you, Running, Ready and Unavailable. Attach, stop and remove from the same view. Hosts and Activity use the public pohunek --json commands.',
+			},
+			{
+				title: 'Keyboard and mouse',
+				text: 'Tab and 1 to 4 switch views, arrows move the selection, Enter opens. Press ? for the keys.',
+			},
+		],
+		install: [
+			{
+				title: 'Run the plugin archive',
+				lines: [
+					'gh release download plugin-v0.7.1 -R zajca/pohunek-work -p "pohunek-work-plugin*"',
+					'sha256sum -c <archive>.sha256',
+					'gh attestation verify <archive> --repo zajca/pohunek-work',
+					'bun plugin/pohunek-work.js tui',
+				],
+			},
+		],
+		notes: [
+			'Status: plugin-v0.7.1 is released, and the plugin README still lists the Sessions, Hosts and Activity views as in progress. Check the release notes for the exact scope.',
+		],
+	},
+	web: {
+		body: 'A self-hosted owner web control center: one backend origin serves a Svelte single-page app and reports your hosts. It is a client over the public protocol, and the CLI and launchers keep working when it is down.',
+		features: [
+			{
+				title: 'Session rail across hosts',
+				text: 'A persistent workspace shell lists every host, groups normal work by project and promotes the sessions that need you.',
+			},
+			{
+				title: 'Attach over WebSocket',
+				text: 'The backend exposes a transparent control or attach WebSocket per daemon. The backend is not authoritative: each daemon still owns its sessions, events and notifications.',
+			},
+			{
+				title: 'Mesh-local owner tool',
+				text: 'It is meant for your own machines over the overlay. It is not the optional team relay.',
+			},
+		],
+		install: [
+			{
+				title: 'Linux',
+				lines: [
+					'gh release download web-v0.3.1 -R zajca/pohunek-work -p "pohunek-web*"',
+					'sha256sum -c <archive>.sha256',
+					'gh attestation verify <archive> --repo zajca/pohunek-work',
+				],
+			},
+			{
+				title: 'macOS',
+				lines: ['brew install zajca/pohunek/pohunek-web'],
+			},
+		],
+		notes: [
+			'Status: web-v0.3.1 is released for Linux. The macOS archive is ad hoc signed and is not yet a published platform.',
+		],
+	},
+};
+
+const { slug } = Astro.params;
+const surface = getSurface(slug!);
+const detail = details[surface.slug];
+const shots = surface.screenshots;
+const repoLabel = surface.repoUrl.replace('https://github.com/', '');
+---
+
+<MarketingLayout title={surface.name} description={surface.summary}>
+	<section class="container">
+		<header class="page-hero">
+			<a class="text-link" href="/surfaces/">Back to surfaces</a>
+			<span class="eyebrow"><Icon name={surface.icon} label="" /> {surface.platform}</span>
+			<h1>{surface.name}</h1>
+			<p class="lead">{detail.body}</p>
+			<div><StatusBadge status={surface.status} note={surface.statusNote} /></div>
+			<div class="actions">
+				<a class="button secondary" href={surface.repoUrl}>Source on GitHub ({repoLabel})</a>
+				{surface.release && <a class="button secondary" href={`${surface.repoUrl}/releases/tag/${surface.release}`}>Release {surface.release}</a>}
+			</div>
+		</header>
+	</section>
+
+	{
+		shots.length > 0 && (
+			<section class="container section">
+				<div class="section-head">
+					<span class="eyebrow">Screenshots</span>
+					<h2>What the app shows</h2>
+					<p class="muted">Captured from an isolated daemon filled with synthetic sessions, not from real work.</p>
+				</div>
+				<div class="grid cols-2">
+					{shots.map((shot) => (
+						<figure class="plate">
+							<Image src={shot.image} alt={shot.alt} />
+							<figcaption><span>{shot.caption}</span></figcaption>
+						</figure>
+					))}
+				</div>
+			</section>
+		)
+	}
+
+	<section class="container section">
+		<div class="section-head">
+			<span class="eyebrow">Features</span>
+			<h2>What it does</h2>
+		</div>
+		<div class="grid cols-2">
+			{
+				detail.features.map((feature) => (
+					<article class="card">
+						<h3>{feature.title}</h3>
+						<p>{feature.text}</p>
+					</article>
+				))
+			}
+		</div>
+	</section>
+
+	{
+		detail.install.length > 0 && (
+			<section class="container section">
+				<div class="section-head">
+					<span class="eyebrow">Install</span>
+					<h2>Get it running</h2>
+				</div>
+				<div class="install-stack">
+					{detail.install.map((block) => (
+						<CopyBox title={block.title} text={block.lines.join('\n')} />
+					))}
+				</div>
+			</section>
+		)
+	}
+
+	{
+		detail.notes && (
+			<section class="container section">
+				<div class="section-head">
+					<span class="eyebrow">Notes</span>
+				</div>
+				<ul class="notes">
+					{detail.notes.map((note) => <li>{note}</li>)}
+				</ul>
+			</section>
+		)
+	}
+
+	<section class="container section">
+		<p class="muted">
+			Every surface is a client of the same public CLI and protocol. See the <a class="text-link" href="/surfaces/">other surfaces</a>
+			or the <a class="text-link" href="/docs/">docs</a>. Project home: <a class="text-link" href={site.repoUrl}>{site.repoUrl}</a>.
+		</p>
+	</section>
+</MarketingLayout>
+
+<style>
+	.install-stack {
+		display: grid;
+		gap: 1.25rem;
+	}
+	.notes {
+		margin: 0;
+		padding-left: 1.2rem;
+		display: grid;
+		gap: 0.6rem;
+		color: var(--ink-muted);
+	}
+	.plate {
+		margin: 0;
+	}
+	.plate :global(img) {
+		width: 100%;
+		height: auto;
+	}
+</style>

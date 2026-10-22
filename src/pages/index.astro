@@ -1,0 +1,393 @@
+---
+import { Image } from 'astro:assets';
+import heroField from '../assets/brand/hero-field.png';
+import CopyBox from '../components/CopyBox.astro';
+import Icon from '../components/Icon.astro';
+import StatusBadge from '../components/StatusBadge.astro';
+import Terminal from '../components/Terminal.astro';
+import { site } from '../config/site';
+import installPrompt from '../data/generated/install-prompt.txt?raw';
+import { landing } from '../data/landing';
+import { surfaces } from '../data/surfaces';
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+---
+
+<MarketingLayout title={site.name}>
+	<section class="container hero">
+		<div class="hero-copy">
+			<span class="eyebrow">Headless multihost daemon for coding agents</span>
+			<h1>I herd.<br /><em>They code.</em></h1>
+			<p class="lead">{site.description}</p>
+			<div class="actions">
+				<a class="button" href="/install/">Install with your agent <Icon name="arrow" /></a>
+				<a class="button secondary" href="/docs/">Read the docs</a>
+			</div>
+			<span class="command-pill"><span class="prompt">$</span> pohunek host list</span>
+		</div>
+		<figure class="plate hero-plate">
+			<Image
+				class="engraving"
+				src={heroField}
+				alt="Engraving of a farmhand boy with a whip steering a plow pulled by three server cabinets labelled codex, claude and hermes."
+				widths={[520, 780, 1036]}
+				sizes="(max-width: 60rem) 100vw, 36rem"
+				loading="eager"
+				fetchpriority="high"
+			/>
+			<figcaption>
+				<span><em>A pohunek drives the draft animals. He does not plow himself.</em></span>
+				<span>Plate I</span>
+			</figcaption>
+		</figure>
+	</section>
+
+	<section class="section">
+		<div class="container">
+			<div class="section-head center">
+				<span class="eyebrow">The idea</span>
+				<h2>Your agents need a farmhand, not an IDE</h2>
+			</div>
+			<div class="grid cols-3">
+				{
+					landing.tenets.map((tenet, index) => (
+						<article class="card">
+							<span class="card-kicker">
+								<span>{`Tenet ${index + 1}`}</span>
+								<Icon name={tenet.icon} />
+							</span>
+							<h3>{tenet.title}</h3>
+							<p>{tenet.body}</p>
+						</article>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container">
+			<div class="section-head">
+				<span class="eyebrow">Agent first</span>
+				<h2>The agent drives. You don't.</h2>
+				<p class="lead">
+					Every automation command returns one versioned JSON envelope with typed errors. An agent, or
+					your script, starts work on another machine, feeds it, waits, and reviews the result.
+				</p>
+			</div>
+			<Terminal title="an agent working buildbox" status="--json">
+				<ol class="steps">
+					{
+						landing.agentSteps.map((step) => (
+							<li>
+								<code>
+									<span class="prompt">$</span> {step.command}
+								</code>
+								<span class="caption">{step.caption}</span>
+							</li>
+						))
+					}
+				</ol>
+			</Terminal>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container">
+			<div class="section-head">
+				<span class="eyebrow">The herd</span>
+				<h2>Every agent CLI, one contract</h2>
+				<p class="lead">
+					Each agent has its own TUI quirks, prompt framing, hooks, session ids and resume rules. pohunek
+					absorbs them once, through signed runtime packages, so your tooling talks to one contract.
+				</p>
+			</div>
+			<ul class="herd">
+				{
+					landing.agents.map((agent) => (
+						<li class="herd-item">
+							<span class="herd-name">{agent.name}</span>
+							<StatusBadge status={agent.status} note={agent.note} />
+						</li>
+					))
+				}
+			</ul>
+			<p class="muted herd-more">
+				More agents are on the way. Any agent CLI can join as a runtime package: a runtime manifest plus
+				TOML detection rules, no recompile. <a class="text-link" href="/plugins/">How plugins work</a>
+			</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container">
+			<div class="section-head">
+				<span class="eyebrow">Architecture</span>
+				<h2>One small daemon per machine</h2>
+				<p class="lead">
+					Every host is authoritative for its own sessions. Clients talk to each daemon directly: an
+					owner-only Unix socket locally, a NetBird/WireGuard overlay remotely. No central server, no SaaS,
+					no state sync.
+				</p>
+			</div>
+			<div class="diagram" role="img" aria-label="Your tooling talks through the CLI, protocol and SDKs to a pohunekd daemon on each host; each daemon runs durable PTY workers for the agents.">
+				<div class="node tooling">
+					<span class="node-label">Your tooling</span>
+					<strong>agents, scripts, launchers, GUIs</strong>
+				</div>
+				<div class="link-down"><span>pohunek CLI --json · protocol · SDKs</span></div>
+				<div class="hosts">
+					{
+						landing.hosts.map((host) => (
+							<div class="node host">
+								<span class="node-label">{host.transport}</span>
+								<strong>{host.name}: pohunekd</strong>
+								<span class="workers">{host.workers}</span>
+							</div>
+						))
+					}
+				</div>
+			</div>
+			<p class="muted diagram-note">
+				Each session lives in its own <code>pohunek-sessiond</code> worker (a systemd unit on Linux, a launchd
+				job on macOS), which owns the PTY. Close the terminal, restart or upgrade the daemon: the session keeps
+				the same PTY and child process.
+			</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container">
+			<div class="section-head">
+				<span class="eyebrow">Comparison</span>
+				<h2>Why not a multiplexer and ssh?</h2>
+				<p class="lead">
+					A multiplexer keeps a shell alive. It does not know that the process inside is an agent, so every
+					agent-aware need lands on whoever writes the tool. pohunek handles it once.
+				</p>
+			</div>
+			<div class="table-wrap">
+				<table class="ledger">
+					<thead>
+						<tr><th scope="col">You need to</th><th scope="col">pohunek gives you</th></tr>
+					</thead>
+					<tbody>
+						{
+							landing.comparison.map((row) => (
+								<tr>
+									<td>{row.need}</td>
+									<td>{row.answer}</td>
+								</tr>
+							))
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container">
+			<div class="section-head">
+				<span class="eyebrow">Optional surfaces</span>
+				<h2>Ways to look over the fence</h2>
+				<p class="lead">
+					pohunek ships no UI. Every surface is a client of the same public contract, and you never need one
+					to get work done.
+				</p>
+			</div>
+			<div class="grid cols-3">
+				{
+					surfaces.map((surface) => (
+						<a class="card" href={`/surfaces/${surface.slug}/`}>
+							<span class="card-kicker">
+								<span>{surface.platform}</span>
+							</span>
+							<h3>{surface.name}</h3>
+							<p>{surface.summary}</p>
+							<span class="card-foot">
+								<StatusBadge status={surface.status} />
+							</span>
+						</a>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container install">
+			<div class="section-head center">
+				<span class="eyebrow">Install</span>
+				<h2>Install with your agent</h2>
+				<p class="lead">
+					Open Claude Code, Codex or another agent with shell access on the machine that should become a
+					pohunek host, and paste this. It verifies every download and asks before changing anything.
+				</p>
+			</div>
+			<CopyBox title="prompt for your agent" text={installPrompt.trim()} />
+			<p class="muted install-alt">
+				Prefer to do it by hand? Linux x86_64 release archives with checksums and build attestations, or
+				<code>{site.homebrewInstall}</code> on Apple Silicon. <a class="text-link" href="/docs/install/">Manual installation</a>
+			</p>
+		</div>
+	</section>
+</MarketingLayout>
+
+<style>
+	.hero {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 2.5rem;
+		align-items: center;
+		padding-block: clamp(2.5rem, 7vw, 5.5rem);
+	}
+	@media (min-width: 60rem) {
+		.hero {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+		}
+	}
+	.hero-copy {
+		display: grid;
+		gap: 1.4rem;
+		justify-items: start;
+	}
+	.hero h1 em {
+		color: var(--leather);
+		font-weight: 400;
+	}
+	.hero-plate {
+		margin: 0;
+	}
+	.steps {
+		list-style: none;
+		margin: 0;
+		padding: 1.2rem;
+		display: grid;
+		gap: 1.1rem;
+	}
+	.steps li {
+		display: grid;
+		gap: 0.25rem;
+	}
+	.steps code {
+		background: none;
+		border: 0;
+		padding: 0;
+		color: var(--terminal-ink);
+		font-size: 0.85rem;
+		overflow-x: auto;
+		white-space: nowrap;
+		display: block;
+	}
+	.steps .prompt {
+		color: var(--phosphor);
+	}
+	.steps .caption {
+		color: var(--amber);
+		font-size: 0.78rem;
+		padding-inline-start: 1.1rem;
+	}
+	.herd {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+		border-top: 1px solid var(--rule-strong);
+	}
+	.herd-item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+		padding: 1rem 0.25rem;
+		border-bottom: 1px solid var(--rule);
+	}
+	.herd-name {
+		font-family: var(--font-display);
+		font-size: 1.15rem;
+		color: var(--ink-strong);
+	}
+	.herd-more {
+		margin-top: 1.25rem;
+	}
+	.diagram {
+		display: grid;
+		gap: 0;
+		justify-items: center;
+		padding: clamp(1.25rem, 3vw, 2.5rem);
+		border: 1px solid var(--rule-strong);
+		background: var(--paper-raised);
+	}
+	.node {
+		border: 1px solid var(--ink-strong);
+		background: var(--paper);
+		padding: 1rem 1.25rem;
+		display: grid;
+		gap: 0.3rem;
+		text-align: center;
+		min-width: min(100%, 18rem);
+	}
+	.node strong {
+		font-family: var(--font-display);
+		color: var(--ink-strong);
+	}
+	.node-label,
+	.workers {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: var(--ink-muted);
+	}
+	.node-label {
+		color: var(--leather);
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+	}
+	.link-down {
+		width: 1px;
+		background: var(--ink-strong);
+		height: 4.5rem;
+		position: relative;
+	}
+	.link-down span {
+		position: absolute;
+		top: 50%;
+		left: 0.75rem;
+		transform: translateY(-50%);
+		white-space: nowrap;
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: var(--ink-muted);
+		background: var(--paper-raised);
+	}
+	.hosts {
+		width: 100%;
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+		border-top: 1px solid var(--ink-strong);
+		padding-top: 1.5rem;
+	}
+	.hosts .node {
+		min-width: 0;
+	}
+	.diagram-note {
+		margin-top: 1.25rem;
+		max-width: 46rem;
+	}
+	.install {
+		max-width: 52rem;
+	}
+	.install-alt {
+		margin-top: 1.25rem;
+		text-align: center;
+	}
+	@media (max-width: 40rem) {
+		.link-down span {
+			white-space: normal;
+			width: 9rem;
+			left: 0.5rem;
+		}
+	}
+</style>

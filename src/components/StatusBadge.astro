@@ -1,0 +1,13 @@
+---
+import type { Status } from '../data/status';
+import { statusLabel } from '../data/status';
+
+interface Props {
+	status: Status;
+	note?: string;
+}
+
+const { status, note } = Astro.props;
+---
+
+<span class="badge" data-status={status}>{statusLabel[status]}{note && ` · ${note}`}</span>

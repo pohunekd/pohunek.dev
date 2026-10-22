@@ -1,0 +1,5 @@
+{
+  "$comment": "The pohunek release whose docs, README and version this site renders. Bump with scripts/sync-docs.ts --ref.",
+  "repository": "zajca/pohunek",
+  "ref": "v0.35.2"
+}

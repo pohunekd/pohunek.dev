@@ -1,0 +1,168 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import CopyBox from '../components/CopyBox.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../config/site';
+
+const contract = `pohunek session input <target> --stdin --json
+pohunek session wait <target> --activity idle --timeout-ms 8000 --json
+pohunek agent-skill --json
+pohunek assistant "why does attach fail on my laptop?"`;
+
+const rows = [
+	{
+		need: 'Know whether the agent is working, blocked on an approval, or idle',
+		gives: 'Live working, blocked and idle detection from OSC titles, screen patterns and PTY activity. Detection rules are TOML manifests, so a new agent needs no recompile.',
+	},
+	{
+		need: 'Submit a multi-line prompt into an Ink TUI without it being half-swallowed',
+		gives: 'session input with per-agent framing (bracketed paste, delayed submit). Prompts can come from stdin, so they never appear in argv or logs.',
+	},
+	{
+		need: 'Hear about it when something needs you, on any machine',
+		gives: 'Durable notification records (unread, read, acknowledged, archived), fed by agent hooks and daemon-side detection, deduped, and fanned out with --all-hosts.',
+	},
+	{
+		need: 'Keep two agents out of one working tree',
+		gives: '--branch creates a worktree per session off the base branch. Ownership is recorded and checked before any reuse or cleanup.',
+	},
+	{
+		need: 'Get a conversation back, or branch it',
+		gives: 'Hooks capture the agent session id for an explicit session resume. session fork branches a Claude Code conversation into a new session.',
+	},
+	{
+		need: 'Watch without stealing the terminal',
+		gives: 'session screen, paged session output with exact cursors, and session wait for bounded change polling.',
+	},
+	{
+		need: 'Drive it from a script or another agent',
+		gives: 'One versioned --json envelope, typed errors with recovery hints, subscribe event streams, and Rust and TypeScript SDKs.',
+	},
+];
+---
+
+<MarketingLayout
+	title="Why"
+	description="The agent is pohunek's user. A human does not stare at the terminal, and a multiplexer and ssh are not enough."
+>
+	<article class="container essay">
+		<header class="page-hero">
+			<span class="eyebrow">Why</span>
+			<h1>You don't need an agentic IDE</h1>
+			<p class="lead">
+				The usual answer to running coding agents is a bigger window: an IDE with panes, tabs and a chat box. pohunek takes
+				the other path. The agent is the user of pohunek, and you are the owner who hears about it when it needs you.
+			</p>
+		</header>
+
+		<section class="section">
+			<h2>A pohunek is a farmhand</h2>
+			<blockquote class="farmhand">
+				<p>
+					A pohunek is the farmhand boy who drives the draft animals. He does not plow himself. He keeps the team moving.
+				</p>
+			</blockquote>
+			<p>
+				The agents do the plowing. pohunek keeps them running on the right machine, in the right worktree, and tells you or
+				your tooling when one of them needs attention. The name says what the daemon is for, and what it is not for: it does
+				not write the code.
+			</p>
+		</section>
+
+		<section class="section">
+			<h2>The agent is the user</h2>
+			<p>
+				An agent starts sessions, sends prompts, waits for them to settle, reads the diff and hands work off to the next one.
+				It does all of that through one contract: a versioned <code>--json</code> envelope on every automation command,
+				typed errors with recovery hints, <code>pohunek agent-skill</code> that prints the full operating skill an agent
+				needs, and <code>pohunek assistant</code> that starts an agent already aware of pohunek and your hosts.
+			</p>
+			<div class="stack">
+				<CopyBox title="the same contract, from a shell or an agent" text={contract} />
+			</div>
+		</section>
+
+		<section class="section">
+			<h2>The human is not the terminal</h2>
+			<p>
+				You are not meant to watch a pane of agent output. You go do something else. The record lands in front of you when
+				an agent is blocked on an approval, from every host at once, through the notification stream. A session keeps
+				running whether or not anyone is attached to it, and you can take it over with <code>pohunek attach</code> when you
+				want to, and leave it with Ctrl-] while the agent keeps going.
+			</p>
+		</section>
+
+		<section class="section">
+			<h2>Why not a multiplexer and ssh</h2>
+			<p>
+				A multiplexer keeps a shell alive. It does not know that the process inside is an agent, so every agent-aware need
+				lands on whoever writes the tool. pohunek handles it once, for every agent CLI.
+			</p>
+			<div class="table-wrap">
+				<table class="ledger">
+					<thead>
+						<tr><th>You need to</th><th>pohunek gives you</th></tr>
+					</thead>
+					<tbody>
+						{rows.map((row) => <tr><td>{row.need}</td><td>{row.gives}</td></tr>)}
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<section class="section">
+			<h2>Terminals stay durable, and editors stay yours</h2>
+			<p>
+				Each agent runs on its own durable worker that owns the PTY. Close the terminal, restart or upgrade the daemon, and
+				the session keeps the same PTY and child process. Any editor or terminal can attach, because the attach command is
+				just a terminal. pohunek does not ask you to adopt a particular IDE.
+			</p>
+			<p class="muted">
+				Each host is authoritative for its own sessions, reached over a NetBird or WireGuard overlay with no central server.
+			</p>
+		</section>
+
+		<section class="section closing">
+			<Icon name="plow" label="" />
+			<p>Run the team with pohunek. Install it, then see the surfaces that look over the fence.</p>
+			<div class="actions">
+				<a class="button" href="/install/">Install</a>
+				<a class="button secondary" href="/surfaces/">Surfaces</a>
+				<a class="button secondary" href={site.repoUrl}>Source</a>
+			</div>
+		</section>
+	</article>
+</MarketingLayout>
+
+<style>
+	.essay {
+		max-width: 46rem;
+	}
+	.essay section.section h2 {
+		margin-bottom: 0.9rem;
+	}
+	.essay section p + p {
+		margin-top: 0.9rem;
+	}
+	.farmhand {
+		margin: 0;
+		padding: 0.25rem 0 0.25rem 1.2rem;
+		border-left: 3px solid var(--leather);
+		font-family: var(--font-display);
+		font-size: 1.2rem;
+		color: var(--ink-strong);
+	}
+	.stack {
+		margin-top: 1.2rem;
+	}
+	.closing {
+		display: grid;
+		gap: 1rem;
+		justify-items: start;
+	}
+	.closing :global(svg) {
+		width: 2.2rem;
+		height: 2.2rem;
+		color: var(--leather);
+	}
+</style>
