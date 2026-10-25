@@ -9,6 +9,7 @@ import companionSessionDetail from '../assets/screenshots/companion/session-deta
 import companionNewSession from '../assets/screenshots/companion/new-session.png';
 import companionAssistant from '../assets/screenshots/companion/assistant.png';
 import companionInstallPlan from '../assets/screenshots/companion/install-plan.png';
+import { androidScreenshots } from './generated/android-screenshots';
 
 export interface SurfaceScreenshot {
 	image: ImageMetadata;
@@ -107,7 +108,7 @@ export const surfaces: readonly Surface[] = [
 		platform: 'Android',
 		repoUrl: 'https://github.com/pohunekd/pohunek-companion-android',
 		icon: 'phone',
-		screenshots: [],
+		screenshots: androidScreenshots,
 	},
 	{
 		slug: 'tui',
