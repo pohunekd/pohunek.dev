@@ -2,6 +2,24 @@
   "product": "companion",
   "releases": [
     {
+      "tag": "v0.1.6",
+      "version": "0.1.6",
+      "publishedAt": "2026-10-25T13:54:29Z",
+      "prerelease": false,
+      "url": "https://github.com/pohunekd/pohunek-companion/releases/tag/v0.1.6",
+      "source": "generated",
+      "markdown": "- Parse --known-hosts as one JSON word in the dialogs ([#229](https://github.com/pohunekd/pohunek-companion/pull/229))"
+    },
+    {
+      "tag": "v0.1.5",
+      "version": "0.1.5",
+      "publishedAt": "2026-10-24T06:41:33Z",
+      "prerelease": false,
+      "url": "https://github.com/pohunekd/pohunek-companion/releases/tag/v0.1.5",
+      "source": "generated",
+      "markdown": "- Add a README hero and links to pohunek.dev ([#215](https://github.com/pohunekd/pohunek-companion/pull/215))\n- Merge bar: design gate for visual changes, local rebase check ([#221](https://github.com/pohunekd/pohunek-companion/pull/221))\n- Show sessions in the group named by their companion.group metadata ([#222](https://github.com/pohunekd/pohunek-companion/pull/222))\n- Moves and group edits write companion.group, and layout.toml migrates into it ([#224](https://github.com/pohunekd/pohunek-companion/pull/224))\n- Mark sessions whose group is not shared and create new sessions in their group ([#225](https://github.com/pohunekd/pohunek-companion/pull/225))"
+    },
+    {
       "tag": "v0.1.4",
       "version": "0.1.4",
       "publishedAt": "2026-10-21T19:33:24Z",

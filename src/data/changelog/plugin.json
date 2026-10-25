@@ -2,6 +2,24 @@
   "product": "plugin",
   "releases": [
     {
+      "tag": "plugin-v0.7.3",
+      "version": "0.7.3",
+      "publishedAt": "2026-10-22T14:36:51Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek-work/releases/tag/plugin-v0.7.3",
+      "source": "generated",
+      "markdown": "- Add a README hero and links to pohunek.dev ([#218](https://github.com/zajca/pohunek-work/pull/218))\n- Plugin TUI: clear and redraw from the top on every resize ([#219](https://github.com/zajca/pohunek-work/pull/219))\n- Keep ended sessions out of Needs you ([#220](https://github.com/zajca/pohunek-work/pull/220))\n- Bump plugin to 0.7.3 ([#221](https://github.com/zajca/pohunek-work/pull/221))"
+    },
+    {
+      "tag": "plugin-v0.7.2",
+      "version": "0.7.2",
+      "publishedAt": "2026-10-22T11:12:45Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek-work/releases/tag/plugin-v0.7.2",
+      "source": "generated",
+      "markdown": "- Plugin TUI: return from an inline attach with a typed detach sequence ([#213](https://github.com/zajca/pohunek-work/pull/213))\n- Bump plugin to 0.7.2 ([#214](https://github.com/zajca/pohunek-work/pull/214))"
+    },
+    {
       "tag": "plugin-v0.7.1",
       "version": "0.7.1",
       "publishedAt": "2026-10-21T14:15:31Z",
