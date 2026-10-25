@@ -97,7 +97,7 @@ async function publish(
     await writeFile(join(stagingDir, `${shot.id}.png`), images.get(shot.id) as Uint8Array);
   }
   const moduleSource = renderScreenshotModule(manifest.shots, relative(dirname(modulePath), outputDir));
-  // The output is swapped in only after every image is written, so an interrupted run never leaves a partial set.
+  // The image directory is swapped in only after every image is written, so it never holds a partial set.
   await rm(outputDir, { recursive: true, force: true });
   await mkdir(dirname(outputDir), { recursive: true });
   await rename(stagingDir, outputDir);
