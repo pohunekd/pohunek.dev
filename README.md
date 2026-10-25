@@ -18,6 +18,7 @@ from GitHub Pages.
 | `src/config/agents.mjs` | `llms.txt`, `robots.txt` and `/.well-known/security.txt` settings |
 | `src/styles/` | Design tokens and styles, see [DESIGN.md](DESIGN.md) |
 | `scripts/sync-docs.ts` | Pulls pohunek's docs at the pinned release |
+| `scripts/bump-pin.ts` | Moves the pin forward to a newer release tag |
 | `pohunek.config.json` | The pinned pohunek repository and release tag |
 | `scripts/sync-screenshots.ts` | Pulls the Android screenshot set at the pinned release |
 | `android.config.json` | The pinned Android repository and release tag |
@@ -27,6 +28,13 @@ The documentation is never edited here. `scripts/sync-docs.ts` takes a
 whitelisted set of files from `zajca/pohunek` at the tag in
 `pohunek.config.json`, rewrites their links and writes them into the Starlight
 content collection. Fix docs upstream, then bump the tag.
+
+`.github/workflows/follow-release.yml` bumps the tag on its own: every three hours it
+looks up the latest stable pohunek release, moves the pin with
+`scripts/bump-pin.ts`, runs the tests and the build at that release, pushes the
+bump to `main` and starts a deploy. Run it by hand from the Actions tab to
+follow a release at once or to pin a newer tag. A failing build leaves the
+pin where it was and fails the run.
 
 Agents get the same docs as plain text: `starlight-llms-txt` renders
 `/llms.txt`, `/llms-full.txt`, `/llms-small.txt` and the sets under

@@ -10,6 +10,7 @@
     "astro": "astro",
     "sync-docs": "bun scripts/sync-docs.ts",
     "sync-screenshots": "bun scripts/sync-screenshots.ts",
+    "bump-pin": "bun scripts/bump-pin.ts",
     "test": "bun test tests"
   },
   "dependencies": {
