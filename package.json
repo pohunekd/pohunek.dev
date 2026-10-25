@@ -3,12 +3,13 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "bun scripts/sync-docs.ts && astro dev",
+    "dev": "bun scripts/sync-docs.ts && bun scripts/sync-screenshots.ts && astro dev",
     "start": "astro dev",
-    "build": "bun scripts/sync-docs.ts && astro build",
+    "build": "bun scripts/sync-docs.ts && bun scripts/sync-screenshots.ts && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "sync-docs": "bun scripts/sync-docs.ts",
+    "sync-screenshots": "bun scripts/sync-screenshots.ts",
     "test": "bun test tests"
   },
   "dependencies": {

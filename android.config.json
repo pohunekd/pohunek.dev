@@ -1,0 +1,6 @@
+{
+  "$comment": "The Android companion release whose screenshot set (docs/screenshots/manifest.json and the images it lists) this site renders. Bump ref to a release tag to follow a new release.",
+  "repository": "pohunekd/pohunek-companion-android",
+  "ref": "main",
+  "manifest": "docs/screenshots/manifest.json"
+}

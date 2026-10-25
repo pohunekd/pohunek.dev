@@ -6,6 +6,7 @@ export interface DocsSource {
   readonly description: string;
   listFiles(): Promise<string[]>;
   readText(path: string): Promise<string>;
+  readBytes(path: string): Promise<Uint8Array>;
 }
 
 /** Thrown for conditions the operator must fix; the CLI prints the message without a stack trace. */
@@ -61,10 +62,17 @@ function gitSource(repoDir: string, gitRef: string, description: string): DocsSo
     async readText(path: string): Promise<string> {
       return runGit(['show', `${gitRef}:${path}`], repoDir);
     },
+    async readBytes(path: string): Promise<Uint8Array> {
+      return runGitBytes(['show', `${gitRef}:${path}`], repoDir);
+    },
   };
 }
 
 async function runGit(args: string[], cwd?: string): Promise<string> {
+  return new TextDecoder().decode(await runGitBytes(args, cwd));
+}
+
+async function runGitBytes(args: string[], cwd?: string): Promise<Uint8Array> {
   const proc = Bun.spawn(['git', ...args], {
     cwd,
     stdin: 'ignore',
@@ -73,7 +81,7 @@ async function runGit(args: string[], cwd?: string): Promise<string> {
     env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
   });
   const [stdout, stderr, code] = await Promise.all([
-    new Response(proc.stdout).text(),
+    new Response(proc.stdout).bytes(),
     new Response(proc.stderr).text(),
     proc.exited,
   ]);

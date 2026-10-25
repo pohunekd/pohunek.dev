@@ -27,6 +27,10 @@ export interface ProductPin {
   readonly ref: string;
 }
 
+export interface ScreenshotPin extends ProductPin {
+  readonly manifest: string;
+}
+
 type JsonObject = Record<string, unknown>;
 
 const REPOSITORY_PATTERN = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
@@ -115,7 +119,16 @@ export function parseDocsSyncConfig(raw: unknown): DocsSyncConfig {
 
 /** Validates pohunek.config.json, the pin of the product release whose docs are rendered. */
 export function parseProductPin(raw: unknown): ProductPin {
-  const where = 'pohunek.config.json';
+  return parsePin(raw, 'pohunek.config.json');
+}
+
+/** Validates android.config.json, the pin of the Android release whose screenshot set is rendered. */
+export function parseScreenshotPin(raw: unknown): ScreenshotPin {
+  const where = 'android.config.json';
+  return { ...parsePin(raw, where), manifest: requireString(asObject(raw, where), 'manifest', where) };
+}
+
+function parsePin(raw: unknown, where: string): ProductPin {
   const obj = asObject(raw, where);
   const repository = requireString(obj, 'repository', where);
   if (!REPOSITORY_PATTERN.test(repository)) {
