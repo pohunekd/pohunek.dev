@@ -60,6 +60,12 @@ describe('renderAtomFeed', () => {
     expect(generated).toContain('not curated');
   });
 
+  test('drops characters XML 1.0 does not allow', () => {
+    const broken = { ...entries[0], html: '<p>a\u0008b\uD800c 😀</p>' };
+    const xml = renderAtomFeed([broken], options);
+    expect(xml).toContain('&lt;p&gt;abc 😀&lt;/p&gt;');
+  });
+
   test('is well-formed for an empty timeline', () => {
     expect(renderAtomFeed([], options)).toContain('<updated>1970-01-01T00:00:00.000Z</updated>');
   });

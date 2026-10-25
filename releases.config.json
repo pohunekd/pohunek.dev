@@ -1,5 +1,5 @@
 {
-  "$comment": "Every ecosystem release this site names. .github/workflows/follow-release.yml moves each version to the product's newest release once its assets verify; scripts/follow-releases.ts does it by hand. Asset names take {version}; every asset is checked against its .sha256 file and, when attested, with gh attestation verify.",
+  "$comment": "Every ecosystem release this site names. .github/workflows/follow-release.yml moves each version to the product's newest release once its assets verify; scripts/follow-releases.ts does it by hand. Asset names take {version}; every asset is checked against its .sha256 file and, when attested, with gh attestation verify bound to signerWorkflow and the release tag.",
   "apiUrl": "https://api.github.com",
   "changelogDir": "src/data/changelog",
   "products": [
@@ -11,6 +11,7 @@
       "version": "0.35.2",
       "prerelease": false,
       "attested": true,
+      "signerWorkflow": ".github/workflows/release-evidence.yml",
       "assets": [
         "pohunek-daemon-{version}-x86_64-unknown-linux-gnu.tar.gz"
       ]
@@ -23,6 +24,7 @@
       "version": "0.1.4",
       "prerelease": false,
       "attested": true,
+      "signerWorkflow": ".github/workflows/release.yml",
       "assets": [
         "pohunek-companion-{version}-x86_64-unknown-linux-gnu.tar.gz",
         "pohunek-companion-{version}-aarch64-apple-darwin.tar.gz"
@@ -49,6 +51,7 @@
       "version": "0.7.1",
       "prerelease": false,
       "attested": true,
+      "signerWorkflow": ".github/workflows/release.yml",
       "assets": [
         "pohunek-work-plugin-{version}-noarch.tar.gz"
       ]
@@ -61,6 +64,7 @@
       "version": "0.4.0",
       "prerelease": false,
       "attested": true,
+      "signerWorkflow": ".github/workflows/release.yml",
       "assets": [
         "pohunek-launchers-{version}-noarch.tar.gz"
       ]
@@ -73,6 +77,7 @@
       "version": "0.3.1",
       "prerelease": false,
       "attested": true,
+      "signerWorkflow": ".github/workflows/release.yml",
       "assets": [
         "pohunek-web-{version}-linux-x86_64.tar.gz",
         "pohunek-web-{version}-aarch64-apple-darwin.tar.gz"

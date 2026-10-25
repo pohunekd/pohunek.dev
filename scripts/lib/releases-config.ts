@@ -10,6 +10,8 @@ export interface Product {
   readonly prerelease: boolean;
   /** Whether every asset carries a GitHub build-provenance attestation. */
   readonly attested: boolean;
+  /** Repository path of the workflow that signs the attestations; set exactly when `attested`. */
+  readonly signerWorkflow?: string;
   /** Asset names with a `{version}` placeholder. */
   readonly assets: readonly string[];
   /** Path of the screenshot manifest inside the product repository, when the site renders its screenshots. */
@@ -39,6 +41,7 @@ const TAG_PREFIX_PATTERN = /^([a-z][a-z0-9]*-)?v$/;
 const NUMBER = '(0|[1-9][0-9]*)';
 const VERSION_PATTERN = new RegExp(`^${NUMBER}\\.${NUMBER}\\.${NUMBER}(?:-pre\\.${NUMBER})?$`);
 const ASSET_PATTERN = /^[A-Za-z0-9._{}-]+$/;
+const WORKFLOW_PATTERN = /^\.github\/workflows\/[A-Za-z0-9._-]+\.ya?ml$/;
 const VERSION_PLACEHOLDER = '{version}';
 
 export function parseVersion(text: string): Version {
@@ -148,6 +151,7 @@ function parseProduct(raw: unknown, index: number): Product {
     'version',
     'prerelease',
     'attested',
+    'signerWorkflow',
     'assets',
     'screenshotManifest',
   ]);
@@ -192,6 +196,16 @@ function parseProduct(raw: unknown, index: number): Product {
     throw new Error(`${where}.screenshotManifest must be a non-empty string when present`);
   }
 
+  const attested = requireBoolean(obj, 'attested', where);
+  const signerWorkflow = obj.signerWorkflow;
+  if (attested) {
+    if (typeof signerWorkflow !== 'string' || !WORKFLOW_PATTERN.test(signerWorkflow)) {
+      throw new Error(`${where}.signerWorkflow must be a .github/workflows/<name>.yml path when attested is true`);
+    }
+  } else if (signerWorkflow !== undefined) {
+    throw new Error(`${where}.signerWorkflow is only valid when attested is true`);
+  }
+
   return {
     id,
     name: requireString(obj, 'name', where),
@@ -199,7 +213,8 @@ function parseProduct(raw: unknown, index: number): Product {
     tagPrefix,
     version,
     prerelease,
-    attested: requireBoolean(obj, 'attested', where),
+    attested,
+    signerWorkflow: attested ? (signerWorkflow as string) : undefined,
     assets,
     screenshotManifest,
   };

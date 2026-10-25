@@ -103,11 +103,26 @@ function findAsset(release: GithubRelease, name: string): GithubAsset {
   return asset;
 }
 
-async function runGhAttestationVerify(path: string, repository: string): Promise<void> {
-  const child = Bun.spawn(['gh', 'attestation', 'verify', path, '--repo', repository], {
-    stdout: 'pipe',
-    stderr: 'pipe',
-  });
+/** The attestation must come from the product's release workflow, run for exactly this tag. */
+async function runGhAttestationVerify(path: string, product: Product, tag: string): Promise<void> {
+  if (product.signerWorkflow === undefined) {
+    throw new Error(`${product.id} is attested but names no signerWorkflow`);
+  }
+  const child = Bun.spawn(
+    [
+      'gh',
+      'attestation',
+      'verify',
+      path,
+      '--repo',
+      product.repository,
+      '--signer-workflow',
+      `${product.repository}/${product.signerWorkflow}`,
+      '--source-ref',
+      `refs/tags/${tag}`,
+    ],
+    { stdout: 'pipe', stderr: 'pipe' },
+  );
   const [code, stderr] = await Promise.all([child.exited, new Response(child.stderr).text()]);
   if (code !== 0) {
     throw new Error(`gh attestation verify failed for ${path}: ${stderr.trim()}`);
@@ -137,7 +152,7 @@ async function verifyAssets(github: GithubClient, product: Product, target: Elig
       if (product.attested) {
         const path = join(workDir, name);
         await writeFile(path, bytes);
-        await runGhAttestationVerify(path, product.repository);
+        await runGhAttestationVerify(path, product, target.release.tagName);
       }
       console.error(`  ${product.id} ${target.version}: ${name} verified`);
     }

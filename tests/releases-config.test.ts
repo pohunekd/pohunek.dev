@@ -18,6 +18,7 @@ function product(overrides: Record<string, unknown> = {}): Record<string, unknow
     version: '0.7.1',
     prerelease: false,
     attested: true,
+    signerWorkflow: '.github/workflows/release.yml',
     assets: ['pohunek-work-plugin-{version}-noarch.tar.gz'],
     ...overrides,
   };
@@ -72,6 +73,14 @@ describe('parseReleasesConfig', () => {
     );
   });
 
+  test('binds attestations to a release workflow path', () => {
+    expect(() => parseReleasesConfig(config([product({ signerWorkflow: undefined })]))).toThrow('signerWorkflow must be');
+    expect(() => parseReleasesConfig(config([product({ signerWorkflow: 'release.yml' })]))).toThrow('signerWorkflow must be');
+    expect(() =>
+      parseReleasesConfig(config([product({ attested: false })])),
+    ).toThrow('signerWorkflow is only valid when attested is true');
+  });
+
   test('requires an https API URL', () => {
     expect(() => parseReleasesConfig({ ...config(), apiUrl: 'http://api.github.com' })).toThrow('https URL');
   });
@@ -94,7 +103,17 @@ describe('compareVersions', () => {
 describe('tags and assets', () => {
   const plugin = parseReleasesConfig(config()).products[0] as Product;
   const android = parseReleasesConfig(
-    config([product({ id: 'android', tagPrefix: 'v', version: '0.1.0-pre.3', prerelease: true, assets: ['a-{version}.apk'] })]),
+    config([
+      product({
+        id: 'android',
+        tagPrefix: 'v',
+        version: '0.1.0-pre.3',
+        prerelease: true,
+        attested: false,
+        signerWorkflow: undefined,
+        assets: ['a-{version}.apk'],
+      }),
+    ]),
   ).products[0] as Product;
 
   test('reads the version of a tag of the product only', () => {

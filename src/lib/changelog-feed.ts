@@ -7,8 +7,12 @@ export interface FeedOptions {
 	readonly limit: number;
 }
 
+/** Characters XML 1.0 does not allow, including unpaired surrogates; one of them would make the whole feed unreadable. */
+const XML_INVALID = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g;
+
 function escapeXml(text: string): string {
 	return text
+		.replace(XML_INVALID, '')
 		.replaceAll('&', '&amp;')
 		.replaceAll('<', '&lt;')
 		.replaceAll('>', '&gt;')
