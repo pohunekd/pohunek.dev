@@ -136,20 +136,57 @@ const details: Record<string, Detail> = {
 		],
 	},
 	android: {
-		body: 'A native Android companion for the same daemons, planned as a remote session list with live state and an embedded terminal over the NetBird overlay.',
+		body: 'A native Android app (Kotlin and Jetpack Compose) for the owner of one or more daemons. It speaks the public protocol over the NetBird overlay and keeps no session state of its own: the daemons run the sessions, the phone lists them, opens a terminal on them and starts new ones.',
 		features: [
 			{
-				title: 'Session list with live state',
-				text: 'Sessions from your hosts, with their live state, so you can see which ones need you from your phone.',
+				title: 'Live sessions from several hosts',
+				text: 'One list holds the sessions of every host the app follows. Each row shows the agent, its owner state and its Work link. A host that drops off keeps its last rows, dimmed, until it is reachable again, and hosts that a connected daemon discovers on the NetBird overlay join the list without being stored.',
 			},
 			{
-				title: 'Embedded terminal over NetBird',
-				text: 'Attach to a session through the same overlay the daemons already use. No central server is involved.',
+				title: 'Needs you first',
+				text: 'Sessions that wait for you sit in a Needs you section at the top of every view. An idle session counts as idle only after a configurable threshold.',
+			},
+			{
+				title: 'Views and filters',
+				text: 'Switch the list between your own groups and read-only views by state, by project and by Work item. Chips narrow it by owner state, project and host, and a search field matches names, projects, agents and Work ids.',
+			},
+			{
+				title: 'Groups shared with the desktop',
+				text: 'Your groups are stored in the session metadata key companion.group, so the desktop companion shows the same membership. Create, rename and delete groups, move a session from its action sheet, and long-press a row or a group header to reorder. Order and collapse state stay on the phone.',
+			},
+			{
+				title: 'Session actions and details',
+				text: 'Every row has an action sheet: open the terminal, details, rename, start a new session next to it, move to a group, open its link, stop and remove. The details view lists the session id, host, agent, state and working directory, each with a copy button. An ended session that the daemon can resume gets a Resume action.',
+			},
+			{
+				title: 'New session',
+				text: 'Pick a host and a project, then start from a project template that fills the agent and the prompt, or from a blank form with an optional branch and base branch. A started session is created in the group of the row you launched it from.',
+			},
+			{
+				title: 'Full-screen terminal',
+				text: 'Open a session in a full-screen terminal, drawn by libghostty-vt, with an accessory bar for the keys a phone keyboard lacks. When the network drops, the terminal re-attaches with a growing wait, repaints from the daemon snapshot and gives up with an error only after a configurable time.',
+			},
+			{
+				title: 'Settings and logs',
+				text: 'Connection, liveness, reattach and display tunables live in one Settings list with their defaults and a reset. The app log can be exported through the Android share sheet.',
 			},
 		],
-		install: [],
+		install: [
+			{
+				title: 'Install the pre-release APK',
+				intro: 'Releases are signed with one key. Download the APK and its checksum, verify both, then open the APK on the phone and allow installs from the app you open it with. A later release installs over this one and keeps your data. apksigner comes with the Android SDK build-tools; the certificate SHA-256 digest it prints must equal the one in the release notes.',
+				lines: [
+					'v=0.1.0-pre.3',
+					'gh release download v$v -R pohunekd/pohunek-companion-android -p "pohunek-companion-$v.apk*"',
+					'sha256sum -c pohunek-companion-$v.apk.sha256',
+					'apksigner verify --print-certs pohunek-companion-$v.apk',
+				],
+			},
+		],
 		notes: [
-			'Coming soon. The repository exists, but it has no release yet and no screenshots.',
+			'Requirements: Android 13 or newer, the official NetBird app on the phone, and a Pohunek daemon reachable over the overlay. The app does not run a daemon, and the daemon has no authentication of its own: the NetBird overlay is the security boundary.',
+			'Status: pre-release. Install the APK from the releases page.',
+			'Not there yet: starting an assistant session, which waits on the daemon side (zajca/pohunek#1532), and background notifications. The list and the terminal update only while the app is open.',
 		],
 	},
 	tui: {
