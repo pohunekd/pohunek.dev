@@ -1,0 +1,17 @@
+---
+import type { Product } from '../../../scripts/lib/releases-config';
+import ChangelogPage from '../../components/ChangelogPage.astro';
+import { ecosystem } from '../../data/ecosystem';
+
+export function getStaticPaths() {
+	return ecosystem.products.map((product) => ({ params: { product: product.id }, props: { product } }));
+}
+
+interface Props {
+	product: Product;
+}
+
+const { product } = Astro.props;
+---
+
+<ChangelogPage current={product} />

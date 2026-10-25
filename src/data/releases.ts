@@ -1,19 +1,12 @@
+import { assetNames } from '../../scripts/lib/releases-config';
 import { site } from '../config/site';
+import { pinnedTag, product, type ProductId } from './ecosystem';
 
-/**
- * Release versions the install commands on this site name. Every command was
- * checked against these assets: the archive names exist, `sha256sum -c` passes
- * and `gh attestation verify` succeeds.
- */
-export const releases = {
-	pohunek: site.release.replace(/^v/, ''),
-	companion: '0.1.4',
-	launchers: '0.4.0',
-	plugin: '0.7.1',
-	web: '0.3.1',
-} as const;
+// The install commands name the pinned releases of releases.config.json. A pin moves only after the
+// archives named here exist, match their `.sha256` files and pass `gh attestation verify`
+// (scripts/follow-releases.ts).
 
-const workRepo = 'zajca/pohunek-work';
+const workRepo = product('plugin').repository;
 
 /** Download, verify and unpack one release archive; `tag` and `archive` are full names. */
 function fetchAndVerify(repo: string, tag: string, archive: string): string[] {
@@ -25,15 +18,24 @@ function fetchAndVerify(repo: string, tag: string, archive: string): string[] {
 	];
 }
 
-const daemonArchive = `pohunek-daemon-${releases.pohunek}-x86_64-unknown-linux-gnu`;
-const launchersArchive = `pohunek-launchers-${releases.launchers}-noarch`;
-const pluginArchive = `pohunek-work-plugin-${releases.plugin}-noarch`;
-const webArchive = `pohunek-web-${releases.web}-linux-x86_64`;
+/** The pinned archive of a product whose name contains `marker`, without the `.tar.gz` suffix. */
+function archive(id: ProductId, marker: string): string {
+	const name = assetNames(product(id)).find((candidate) => candidate.includes(marker));
+	if (name === undefined || !name.endsWith('.tar.gz')) {
+		throw new Error(`releases.config.json product "${id}" has no .tar.gz asset containing "${marker}"`);
+	}
+	return name.slice(0, -'.tar.gz'.length);
+}
+
+const daemonArchive = archive('pohunek', 'x86_64-unknown-linux-gnu');
+const launchersArchive = archive('launchers', 'noarch');
+const pluginArchive = archive('plugin', 'noarch');
+const webArchive = archive('web', 'linux-x86_64');
 
 /** Shell lines for the install boxes. */
 export const installCommands = {
 	pohunekLinux: [
-		...fetchAndVerify(site.repository, `v${releases.pohunek}`, `${daemonArchive}.tar.gz`),
+		...fetchAndVerify(product('pohunek').repository, pinnedTag('pohunek'), `${daemonArchive}.tar.gz`),
 		`cd ${daemonArchive}`,
 		'./pohunek service check        # shows what will be installed where',
 		'./packaging/install-daemon.sh  # installs the CLI and the login service',
@@ -43,7 +45,7 @@ export const installCommands = {
 
 	/** Launcher scripts from the release archive, without pohunek-work. */
 	launchersFromRelease: [
-		...fetchAndVerify(workRepo, `launchers-v${releases.launchers}`, `${launchersArchive}.tar.gz`),
+		...fetchAndVerify(workRepo, pinnedTag('launchers'), `${launchersArchive}.tar.gz`),
 		`cd ${launchersArchive}`,
 	],
 	/** Launcher scripts from a source checkout. */
@@ -63,7 +65,7 @@ export const installCommands = {
 	launchersWithWork: ['pohunek-work setup        # scripts, launcher.conf, prompts and the sway drop-in', 'pohunek-work doctor'],
 
 	pluginLinux: [
-		...fetchAndVerify(workRepo, `plugin-v${releases.plugin}`, `${pluginArchive}.tar.gz`),
+		...fetchAndVerify(workRepo, pinnedTag('plugin'), `${pluginArchive}.tar.gz`),
 		'mkdir -p ~/.local/lib ~/.local/bin',
 		`rm -rf ~/.local/lib/pohunek-work && mv ${pluginArchive} ~/.local/lib/pohunek-work`,
 		`printf '#!/bin/sh\\nexec bun "$HOME/.local/lib/pohunek-work/plugin/pohunek-work.js" "$@"\\n' > ~/.local/bin/pohunek-work`,
@@ -72,7 +74,7 @@ export const installCommands = {
 	],
 
 	webLinux: [
-		...fetchAndVerify(workRepo, `web-v${releases.web}`, `${webArchive}.tar.gz`),
+		...fetchAndVerify(workRepo, pinnedTag('web'), `${webArchive}.tar.gz`),
 		`cd ${webArchive} && ./install.sh`,
 		'$EDITOR ~/.config/pohunek/backend.env   # set POHUNEK_BACKEND_BIND_HOST (NetBird address) and POHUNEK_BACKEND_PORT',
 		'systemctl --user daemon-reload',

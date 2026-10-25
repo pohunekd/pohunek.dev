@@ -35,6 +35,11 @@ export const llmsTxt = {
 		{ label: 'Surfaces', url: `${siteUrl}/surfaces/`, description: 'optional owner UIs: desktop and Android companions, TUI, Sway launcher, web' },
 		{ label: 'Plugins', url: `${siteUrl}/plugins/`, description: 'runtime packages and workflow plugins' },
 		{ label: 'Roadmap', url: `${siteUrl}/roadmap/`, description: 'tracks and their state' },
+		{
+			label: 'Changelog',
+			url: `${siteUrl}/changelog.txt`,
+			description: 'every release of pohunek, the companions and the pohunek-work surfaces as Markdown, newest first',
+		},
 		{ label: 'Source', url: 'https://github.com/zajca/pohunek', description: 'repository, issues and releases' },
 	],
 };

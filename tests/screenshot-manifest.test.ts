@@ -1,6 +1,5 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, test } from 'bun:test';
-import { parseScreenshotPin } from '../scripts/lib/docs-config.ts';
 import {
   parseScreenshotManifest,
   readPngSize,
@@ -165,25 +164,5 @@ describe('renderScreenshotModule', () => {
     const source = renderScreenshotModule(shots, '../a');
     expect(source).toContain('caption: "He said \\"hi\\"\\nnext"');
     expect(source).toContain('alt: "it\'s `x`"');
-  });
-});
-
-describe('parseScreenshotPin', () => {
-  const pin = {
-    repository: 'pohunekd/pohunek-companion-android',
-    ref: 'v0.1.0',
-    manifest: 'docs/screenshots/manifest.json',
-  };
-
-  test('reads repository, ref and manifest path', () => {
-    expect(parseScreenshotPin({ ...pin, $comment: 'x' })).toEqual(pin);
-  });
-
-  test('rejects a repository that is not owner/name', () => {
-    expect(() => parseScreenshotPin({ ...pin, repository: 'https://github.com/a/b' })).toThrow('owner/name');
-  });
-
-  test('fails when the manifest path is missing', () => {
-    expect(() => parseScreenshotPin({ ...pin, manifest: undefined })).toThrow('manifest must be a non-empty string');
   });
 });

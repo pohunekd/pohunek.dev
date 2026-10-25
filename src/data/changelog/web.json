@@ -1,0 +1,32 @@
+{
+  "product": "web",
+  "releases": [
+    {
+      "tag": "web-v0.3.1",
+      "version": "0.3.1",
+      "publishedAt": "2026-10-10T12:00:33Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek-work/releases/tag/web-v0.3.1",
+      "source": "generated",
+      "markdown": "- Show verified recovery target in web GUI ([#137](https://github.com/zajca/pohunek-work/pull/137))\n- Confirm native recovery target before launch ([#138](https://github.com/zajca/pohunek-work/pull/138))"
+    },
+    {
+      "tag": "web-v0.3.0",
+      "version": "0.3.0",
+      "publishedAt": "2026-10-09T12:51:17Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek-work/releases/tag/web-v0.3.0",
+      "source": "generated",
+      "markdown": "- plugin: choose the issue source per project and require Linear only for Linear projects ([#72](https://github.com/zajca/pohunek-work/pull/72))\n- plugin: give join and rules a source-neutral issue type ([#73](https://github.com/zajca/pohunek-work/pull/73))\n- plugin: GitHub Issues source for list rows and joins ([#74](https://github.com/zajca/pohunek-work/pull/74))\n- plugin: implement and follow-up actions for GitHub issue rows ([#75](https://github.com/zajca/pohunek-work/pull/75))\n- plugin: let a project hand pull request reviews to an external pipeline ([#76](https://github.com/zajca/pohunek-work/pull/76))\n- launchers: rofi issue picker and launcher for GitHub issues ([#77](https://github.com/zajca/pohunek-work/pull/77))\n- Adopt an existing pull request for babysit, fix-ci and rebase ([#78](https://github.com/zajca/pohunek-work/pull/78))\n- Bump the plugin to 0.4.0 and the launchers to 0.2.0 ([#79](https://github.com/zajca/pohunek-work/pull/79))\n- docs: complete the agent guidance for driving pohunek work ([#89](https://github.com/zajca/pohunek-work/pull/89))\n- Order RFC 3339 timestamps by instant instead of by string ([#90](https://github.com/zajca/pohunek-work/pull/90))\n- Document the ai:review label as the trigger of the automated review ([#94](https://github.com/zajca/pohunek-work/pull/94))\n- Detect the project ignore label on pull requests and issues ([#91](https://github.com/zajca/pohunek-work/pull/91))\n- Verify a launched session starts working before do reports success ([#97](https://github.com/zajca/pohunek-work/pull/97))\n- Hide ignored rows from list, refuse them in do and skip them in watch ([#92](https://github.com/zajca/pohunek-work/pull/92))\n- Lock the owner backend log family against a second writer ([#96](https://github.com/zajca/pohunek-work/pull/96))\n- Look up archived and cross-team Linear issues for the ignore label ([#100](https://github.com/zajca/pohunek-work/pull/100))\n- Consult every candidate issue of a pull request for the ignore label ([#101](https://github.com/zajca/pohunek-work/pull/101))\n- list: session indicators and finished-session retention ([#99](https://github.com/zajca/pohunek-work/pull/99))\n- Take the started and paused signal of GitHub issues from a Project field ([#109](https://github.com/zajca/pohunek-work/pull/109))\n- Add a do cleanup action that removes a finished session after safety checks ([#98](https://github.com/zajca/pohunek-work/pull/98))\n- Adopt integration and end-to-end test policy ([#112](https://github.com/zajca/pohunek-work/pull/112))\n- Explain a branch collision in do with attach advice or a fail-closed release offer ([#110](https://github.com/zajca/pohunek-work/pull/110))\n- Remove plugin unit tests ([#114](https://github.com/zajca/pohunek-work/pull/114))\n- Remove isolated web tests ([#116](https://github.com/zajca/pohunek-work/pull/116))\n- Remove isolated GUI core state tests ([#120](https://github.com/zajca/pohunek-work/pull/120))\n- Fail do when a project setup hook failed ([#115](https://github.com/zajca/pohunek-work/pull/115))\n- Run a configured project teardown before cleanup removes the session ([#124](https://github.com/zajca/pohunek-work/pull/124))\n- Bump plugin to 0.5.0 ([#125](https://github.com/zajca/pohunek-work/pull/125))\n- Bump launchers to 0.3.0 ([#126](https://github.com/zajca/pohunek-work/pull/126))\n- Wait for the local daemon when the web backend starts first ([#130](https://github.com/zajca/pohunek-work/pull/130))\n- Bump web to 0.3.0 ([#131](https://github.com/zajca/pohunek-work/pull/131))\n- Bump gui to 0.3.1 ([#132](https://github.com/zajca/pohunek-work/pull/132))"
+    },
+    {
+      "tag": "web-v0.2.0",
+      "version": "0.2.0",
+      "publishedAt": "2026-10-04T14:57:55Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek-work/releases/tag/web-v0.2.0",
+      "source": "generated",
+      "markdown": "First release."
+    }
+  ]
+}

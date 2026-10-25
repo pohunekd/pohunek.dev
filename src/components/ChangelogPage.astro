@@ -1,0 +1,79 @@
+---
+import type { Product } from '../../scripts/lib/releases-config';
+import ChangelogList from './ChangelogList.astro';
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import { changelogFeed } from '../config/changelog';
+import { timeline } from '../data/changelog';
+import { ecosystem } from '../data/ecosystem';
+
+interface Props {
+	/** The product to show; all products when absent. */
+	current?: Product;
+}
+
+const { current } = Astro.props;
+const entries = timeline(current === undefined ? ecosystem.products : [current]);
+const title = current === undefined ? 'Changelog' : `${current.name} changelog`;
+---
+
+<MarketingLayout
+	title={title}
+	description="What changed in each release of pohunek, its companions and the pohunek-work surfaces, newest first."
+>
+	<link slot="head" rel="alternate" type="application/atom+xml" title={changelogFeed.title} href="/changelog.xml" />
+
+	<section class="container">
+		<header class="page-hero">
+			<span class="eyebrow">Changelog</span>
+			<h1>{current === undefined ? 'Every release, newest first' : current.name}</h1>
+			<p class="lead">
+				Each release lists its user-facing changes from the release notes. Older releases, published before the projects
+				wrote curated notes, list the titles of their merged pull requests instead and are marked so.
+			</p>
+			<nav class="changelog-filter" aria-label="Products">
+				<a href="/changelog/" aria-current={current === undefined ? 'page' : undefined}>All</a>
+				{
+					ecosystem.products.map((product) => (
+						<a href={`/changelog/${product.id}/`} aria-current={current?.id === product.id ? 'page' : undefined}>
+							{product.name}
+						</a>
+					))
+				}
+				<a class="changelog-feed" href="/changelog.xml">Atom feed</a>
+			</nav>
+		</header>
+	</section>
+
+	<section class="container section">
+		<ChangelogList entries={entries} showProduct={current === undefined} />
+	</section>
+</MarketingLayout>
+
+<style>
+	.changelog-filter {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 0.4rem;
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+	}
+	.changelog-filter a {
+		padding: 0.3rem 0.7rem;
+		border: 1px solid var(--rule);
+		color: var(--ink-muted);
+		text-decoration: none;
+	}
+	.changelog-filter a:hover {
+		border-color: var(--rule-strong);
+		color: var(--ink-strong);
+	}
+	.changelog-filter a[aria-current='page'] {
+		border-color: var(--ink-strong);
+		color: var(--ink-strong);
+		background: var(--paper-sunk);
+	}
+	.changelog-filter .changelog-feed {
+		border-style: dashed;
+	}
+</style>

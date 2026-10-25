@@ -1,0 +1,50 @@
+{
+  "product": "companion",
+  "releases": [
+    {
+      "tag": "v0.1.4",
+      "version": "0.1.4",
+      "publishedAt": "2026-10-21T19:33:24Z",
+      "prerelease": false,
+      "url": "https://github.com/pohunekd/pohunek-companion/releases/tag/v0.1.4",
+      "source": "generated",
+      "markdown": "- Add ui-agent showcase dataset and rewrite the README around screenshots ([#202](https://github.com/pohunekd/pohunek-companion/pull/202))\n- Show a setup screen when Pohunek is missing or its daemon is not running ([#207](https://github.com/pohunekd/pohunek-companion/pull/207))\n- Parse the command line with clap and add shell completions ([#206](https://github.com/pohunekd/pohunek-companion/pull/206))\n- Install Pohunek from the setup screen ([#208](https://github.com/pohunekd/pohunek-companion/pull/208))\n- Verify on macOS: fix static completions and ui-agent on Darwin ([#210](https://github.com/pohunekd/pohunek-companion/pull/210))\n- Notify the Homebrew tap when a stable release is published ([#211](https://github.com/pohunekd/pohunek-companion/pull/211))\n- Pin the dark color scheme in the New session dialog ([#213](https://github.com/pohunekd/pohunek-companion/pull/213))"
+    },
+    {
+      "tag": "v0.1.3",
+      "version": "0.1.3",
+      "publishedAt": "2026-10-20T19:09:31Z",
+      "prerelease": false,
+      "url": "https://github.com/pohunekd/pohunek-companion/releases/tag/v0.1.3",
+      "source": "generated",
+      "markdown": "- Use one main desktop category and skip the icon cache without an index.theme ([#188](https://github.com/pohunekd/pohunek-companion/pull/188))\n- Start a Pohunek assistant session from the companion ([#190](https://github.com/pohunekd/pohunek-companion/pull/190))\n- Clear the project or host filter when its selected entry is clicked again ([#194](https://github.com/pohunekd/pohunek-companion/pull/194))\n- Skip the key-routing scope on Tab and show a light focus ring on Create ([#196](https://github.com/pohunekd/pohunek-companion/pull/196))\n- Resume ended sessions from the sidebar ([#195](https://github.com/pohunekd/pohunek-companion/pull/195))\n- Keep row labels clear of the hover action icons ([#198](https://github.com/pohunekd/pohunek-companion/pull/198))"
+    },
+    {
+      "tag": "v0.1.2",
+      "version": "0.1.2",
+      "publishedAt": "2026-10-20T15:44:04Z",
+      "prerelease": false,
+      "url": "https://github.com/pohunekd/pohunek-companion/releases/tag/v0.1.2",
+      "source": "generated",
+      "markdown": "- Hide the owner's overlay hosts from the isolated ui-agent run ([#183](https://github.com/pohunekd/pohunek-companion/pull/183))\n- Add a session detail view with copyable ids, paths and links ([#182](https://github.com/pohunekd/pohunek-companion/pull/182))\n- Add a Linux desktop entry, hicolor icons and a desktop install subcommand ([#186](https://github.com/pohunekd/pohunek-companion/pull/186))"
+    },
+    {
+      "tag": "v0.1.1",
+      "version": "0.1.1",
+      "publishedAt": "2026-10-20T14:07:11Z",
+      "prerelease": false,
+      "url": "https://github.com/pohunekd/pohunek-companion/releases/tag/v0.1.1",
+      "source": "generated",
+      "markdown": "- Load the New session dialog without waiting for host discovery (#175) ([#177](https://github.com/pohunekd/pohunek-companion/pull/177))\n- Multi-host polish: one project chip per name, host tag on rows, visible selected host ([#178](https://github.com/pohunekd/pohunek-companion/pull/178))"
+    },
+    {
+      "tag": "v0.1.0",
+      "version": "0.1.0",
+      "publishedAt": "2026-10-20T12:34:51Z",
+      "prerelease": false,
+      "url": "https://github.com/pohunekd/pohunek-companion/releases/tag/v0.1.0",
+      "source": "generated",
+      "markdown": "First release."
+    }
+  ]
+}

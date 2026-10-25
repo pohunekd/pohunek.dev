@@ -3,7 +3,8 @@
 // the module that surfaces.ts imports. Both outputs are generated and never committed.
 import { mkdir, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
-import { parseDocsSyncConfig, parseScreenshotPin } from './lib/docs-config.ts';
+import { parseDocsSyncConfig } from './lib/docs-config.ts';
+import { findProduct, parseReleasesConfig, tagOf } from './lib/releases-config.ts';
 import { cloneSource, DocsSyncError, openLocalSource, type DocsSource } from './lib/docs-source.ts';
 import {
   parseScreenshotManifest,
@@ -18,6 +19,8 @@ interface CliArgs {
 }
 
 const REPO_ROOT = resolve(dirname(import.meta.path), '..');
+/** The product in releases.config.json whose screenshot set this site renders. */
+const SCREENSHOT_PRODUCT = 'android';
 const IMAGES_DIR = 'src/assets/screenshots/android';
 const MODULE_PATH = 'android-screenshots.ts';
 const CACHE_DIR = '.cache/screenshots-sync';
@@ -107,8 +110,12 @@ async function publish(
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const docsConfig = parseDocsSyncConfig(await readJsonFile('docs-sync.config.json'));
-  const pin = parseScreenshotPin(await readJsonFile('android.config.json'));
-  const ref = args.ref ?? pin.ref;
+  const pin = findProduct(parseReleasesConfig(await readJsonFile('releases.config.json')), SCREENSHOT_PRODUCT);
+  if (pin.screenshotManifest === undefined) {
+    throw new DocsSyncError(`releases.config.json product "${SCREENSHOT_PRODUCT}" has no screenshotManifest`);
+  }
+  const manifestPath = pin.screenshotManifest;
+  const ref = args.ref ?? tagOf(pin);
   const where = `${pin.repository} at ref "${ref}"`;
 
   const cacheRoot = join(REPO_ROOT, CACHE_DIR);
@@ -124,8 +131,8 @@ async function main(): Promise<void> {
 
   try {
     console.error(`sync-screenshots: reading ${source.description}`);
-    const manifest = await readManifest(source, pin.manifest, where);
-    const images = await readImages(source, manifest, pin.manifest, where);
+    const manifest = await readManifest(source, manifestPath, where);
+    const images = await readImages(source, manifest, manifestPath, where);
     await publish(
       manifest,
       images,

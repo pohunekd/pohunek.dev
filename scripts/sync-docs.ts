@@ -3,7 +3,8 @@
 // and extracts the install prompt into src/data/generated/. Generated output is never committed.
 import { mkdir, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
-import { parseDocsSyncConfig, parseProductPin, type DocsSyncConfig } from './lib/docs-config.ts';
+import { parseDocsSyncConfig, type DocsSyncConfig } from './lib/docs-config.ts';
+import { findProduct, parseReleasesConfig, tagOf } from './lib/releases-config.ts';
 import { cloneSource, DocsSyncError, openLocalSource, type DocsSource } from './lib/docs-source.ts';
 import {
   buildDocPage,
@@ -19,6 +20,8 @@ interface CliArgs {
 }
 
 const REPO_ROOT = resolve(dirname(import.meta.path), '..');
+/** The product in releases.config.json whose docs this site renders. */
+const DOCS_PRODUCT = 'pohunek';
 
 function parseArgs(argv: readonly string[]): CliArgs {
   const values: Record<string, string> = {};
@@ -102,8 +105,8 @@ async function publish(pages: readonly BuiltPage[], stagingDir: string, outputDi
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const config = parseDocsSyncConfig(await readJsonFile('docs-sync.config.json'));
-  const pin = parseProductPin(await readJsonFile('pohunek.config.json'));
-  const ref = args.ref ?? pin.ref;
+  const pin = findProduct(parseReleasesConfig(await readJsonFile('releases.config.json')), DOCS_PRODUCT);
+  const ref = args.ref ?? tagOf(pin);
 
   const cacheRoot = join(REPO_ROOT, config.cacheDir);
   const cloneDir = join(cacheRoot, ref.replace(/[^A-Za-z0-9._-]/g, '_'));

@@ -1,0 +1,32 @@
+{
+  "product": "android",
+  "releases": [
+    {
+      "tag": "v0.1.0-pre.3",
+      "version": "0.1.0-pre.3",
+      "publishedAt": "2026-10-25T17:46:56Z",
+      "prerelease": true,
+      "url": "https://github.com/pohunekd/pohunek-companion-android/releases/tag/v0.1.0-pre.3",
+      "source": "generated",
+      "markdown": "- Capture the public screenshot set with one command ([#145](https://github.com/pohunekd/pohunek-companion-android/pull/145))\n- Refuse a release tag without a valid screenshot set ([#146](https://github.com/pohunekd/pohunek-companion-android/pull/146))\n- Capture the full public screenshot set ([#147](https://github.com/pohunekd/pohunek-companion-android/pull/147))\n- Show the screenshot gallery in the README ([#148](https://github.com/pohunekd/pohunek-companion-android/pull/148))"
+    },
+    {
+      "tag": "v0.1.0-pre.2",
+      "version": "0.1.0-pre.2",
+      "publishedAt": "2026-10-24T05:24:42Z",
+      "prerelease": true,
+      "url": "https://github.com/pohunekd/pohunek-companion-android/releases/tag/v0.1.0-pre.2",
+      "source": "generated",
+      "markdown": "- Groups from session metadata, shared with the desktop companion ([#127](https://github.com/pohunekd/pohunek-companion-android/pull/127))\n- Start a session from a project template, with branch options ([#128](https://github.com/pohunekd/pohunek-companion-android/pull/128))\n- Moves and group edits write companion.group, and layout.json migrates into it ([#130](https://github.com/pohunekd/pohunek-companion-android/pull/130))\n- Map an unresolvable host name to ConnectionFailed with a readable message ([#132](https://github.com/pohunekd/pohunek-companion-android/pull/132))\n- Run the unresolved-host test on real time ([#134](https://github.com/pohunekd/pohunek-companion-android/pull/134))\n- New sessions start in their group, and sessions whose group is not shared are marked ([#133](https://github.com/pohunekd/pohunek-companion-android/pull/133))\n- Long-press to reorder sessions and groups ([#136](https://github.com/pohunekd/pohunek-companion-android/pull/136))"
+    },
+    {
+      "tag": "v0.1.0-pre.1",
+      "version": "0.1.0-pre.1",
+      "publishedAt": "2026-10-23T21:24:43Z",
+      "prerelease": true,
+      "url": "https://github.com/pohunekd/pohunek-companion-android/releases/tag/v0.1.0-pre.1",
+      "source": "generated",
+      "markdown": "First release."
+    }
+  ]
+}

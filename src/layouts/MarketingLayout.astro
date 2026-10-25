@@ -49,6 +49,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 				document.documentElement.dataset.theme = theme === 'dark' ? 'dark' : 'light';
 			})();
 		</script>
+		<slot name="head" />
 	</head>
 	<body>
 		<a class="skip-link" href="#main">Skip to content</a>
