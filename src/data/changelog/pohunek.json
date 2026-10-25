@@ -1,0 +1,662 @@
+{
+  "product": "pohunek",
+  "releases": [
+    {
+      "tag": "v0.35.2",
+      "version": "0.35.2",
+      "publishedAt": "2026-10-16T17:33:43Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.35.2",
+      "source": "generated",
+      "markdown": "- Accept every official runtime release up to the next major (0.35.2) ([#1201](https://github.com/zajca/pohunek/pull/1201))\n- Carry pinned profiles and stopped sessions to a newer official package version ([#1202](https://github.com/zajca/pohunek/pull/1202))"
+    },
+    {
+      "tag": "v0.35.1",
+      "version": "0.35.1",
+      "publishedAt": "2026-10-16T11:16:49Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.35.1",
+      "source": "generated",
+      "markdown": "- Read a withheld macOS 27 environment as unobservable, not unmarked ([#796](https://github.com/zajca/pohunek/pull/796))\n- Decide unreadable-environment processes by fork lineage in the sweep ([#820](https://github.com/zajca/pohunek/pull/820))\n- Journal the worker's creation number and hand it to the runtime sweep ([#822](https://github.com/zajca/pohunek/pull/822))\n- Reject incomplete automated reviews in delivery gates ([#824](https://github.com/zajca/pohunek/pull/824))\n- Report CI timing by workflow tier ([#826](https://github.com/zajca/pohunek/pull/826))\n- Report agent profile readiness in doctor ([#825](https://github.com/zajca/pohunek/pull/825))\n- Report detection manifest health in doctor ([#827](https://github.com/zajca/pohunek/pull/827))\n- Filter session lists by metadata across clients ([#828](https://github.com/zajca/pohunek/pull/828))\n- Define public work readiness and contribution templates ([#831](https://github.com/zajca/pohunek/pull/831))\n- Verify Hermes package definition through signed install ([#829](https://github.com/zajca/pohunek/pull/829))\n- Expose metadata predicates in session list CLI ([#832](https://github.com/zajca/pohunek/pull/832))\n- Report provider integration drift in daemon doctor ([#830](https://github.com/zajca/pohunek/pull/830))\n- Define PR, main, and nightly CI tiers ([#833](https://github.com/zajca/pohunek/pull/833))\n- Separate core reporting from Hermes callbacks ([#834](https://github.com/zajca/pohunek/pull/834))\n- Require dependencies in work item form ([#842](https://github.com/zajca/pohunek/pull/842))\n- Keep Hermes identity fixture reading after step timeout ([#840](https://github.com/zajca/pohunek/pull/840))\n- Report active worker protocol compatibility in doctor ([#836](https://github.com/zajca/pohunek/pull/836))\n- Shut down old registry before worker handoff ([#841](https://github.com/zajca/pohunek/pull/841))\n- Verify embedded Hermes operator payload and record sidecar drift ([#839](https://github.com/zajca/pohunek/pull/839))\n- Keep foreground probe lock test off runtime workers ([#838](https://github.com/zajca/pohunek/pull/838))\n- Require exact-commit CI evidence before release ([#835](https://github.com/zajca/pohunek/pull/835))\n- Record public contributor authority and review policy ([#837](https://github.com/zajca/pohunek/pull/837))\n- Route agent instructions through scoped guides ([#846](https://github.com/zajca/pohunek/pull/846))\n- Add public contribution entry points ([#848](https://github.com/zajca/pohunek/pull/848))\n- Pin the Rust toolchain for CI and local runs ([#850](https://github.com/zajca/pohunek/pull/850))\n- Reconcile the roadmap with the live epics and blocker graph ([#860](https://github.com/zajca/pohunek/pull/860))\n- Install Hermes operator assets from the selected official package ([#853](https://github.com/zajca/pohunek/pull/853))\n- Move the udeps nightly pin to nightly-2026-10-12 ([#863](https://github.com/zajca/pohunek/pull/863))\n- Correct runtime package release facts and document package trust ([#861](https://github.com/zajca/pohunek/pull/861))\n- List the Rust toolchain pin scan in the gate set ([#865](https://github.com/zajca/pohunek/pull/865))\n- Run the xtask, package and client tests on macOS 27 ([#859](https://github.com/zajca/pohunek/pull/859))\n- Select runtime package CI jobs with a fail-closed classifier ([#866](https://github.com/zajca/pohunek/pull/866))\n- Refuse pre-0.33.1 workers and stop reading the legacy runtime marker ([#872](https://github.com/zajca/pohunek/pull/872))\n- Select contribution paths and emit versioned JSON from dev-bootstrap ([#873](https://github.com/zajca/pohunek/pull/873))\n- Filter notifications watch by session, kind and status ([#874](https://github.com/zajca/pohunek/pull/874))\n- Wait for a fake agent's complete argv record in session tests ([#876](https://github.com/zajca/pohunek/pull/876))\n- Keep hook reports ordered and diffs stable on macOS 27 ([#871](https://github.com/zajca/pohunek/pull/871))\n- Refuse to serve a built-in pin from the package that replaced it ([#880](https://github.com/zajca/pohunek/pull/880))\n- Declare the transcript tree and parser in the runtime descriptor ([#881](https://github.com/zajca/pohunek/pull/881))\n- Freeze the v0.33 launch specs the store migration reads ([#882](https://github.com/zajca/pohunek/pull/882))\n- Add session.wait_turn: a long bounded wait for the next turn event ([#885](https://github.com/zajca/pohunek/pull/885))\n- Settle the old session registry before a test restart ([#886](https://github.com/zajca/pohunek/pull/886))\n- Name each contribution path's focused checks and verify the macOS path in CI ([#887](https://github.com/zajca/pohunek/pull/887))\n- Make the turn-wait default and ceiling service configuration ([#893](https://github.com/zajca/pohunek/pull/893))\n- Run a real pinned Hermes session through the package with a declared launch rule ([#891](https://github.com/zajca/pohunek/pull/891))\n- Cover resuming a Claude fork through its own conversation id ([#895](https://github.com/zajca/pohunek/pull/895))\n- Verify a runtime package against the signed release baseline ([#898](https://github.com/zajca/pohunek/pull/898))\n- Add session.wait_turn to the TypeScript SDK and testkit ([#896](https://github.com/zajca/pohunek/pull/896))\n- Rank and admit notification providers by hook schema, not by name ([#902](https://github.com/zajca/pohunek/pull/902))\n- Wait for the next turn event from pohunek session wait ([#901](https://github.com/zajca/pohunek/pull/901))\n- Serve daemon tests' codex and claude from the official packages ([#905](https://github.com/zajca/pohunek/pull/905))\n- Freeze the v0.34.2 built-in Codex and Claude as parity goldens ([#903](https://github.com/zajca/pohunek/pull/903))\n- Assign a forked Pi session its own native reference ([#900](https://github.com/zajca/pohunek/pull/900))\n- Report JUnit timing for runtime package jobs and matrix rows ([#897](https://github.com/zajca/pohunek/pull/897))\n- Migrate the release upgrade harness through the official Claude package ([#904](https://github.com/zajca/pohunek/pull/904))\n- Give the Hermes compatibility lock the official package lock shape ([#906](https://github.com/zajca/pohunek/pull/906))\n- Write deterministic evidence next to every built runtime package ([#908](https://github.com/zajca/pohunek/pull/908))\n- Skip unchanged runtime packages only against the signed release baseline ([#909](https://github.com/zajca/pohunek/pull/909))\n- Serve the daemon's session tests' codex and claude from official packages ([#914](https://github.com/zajca/pohunek/pull/914))\n- Close the Claude package's activity detection gaps ([#910](https://github.com/zajca/pohunek/pull/910))\n- Detect Pi dialogs and honour or refuse a relocated session store ([#917](https://github.com/zajca/pohunek/pull/917))\n- Reopen resumed subagents and ignore Claude stop-only helpers ([#919](https://github.com/zajca/pohunek/pull/919))\n- Make the Hermes test interpreter a checked prerequisite ([#877](https://github.com/zajca/pohunek/pull/877))\n- Reconcile Claude subagents from the main-turn Stop snapshot ([#924](https://github.com/zajca/pohunek/pull/924))\n- Stage a provisioned upstream runtime as a verified upstream stage ([#915](https://github.com/zajca/pohunek/pull/915))\n- Bump quinn-proto to 0.11.19 for RUSTSEC-2026-0338..0342 ([#928](https://github.com/zajca/pohunek/pull/928))\n- Run out-of-process daemon tests against the official runtime packages ([#922](https://github.com/zajca/pohunek/pull/922))\n- Trace state hook failures in a bounded owner-private log ([#925](https://github.com/zajca/pohunek/pull/925))\n- Install the Hermes compatibility gate and plugin smoke from the package ([#927](https://github.com/zajca/pohunek/pull/927))\n- Report a missing agent executable before probing its version ([#931](https://github.com/zajca/pohunek/pull/931))\n- Settle Claude subagents only from proven absence and cover them with real Claude ([#930](https://github.com/zajca/pohunek/pull/930))\n- Drive Hermes through the release consumer suite ([#935](https://github.com/zajca/pohunek/pull/935))\n- Remove the built-in Codex runtime ([#934](https://github.com/zajca/pohunek/pull/934))\n- Journal the Claude background-task snapshot in the worker ([#937](https://github.com/zajca/pohunek/pull/937))\n- Clamp the background sequence mark instead of refusing future claims ([#941](https://github.com/zajca/pohunek/pull/941))\n- Publish the background snapshot in SessionInfo and background_state ([#938](https://github.com/zajca/pohunek/pull/938))\n- Show background work in session list and inspect ([#942](https://github.com/zajca/pohunek/pull/942))\n- Move the Hermes package into runtime-packages and give it matrix rows ([#944](https://github.com/zajca/pohunek/pull/944))\n- Render the Claude reporter scripts from the core reporter template ([#945](https://github.com/zajca/pohunek/pull/945))\n- Validate protocol method names in TypeScript gate ([#756](https://github.com/zajca/pohunek/pull/756))\n- Remove the built-in Claude runtime ([#946](https://github.com/zajca/pohunek/pull/946))\n- Exercise shell completion through the CLI process ([#748](https://github.com/zajca/pohunek/pull/748))\n- Move knowledge validation through docs build ([#750](https://github.com/zajca/pohunek/pull/750))\n- Exercise knowledge cache through assistant API ([#759](https://github.com/zajca/pohunek/pull/759))\n- Remove duplicate v3 adapter unit tests ([#744](https://github.com/zajca/pohunek/pull/744))\n- Exercise menu state through terminal compositor ([#760](https://github.com/zajca/pohunek/pull/760))\n- Exercise completion commands through the CLI process ([#951](https://github.com/zajca/pohunek/pull/951))\n- Exercise session targets through CLI process ([#757](https://github.com/zajca/pohunek/pull/757))\n- Exercise CLI errors through process scenarios ([#761](https://github.com/zajca/pohunek/pull/761))\n- Reap daemon fixture processes and settle the sweep on macOS 27 ([#888](https://github.com/zajca/pohunek/pull/888))\n- Exercise terminal composition through a VT parser ([#957](https://github.com/zajca/pohunek/pull/957))\n- Install the Hermes operator plugin only from the installed package ([#947](https://github.com/zajca/pohunek/pull/947))\n- Add persistent plugin units to the platform supervisor with a systemd backend ([#952](https://github.com/zajca/pohunek/pull/952))\n- Exclude other launchd jobs from the runtime sweep by kernel coalition ([#959](https://github.com/zajca/pohunek/pull/959))\n- Decode package archives only after their digest is authorized ([#971](https://github.com/zajca/pohunek/pull/971))\n- Extract the bounded-process primitives from the Hermes runner ([#965](https://github.com/zajca/pohunek/pull/965))\n- Remove the built-in Hermes runtime from the daemon ([#964](https://github.com/zajca/pohunek/pull/964))\n- Add the launchd backend for plugin units ([#973](https://github.com/zajca/pohunek/pull/973))\n- Hold the environment lock while test-support stand-ins spawn ([#988](https://github.com/zajca/pohunek/pull/988))\n- Start copied shell images on macOS 27 in the fixtures that need an interpreter ([#970](https://github.com/zajca/pohunek/pull/970))\n- Share the sweep settle window per operation and signal fixture roots by identity ([#966](https://github.com/zajca/pohunek/pull/966))\n- End a session with its root exit when a stop force-closes PTY output ([#444](https://github.com/zajca/pohunek/pull/444))\n- Describe Hermes, Codex and Claude as package-only runtimes in the docs ([#990](https://github.com/zajca/pohunek/pull/990))\n- Bound SDK pack and release-script test timeouts with named step deadlines ([#986](https://github.com/zajca/pohunek/pull/986))\n- Add the workflow plugin store with consent install ([#963](https://github.com/zajca/pohunek/pull/963))\n- Report profiles over unserved runtimes as unable to launch ([#992](https://github.com/zajca/pohunek/pull/992))\n- Make the script suites pass on macOS 27 ([#987](https://github.com/zajca/pohunek/pull/987))\n- Run workflow plugin actions with a bounded, recorded runner ([#993](https://github.com/zajca/pohunek/pull/993))\n- Pass workflow action JSON through the CLI envelope verbatim ([#994](https://github.com/zajca/pohunek/pull/994))\n- Keep the lineage test creators alive until the sweep signals them ([#996](https://github.com/zajca/pohunek/pull/996))\n- Complete workflow plugin ids and actions in the shell ([#998](https://github.com/zajca/pohunek/pull/998))\n- Check a bundle package's signed digest before decoding it ([#997](https://github.com/zajca/pohunek/pull/997))\n- Start reconcile sweep fixtures from the holding image ([#1012](https://github.com/zajca/pohunek/pull/1012))\n- Commit session runtime transitions atomically with memory ([#1004](https://github.com/zajca/pohunek/pull/1004))\n- Describe runtime input framing and hooks without built-in adapters ([#999](https://github.com/zajca/pohunek/pull/999))\n- Bound and retry a stalled npm ci in compat stage-upstream ([#1017](https://github.com/zajca/pohunek/pull/1017))\n- Fall back to an uncached build when sccache setup fails ([#1015](https://github.com/zajca/pohunek/pull/1015))\n- Fail a pull request that changes an official package without a version bump ([#1016](https://github.com/zajca/pohunek/pull/1016))\n- Bound the mold download so a stalled transfer fails the job ([#1022](https://github.com/zajca/pohunek/pull/1022))\n- Bound PTY input writes that the agent never reads ([#1020](https://github.com/zajca/pohunek/pull/1020))\n- Point unloadable-package profiles and launches at plugin doctor ([#1025](https://github.com/zajca/pohunek/pull/1025))\n- Run workflow plugin jobs and services under the login manager ([#1005](https://github.com/zajca/pohunek/pull/1005))\n- Wait for Claude's prompt box before sending the initial input ([#1028](https://github.com/zajca/pohunek/pull/1028))\n- Order identity reports per reporting process ([#1008](https://github.com/zajca/pohunek/pull/1008))\n- Cap persisted subagent sequence marks at the worker clock ([#1035](https://github.com/zajca/pohunek/pull/1035))\n- Report workflow units with workflow status and guard the service uninstall ([#1030](https://github.com/zajca/pohunek/pull/1030))\n- State that the agent's process tree is not an identity boundary ([#1038](https://github.com/zajca/pohunek/pull/1038))\n- Adopt sessions of the removed built-in runtimes by their official package ([#1024](https://github.com/zajca/pohunek/pull/1024))\n- Move the package archive format to ruzstd 0.9.1 ([#1023](https://github.com/zajca/pohunek/pull/1023))\n- Refuse to start an agent whose working directory is gone ([#1029](https://github.com/zajca/pohunek/pull/1029))\n- Show the stderr tail of a failing create hook in session.new ([#1047](https://github.com/zajca/pohunek/pull/1047))\n- Prove the extraction descriptor bound with a tree small enough to run in seconds ([#1044](https://github.com/zajca/pohunek/pull/1044))\n- Keep Claude profiles with a rule-less override manifest loadable ([#1049](https://github.com/zajca/pohunek/pull/1049))\n- Make the submit-delay scenarios independent of the fake agent's scheduling ([#1053](https://github.com/zajca/pohunek/pull/1053))\n- Start the Hermes macOS job on pull requests only for Hermes inputs ([#1051](https://github.com/zajca/pohunek/pull/1051))\n- Keep unreadable-holder tests apart across separate test runs ([#1056](https://github.com/zajca/pohunek/pull/1056))\n- Move a host to the official runtime packages inside the upgrade ([#1043](https://github.com/zajca/pohunek/pull/1043))\n- Publish the supervised fixture counter atomically ([#1057](https://github.com/zajca/pohunek/pull/1057))\n- Record knowledge-log entries as per-change fragments and fold them at release ([#1055](https://github.com/zajca/pohunek/pull/1055))\n- Run workflow plugin event reactions through a dispatcher unit ([#1042](https://github.com/zajca/pohunek/pull/1042))\n- Close the worker's PTY slave only after the output reader runs ([#1058](https://github.com/zajca/pohunek/pull/1058))\n- Finish the runtime package and workflow plugin documentation ([#1062](https://github.com/zajca/pohunek/pull/1062))\n- Run the release consumer suite on macOS ([#995](https://github.com/zajca/pohunek/pull/995))\n- Name the owning session of a worktree in project show ([#1059](https://github.com/zajca/pohunek/pull/1059))\n- Admit a public native-id report only from the session's PTY root ([#1045](https://github.com/zajca/pohunek/pull/1045))\n- Add the macOS nextest lane profile and its partition check ([#1069](https://github.com/zajca/pohunek/pull/1069))\n- Give every session a private TMPDIR that its removal deletes ([#1068](https://github.com/zajca/pohunek/pull/1068))\n- Show workflow reactions in the consent review and fix the dispatcher's uninstall and version paths ([#1066](https://github.com/zajca/pohunek/pull/1066))\n- Update rustls to 0.23.46 for the 2026-10-14 RustSec advisories ([#1073](https://github.com/zajca/pohunek/pull/1073))\n- Remove fixed waits from the daemon test suites ([#1072](https://github.com/zajca/pohunek/pull/1072))\n- Fix the relay ingress and Hermes plugin suite flakes ([#1081](https://github.com/zajca/pohunek/pull/1081))\n- Report a missing PTY working directory only when it is gone; fix the stop-hook test race ([#1076](https://github.com/zajca/pohunek/pull/1076))\n- Attest the official runtime packages on Apple Silicon ([#1071](https://github.com/zajca/pohunek/pull/1071))\n- Quiet the unsupported journal warning and create client-made daemon directories owner-private ([#1090](https://github.com/zajca/pohunek/pull/1090))\n- Report why a listed session cannot resume or fork ([#1083](https://github.com/zajca/pohunek/pull/1083))\n- Isolate the single-process daemon tests and kill the version probe group before reaping ([#1104](https://github.com/zajca/pohunek/pull/1104))\n- Delete orphaned session temporary directories at daemon startup ([#1085](https://github.com/zajca/pohunek/pull/1085))\n- Keep the burst action's output within one page of pipe buffer ([#1106](https://github.com/zajca/pohunek/pull/1106))\n- Give each reconcile supervision scenario only its own processes ([#1105](https://github.com/zajca/pohunek/pull/1105))\n- Keep the directory of the stores' TMPDIR roots private ([#1108](https://github.com/zajca/pohunek/pull/1108))\n- Run the macOS lane from one nextest archive and add the macOS tier job ([#1099](https://github.com/zajca/pohunek/pull/1099))\n- Report the upgrade test's launch notification as an error, and keep the daemon logs on failure ([#1109](https://github.com/zajca/pohunek/pull/1109))\n- Judge the upgrade against the planned official packages ([#1060](https://github.com/zajca/pohunek/pull/1060))\n- Judge a stopped session's migration outcome before its capabilities ([#1125](https://github.com/zajca/pohunek/pull/1125))\n- Plan the official runtimes a fresh host can use with --detect ([#1127](https://github.com/zajca/pohunek/pull/1127))\n- Test the one-step upgrade from built-in runtimes end to end ([#1124](https://github.com/zajca/pohunek/pull/1124))\n- Judge release layout processes by what they execute ([#1121](https://github.com/zajca/pohunek/pull/1121))\n- Fix usage-error newline, generic wait routing and notifications list paging ([#1116](https://github.com/zajca/pohunek/pull/1116))\n- Persist the active agent's origin and never commit a report resolved against a replaced pin ([#1096](https://github.com/zajca/pohunek/pull/1096))\n- Change the process environment only in a test's own process ([#1123](https://github.com/zajca/pohunek/pull/1123))\n- Wait for the rendered prompt before Pi's and Hermes's initial input ([#1118](https://github.com/zajca/pohunek/pull/1118))\n- Park the rename cursor after the typed name, and read the Codex folder trust dialog as blocked ([#1134](https://github.com/zajca/pohunek/pull/1134))\n- Decide a lost-runtime sweep after its last pass from a survey ([#1136](https://github.com/zajca/pohunek/pull/1136))\n- Restore the PATH-search parity scenarios of the upgrade preflight ([#1139](https://github.com/zajca/pohunek/pull/1139))\n- Continue a session's projector epoch from the store after a restart ([#1132](https://github.com/zajca/pohunek/pull/1132))\n- Emit the echo a terminal held during an attach or resize output pause ([#1146](https://github.com/zajca/pohunek/pull/1146))\n- Await a killed root's death for its own deadline before failing a stop ([#1148](https://github.com/zajca/pohunek/pull/1148))\n- Run the Hermes macOS job's tests through nextest ([#1135](https://github.com/zajca/pohunek/pull/1135))\n- Pass the kill reap bound in the held-echo scenarios' cleanup ([#1155](https://github.com/zajca/pohunek/pull/1155))\n- Wait for an unreachable worker before admitting a hook report ([#1153](https://github.com/zajca/pohunek/pull/1153))\n- Arm the live transcript watcher before a scenario changes the tree ([#1157](https://github.com/zajca/pohunek/pull/1157))\n- Size the SDK test request timeouts for loaded runners ([#1158](https://github.com/zajca/pohunek/pull/1158))\n- Set up a host with one pohunek setup run ([#1142](https://github.com/zajca/pohunek/pull/1142))\n- Keep attach output flowing while the stream's own input is pending ([#1161](https://github.com/zajca/pohunek/pull/1161))\n- Resolve the machine's own overlay name as the local host ([#1163](https://github.com/zajca/pohunek/pull/1163))\n- Shorten the xtask Hermes harness tests ([#1166](https://github.com/zajca/pohunek/pull/1166))\n- Hand a held hook stderr to a drain process that outlives the daemon ([#1165](https://github.com/zajca/pohunek/pull/1165))\n- Give the input-stall scenarios an input no PTY can hold unread ([#1170](https://github.com/zajca/pohunek/pull/1170))\n- Update Hermes homes in an upgrade with the daemon job's PATH ([#1171](https://github.com/zajca/pohunek/pull/1171))\n- Accept the Assistant request from stdin in the public CLI ([#1169](https://github.com/zajca/pohunek/pull/1169))\n- Wait for the bounded create in session new and report an ignored base branch ([#1172](https://github.com/zajca/pohunek/pull/1172))\n- Point the session new outcome text at the shared Creation outcome section ([#1175](https://github.com/zajca/pohunek/pull/1175))\n- Wait for a scripted retirement's process to end before returning ([#1174](https://github.com/zajca/pohunek/pull/1174))\n- Wait for the recorded reference and split the seed sweep in daemon tests ([#1177](https://github.com/zajca/pohunek/pull/1177))\n- Await the recorded adapter reports instead of reading them once ([#1179](https://github.com/zajca/pohunek/pull/1179))\n- Wait for the host test lock while other runs make progress ([#1180](https://github.com/zajca/pohunek/pull/1180))\n- Decide release-layout scan membership by executable and working directory on Linux ([#1181](https://github.com/zajca/pohunek/pull/1181))\n- Judge a stopped session's native reference in the upgrade preflight ([#1140](https://github.com/zajca/pohunek/pull/1140))\n- Warn in the upgrade preflight about profiles without screen readiness ([#1185](https://github.com/zajca/pohunek/pull/1185))\n- Let the service lock child take the terminal before it executes ([#1186](https://github.com/zajca/pohunek/pull/1186))\n- Smoke the Apple Silicon daemon archive offline on macOS ([#1102](https://github.com/zajca/pohunek/pull/1102))\n- Require both archive smoke matrix legs in the release evidence ([#1188](https://github.com/zajca/pohunek/pull/1188))\n- Cite the knowledge-log fragment directory without a path the release fold removes ([#1190](https://github.com/zajca/pohunek/pull/1190))\n- Warm python3 for the macOS smoke's throwaway user before each consumer ([#1193](https://github.com/zajca/pohunek/pull/1193))"
+    },
+    {
+      "tag": "v0.34.2",
+      "version": "0.34.2",
+      "publishedAt": "2026-10-10T11:35:20Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.34.2",
+      "source": "generated",
+      "markdown": "- Pin the fetched base commit per request instead of reading FETCH_HEAD ([#508](https://github.com/zajca/pohunek/pull/508))\n- Add the canonical runtime package archive format and builder ([#507](https://github.com/zajca/pohunek/pull/507))\n- Add the signed runtime package catalog and its verification ([#513](https://github.com/zajca/pohunek/pull/513))\n- Let runtimes declare a core-assigned native session reference ([#509](https://github.com/zajca/pohunek/pull/509))\n- Amend task and dark factory RFCs: provider-initiated turns, usage-limit waits, delegation lineage, multi-target wait ([#511](https://github.com/zajca/pohunek/pull/511))\n- Add verified package extraction and the content-addressed registry store ([#514](https://github.com/zajca/pohunek/pull/514))\n- Rework the README around agents and ship the reference pages in release archives ([#518](https://github.com/zajca/pohunek/pull/518))\n- Fix the notify hook envelope and deliver notifications through the worker socket ([#534](https://github.com/zajca/pohunek/pull/534))\n- Load installed runtime packages in the daemon with pin and tamper verification ([#531](https://github.com/zajca/pohunek/pull/531))\n- Accept worker journal schema N-1 on the daemon and warn on older schemas ([#533](https://github.com/zajca/pohunek/pull/533))\n- Enforce the persisted store schema and migrate it at startup with a backup ([#535](https://github.com/zajca/pohunek/pull/535))\n- Guard persisted record shapes against changes without a schema bump ([#536](https://github.com/zajca/pohunek/pull/536))\n- Document the upgrade window contract and check compat constants on release ([#537](https://github.com/zajca/pohunek/pull/537))\n- Add the plugin lifecycle commands and package wire methods ([#542](https://github.com/zajca/pohunek/pull/542))\n- Accept public protocol N-1 on the daemon through shape-only edge adapters ([#549](https://github.com/zajca/pohunek/pull/549))\n- Refuse methods introduced after the previous protocol version on N-1 connections ([#555](https://github.com/zajca/pohunek/pull/555))\n- Keep pre-bump sessions reporting: fix the state hook seq type and version-aware worker key ([#557](https://github.com/zajca/pohunek/pull/557))\n- Bind host profiles to explicit package digests and add plugin profile migration ([#553](https://github.com/zajca/pohunek/pull/553))\n- Add the Pi runtime package and a data-driven version probe ([#559](https://github.com/zajca/pohunek/pull/559))\n- Teach the delivery skills the ai:review trigger and the stuck-review rule ([#561](https://github.com/zajca/pohunek/pull/561))\n- Serialize git worktree add, remove and prune per repository ([#551](https://github.com/zajca/pohunek/pull/551))\n- Migrate pre-native-launch resume bindings and repair records damaged by 0.33.1 ([#552](https://github.com/zajca/pohunek/pull/552))\n- Keep the test log capture from losing events to the tracing callsite interest cache ([#566](https://github.com/zajca/pohunek/pull/566))\n- Validate hook reports against compiled core hook schemas ([#563](https://github.com/zajca/pohunek/pull/563))\n- Adopt live N-1 workers, warn on every unavailable classification and give conflicts an exit ([#562](https://github.com/zajca/pohunek/pull/562))\n- Dispatch integration operations through typed handlers resolved from the runtime descriptor ([#568](https://github.com/zajca/pohunek/pull/568))\n- Hold back a package version whose integration is incompatible with a retained reference ([#570](https://github.com/zajca/pohunek/pull/570))\n- Declare the subagent sequence rule in the hook schema and cover stale reports and restarts ([#573](https://github.com/zajca/pohunek/pull/573))\n- Let clients talk to an N-1 daemon through the compat adapters ([#572](https://github.com/zajca/pohunek/pull/572))\n- Gate service upgrade on a read-only preflight of live sessions ([#571](https://github.com/zajca/pohunek/pull/571))\n- Install, inspect and remove agent integrations per profile config home ([#576](https://github.com/zajca/pohunek/pull/576))\n- Freeze the profile revision at session creation and refuse a resume or fork under a changed profile ([#580](https://github.com/zajca/pohunek/pull/580))\n- Resolve the hook schema in the upgrade preflight from the runtime definitions ([#582](https://github.com/zajca/pohunek/pull/582))\n- Add a CI job that upgrades a live session from the previous release to HEAD ([#579](https://github.com/zajca/pohunek/pull/579))\n- Expose a keyed config home id and observe every enabled profile home ([#583](https://github.com/zajca/pohunek/pull/583))\n- Let a reported native reference supersede an assigned one on the worker identity path ([#574](https://github.com/zajca/pohunek/pull/574))\n- Parse the real --version banners of the official runtimes with a declarative line template ([#588](https://github.com/zajca/pohunek/pull/588))\n- Let a catalog-authorized official package serve a reserved runtime alias ([#589](https://github.com/zajca/pohunek/pull/589))\n- Render the Codex reporter scripts from one core-owned template ([#593](https://github.com/zajca/pohunek/pull/593))\n- Load the catalog trust anchor from the installation and add catalog signing tooling ([#594](https://github.com/zajca/pohunek/pull/594))\n- Add the official Codex runtime package source, lock, captured frames and tests ([#595](https://github.com/zajca/pohunek/pull/595))\n- Drop the resume binding of an ended run in the same store write that commits its terminal record ([#598](https://github.com/zajca/pohunek/pull/598))\n- Accept the hook-reported conversation id from a provider child of the launch process ([#600](https://github.com/zajca/pohunek/pull/600))\n- Make agent instructions prefer behavioral component tests over per-function unit tests ([#610](https://github.com/zajca/pohunek/pull/610))\n- Add the official Claude Code runtime package source and its compatibility evidence ([#611](https://github.com/zajca/pohunek/pull/611))\n- Remove low-value CLI command-surface tests ([#615](https://github.com/zajca/pohunek/pull/615))\n- Remove low-value CLI service and packaging tests ([#616](https://github.com/zajca/pohunek/pull/616))\n- Remove low-value CLI integration, plugin and package tests ([#617](https://github.com/zajca/pohunek/pull/617))\n- Allow stopping and removing a session whose runtime is not installed ([#618](https://github.com/zajca/pohunek/pull/618))\n- Remove low-value relay tests ([#622](https://github.com/zajca/pohunek/pull/622))\n- Remove low-value repository tooling tests ([#625](https://github.com/zajca/pohunek/pull/625))\n- Remove low-value shared-library tests ([#626](https://github.com/zajca/pohunek/pull/626))\n- Remove low-value platform tests ([#623](https://github.com/zajca/pohunek/pull/623))\n- Remove low-value package, configuration and host-check tests ([#624](https://github.com/zajca/pohunek/pull/624))\n- Remove low-value daemon session lifecycle tests ([#629](https://github.com/zajca/pohunek/pull/629))\n- Flag outdated managed integration assets at launch and after an upgrade ([#619](https://github.com/zajca/pohunek/pull/619))\n- Reduce Rust protocol, worker-protocol and client tests to wire contracts ([#627](https://github.com/zajca/pohunek/pull/627))\n- Remove duplicate TypeScript SDK tests ([#628](https://github.com/zajca/pohunek/pull/628))\n- Remove low-value daemon agent and package lifecycle tests ([#630](https://github.com/zajca/pohunek/pull/630))\n- Remove low-value daemon integration and detection tests ([#631](https://github.com/zajca/pohunek/pull/631))\n- Remove low-value daemon runtime, store and API tests ([#632](https://github.com/zajca/pohunek/pull/632))\n- Remove low-value session worker tests ([#633](https://github.com/zajca/pohunek/pull/633))\n- Cover the notification agent filter and completion safety contract through production paths ([#635](https://github.com/zajca/pohunek/pull/635))\n- Cover the external-observation opt-in and the hook-schema reference-kind filter ([#637](https://github.com/zajca/pohunek/pull/637))\n- Restore test obligations an independent review found lost in the reduction ([#639](https://github.com/zajca/pohunek/pull/639))\n- Reap session workers a test leaves behind and fail a test run that leaks one ([#638](https://github.com/zajca/pohunek/pull/638))\n- Compile test hot-loop dependencies optimized in the dev profile ([#649](https://github.com/zajca/pohunek/pull/649))\n- Read /proc/<pid>/stat once when waiting for a killed test workload ([#653](https://github.com/zajca/pohunek/pull/653))\n- Write several roots from catalog anchor ([#652](https://github.com/zajca/pohunek/pull/652))\n- Check in the production catalog trust anchor and its inputs ([#656](https://github.com/zajca/pohunek/pull/656))\n- Stage the catalog trust anchor in daemon release archives ([#657](https://github.com/zajca/pohunek/pull/657))\n- Install the catalog trust anchor beside the daemon ([#658](https://github.com/zajca/pohunek/pull/658))\n- Fix nix-darwin NetBird lookup ([#660](https://github.com/zajca/pohunek/pull/660))\n- Extend the signed runtime catalog with release binding (schema 2) ([#661](https://github.com/zajca/pohunek/pull/661))\n- Add the compatibility attestation and the release matrix ([#662](https://github.com/zajca/pohunek/pull/662))\n- Pass daemon identity to worker-launched sessions ([#667](https://github.com/zajca/pohunek/pull/667))\n- Require integration and end-to-end tests ([#672](https://github.com/zajca/pohunek/pull/672))\n- Run the package consumer suite on the exact release binaries ([#663](https://github.com/zajca/pohunek/pull/663))\n- Move prompt coverage to CLI scenarios ([#673](https://github.com/zajca/pohunek/pull/673))\n- Keep service config coverage at integration boundary ([#674](https://github.com/zajca/pohunek/pull/674))\n- Exercise repository scripts through CLI scenarios ([#676](https://github.com/zajca/pohunek/pull/676))\n- Exercise dev-loop measurement through CLI scenarios ([#677](https://github.com/zajca/pohunek/pull/677))\n- Move SDK checks to transport and package integration ([#675](https://github.com/zajca/pohunek/pull/675))\n- Check shard inventory through the partition CLI ([#679](https://github.com/zajca/pohunek/pull/679))\n- Check JUnit cleanup through partition run command ([#681](https://github.com/zajca/pohunek/pull/681))\n- Cover relay client settings in HTTPS integration ([#680](https://github.com/zajca/pohunek/pull/680))\n- Exercise launchd evidence through CLI ([#682](https://github.com/zajca/pohunek/pull/682))\n- Remove static CI workflow assertions ([#683](https://github.com/zajca/pohunek/pull/683))\n- Check JUnit timing through CLI ([#684](https://github.com/zajca/pohunek/pull/684))\n- Check CI run timing through CLI ([#685](https://github.com/zajca/pohunek/pull/685))\n- Validate worktree arguments through real Git ([#687](https://github.com/zajca/pohunek/pull/687))\n- Check CI timing cache and snapshots through CLI ([#689](https://github.com/zajca/pohunek/pull/689))\n- Remove redundant knowledge helper tests ([#688](https://github.com/zajca/pohunek/pull/688))\n- Exercise knowledge contracts through bundle scenarios ([#691](https://github.com/zajca/pohunek/pull/691))\n- Check CI cache reports and errors through CLI ([#692](https://github.com/zajca/pohunek/pull/692))\n- Check schema backups through service purge ([#686](https://github.com/zajca/pohunek/pull/686))\n- Check CI timing reports through CLI ([#693](https://github.com/zajca/pohunek/pull/693))\n- Cover NetBird port configuration through CLI process ([#690](https://github.com/zajca/pohunek/pull/690))\n- Check worker leak cleanup through test runner CLI ([#695](https://github.com/zajca/pohunek/pull/695))\n- Check deleted worker executable through runner CLI ([#696](https://github.com/zajca/pohunek/pull/696))\n- Remove redundant path helper tests ([#694](https://github.com/zajca/pohunek/pull/694))\n- Move package canonical checks to integration coverage ([#704](https://github.com/zajca/pohunek/pull/704))\n- Move XDG path failures to CLI scenarios ([#698](https://github.com/zajca/pohunek/pull/698))\n- Test directory archives through the public package API ([#705](https://github.com/zajca/pohunek/pull/705))\n- Move NetBird discovery checks to CLI scenarios ([#697](https://github.com/zajca/pohunek/pull/697))\n- Check host doctor probes through the CLI ([#702](https://github.com/zajca/pohunek/pull/702))\n- Move NetBird safety checks to CLI and daemon scenarios ([#699](https://github.com/zajca/pohunek/pull/699))\n- Check catalog anchor parsing through daemon installs ([#703](https://github.com/zajca/pohunek/pull/703))\n- Check daemon path failures at process startup ([#706](https://github.com/zajca/pohunek/pull/706))\n- Remove redundant xtask helper tests ([#708](https://github.com/zajca/pohunek/pull/708))\n- Check NetBird fallback and concurrency through client boundaries ([#701](https://github.com/zajca/pohunek/pull/701))\n- Check daemon trust-anchor safety through catalog installs ([#707](https://github.com/zajca/pohunek/pull/707))\n- Check integration wire states through daemon RPC ([#712](https://github.com/zajca/pohunek/pull/712))\n- Cover host discovery wire shape at integration boundaries ([#711](https://github.com/zajca/pohunek/pull/711))\n- Rely on protocol-window connection scenarios ([#710](https://github.com/zajca/pohunek/pull/710))\n- Validate worker inputs through the sessiond process ([#713](https://github.com/zajca/pohunek/pull/713))\n- Check protocol errors against a previous daemon ([#715](https://github.com/zajca/pohunek/pull/715))\n- Test client origin validation through public flows ([#709](https://github.com/zajca/pohunek/pull/709))\n- Check client error mapping through socket failures ([#714](https://github.com/zajca/pohunek/pull/714))\n- Test CLI usage errors through the process boundary ([#717](https://github.com/zajca/pohunek/pull/717))\n- Test protocol compatibility through client and daemon flows ([#722](https://github.com/zajca/pohunek/pull/722))\n- Cover prompt link metadata through CLI process tests ([#718](https://github.com/zajca/pohunek/pull/718))\n- Test assistant CLI forms through the process boundary ([#719](https://github.com/zajca/pohunek/pull/719))\n- Test assistant selection through client protocol ([#720](https://github.com/zajca/pohunek/pull/720))\n- Cover metadata preservation across protocol versions ([#721](https://github.com/zajca/pohunek/pull/721))\n- Test worktree creation failures with real Git ([#724](https://github.com/zajca/pohunek/pull/724))\n- Reject invalid origin envelopes over the daemon socket ([#716](https://github.com/zajca/pohunek/pull/716))\n- Add the release assembler and inventory verifier ([#664](https://github.com/zajca/pohunek/pull/664))\n- Exercise worktree process guards with real Git ([#726](https://github.com/zajca/pohunek/pull/726))\n- Cover protocol v3 translation through client and daemon boundaries ([#725](https://github.com/zajca/pohunek/pull/725))\n- Cover worker version negotiation through its socket ([#728](https://github.com/zajca/pohunek/pull/728))\n- Cover worktree seed validation through real processes ([#730](https://github.com/zajca/pohunek/pull/730))\n- Ignore exited unreadable processes during runtime sweep ([#727](https://github.com/zajca/pohunek/pull/727))\n- Cover stale worktree seeds through real processes ([#734](https://github.com/zajca/pohunek/pull/734))\n- Cover worktree seed guards through real processes ([#736](https://github.com/zajca/pohunek/pull/736))\n- Check protocol v3 output shapes at the daemon socket ([#729](https://github.com/zajca/pohunek/pull/729))\n- Check worktree process locks through CLI ([#737](https://github.com/zajca/pohunek/pull/737))\n- Exercise worktree seed probes through real processes ([#738](https://github.com/zajca/pohunek/pull/738))\n- Check worker version ranges through control codec ([#732](https://github.com/zajca/pohunek/pull/732))\n- Check seeded worktree artifacts through the script ([#739](https://github.com/zajca/pohunek/pull/739))\n- Check worker control compatibility through codec ([#733](https://github.com/zajca/pohunek/pull/733))\n- Exercise worktree base selection through real Git ([#741](https://github.com/zajca/pohunek/pull/741))\n- Reject protocol version switches over client transport ([#735](https://github.com/zajca/pohunek/pull/735))\n- Exercise worktree Git paths through the CLI ([#742](https://github.com/zajca/pohunek/pull/742))\n- Check worktree seed rollback through real Git ([#743](https://github.com/zajca/pohunek/pull/743))\n- Rename catch-all fast test shard to core ([#740](https://github.com/zajca/pohunek/pull/740))\n- Pin and stage the upstream runtimes from integrity-checked lockfiles ([#665](https://github.com/zajca/pohunek/pull/665))\n- Remove redundant v3 request adapter tests ([#731](https://github.com/zajca/pohunek/pull/731))\n- Check worktree hook rollback through real Git ([#749](https://github.com/zajca/pohunek/pull/749))\n- Check CLI retention arguments through the binary ([#745](https://github.com/zajca/pohunek/pull/745))\n- Use CLI process evidence for common errors ([#746](https://github.com/zajca/pohunek/pull/746))\n- Exercise rejected worktree branch creation with Git ([#753](https://github.com/zajca/pohunek/pull/753))\n- Check knowledge metadata through assistant API ([#751](https://github.com/zajca/pohunek/pull/751))\n- Bound SDK pack setup by release process timeout ([#758](https://github.com/zajca/pohunek/pull/758))\n- Add the network-isolated archive smoke ([#666](https://github.com/zajca/pohunek/pull/666))\n- Test worker framing through stream exchanges ([#723](https://github.com/zajca/pohunek/pull/723))\n- Check upstream verifier in docs gate ([#752](https://github.com/zajca/pohunek/pull/752))\n- Publish a release only from the assembled, verified inventory ([#668](https://github.com/zajca/pohunek/pull/668))\n- Share agent skills between Codex and Claude Code ([#764](https://github.com/zajca/pohunek/pull/764))\n- Coordinate CI runs across stacked PRs ([#766](https://github.com/zajca/pohunek/pull/766))\n- Pin package CI installs to staged npm trees ([#767](https://github.com/zajca/pohunek/pull/767))\n- Bound SDK pack determinism test runtime ([#770](https://github.com/zajca/pohunek/pull/770))\n- Require confirmed cleanup before native recovery ([#771](https://github.com/zajca/pohunek/pull/771))\n- Guard unjournaled session removal by session identity ([#772](https://github.com/zajca/pohunek/pull/772))\n- Fix Codex native reference checks and diagnostics ([#776](https://github.com/zajca/pohunek/pull/776))\n- Recover dead workers behind stale sockets ([#777](https://github.com/zajca/pohunek/pull/777))\n- Keep previous Hermes plugin compatible through CLI window ([#778](https://github.com/zajca/pohunek/pull/778))\n- Allow proven conflicted sessions to be removed ([#773](https://github.com/zajca/pohunek/pull/773))\n- Lint the macOS-only code from a Linux runner ([#781](https://github.com/zajca/pohunek/pull/781))\n- Use a pinned public mirror for relay DB CI ([#785](https://github.com/zajca/pohunek/pull/785))\n- Preserve verified native recovery identity ([#779](https://github.com/zajca/pohunek/pull/779))\n- Guard service rollback against incompatible readers ([#775](https://github.com/zajca/pohunek/pull/775))\n- Recover the current Claude conversation safely ([#787](https://github.com/zajca/pohunek/pull/787))\n- Wait for agent input readiness before initial prompt ([#788](https://github.com/zajca/pohunek/pull/788))\n- Configure initial input readiness and submit timing ([#789](https://github.com/zajca/pohunek/pull/789))\n- Wait for observable markers in Darwin ownership tests ([#791](https://github.com/zajca/pohunek/pull/791))\n- Stabilize rollback systemd assertion ([#792](https://github.com/zajca/pohunek/pull/792))\n- Pass signing secret to release evidence workflow ([#794](https://github.com/zajca/pohunek/pull/794))"
+    },
+    {
+      "tag": "v0.33.1",
+      "version": "0.33.1",
+      "publishedAt": "2026-10-04T13:04:40Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.33.1",
+      "source": "generated",
+      "markdown": "- Replace ResumeMode with a typed shell-free native session launch spec ([#484](https://github.com/zajca/pohunek/pull/484))\n- Add validated RuntimeId, RuntimeRef and LaunchBinding protocol types ([#488](https://github.com/zajca/pohunek/pull/488))\n- Rename the worker runtime id to worker instance id ([#490](https://github.com/zajca/pohunek/pull/490))\n- Add runtime definitions, registry and data-driven built-in runtimes ([#489](https://github.com/zajca/pohunek/pull/489))\n- Build the capability inventory from the runtime registry ([#497](https://github.com/zajca/pohunek/pull/497))\n- Dispatch launch, profile bases, resume and the store through the runtime registry ([#499](https://github.com/zajca/pohunek/pull/499))\n- Drive input framing, prompt args and detection from runtime definitions ([#500](https://github.com/zajca/pohunek/pull/500))\n- Resolve launches through a LaunchSource and guard against new per-runtime dispatch ([#501](https://github.com/zajca/pohunek/pull/501))\n- Replace AgentKind with RuntimeId and RuntimeRef across the workspace ([#502](https://github.com/zajca/pohunek/pull/502))\n- Attach dialog header and terminate-and-delete ([#485](https://github.com/zajca/pohunek/pull/485))\n- Notify the Homebrew tap after a stable release ([#504](https://github.com/zajca/pohunek/pull/504))\n- Rename the public runtime_id wire field to worker_instance_id and bump the protocol to 4 ([#505](https://github.com/zajca/pohunek/pull/505))"
+    },
+    {
+      "tag": "v0.33.0",
+      "version": "0.33.0",
+      "publishedAt": "2026-10-03T18:29:41Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.33.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.32.3."
+    },
+    {
+      "tag": "v0.32.3",
+      "version": "0.32.3",
+      "publishedAt": "2026-10-03T16:26:18Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.32.3",
+      "source": "generated",
+      "markdown": "- Build zbus on its runtime-agnostic async-io backend ([#474](https://github.com/zajca/pohunek/pull/474))\n- Fetch locked dependency sources before the release gate tests ([#476](https://github.com/zajca/pohunek/pull/476))"
+    },
+    {
+      "tag": "v0.32.1",
+      "version": "0.32.1",
+      "publishedAt": "2026-10-03T14:14:47Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.32.1",
+      "source": "generated",
+      "markdown": "- Document optional team relay architecture ([#89](https://github.com/zajca/pohunek/pull/89))\n- Implement stable host identity governance ([#90](https://github.com/zajca/pohunek/pull/90))\n- Reconcile team relay RFC with feasibility decisions ([#93](https://github.com/zajca/pohunek/pull/93))\n- Complete relay security and credential foundation ([#106](https://github.com/zajca/pohunek/pull/106))\n- Relay social admission: evidence v1 schema, DTOs, config (issue #92, M1-M3) ([#109](https://github.com/zajca/pohunek/pull/109))\n- Add durable subagent observation ([#110](https://github.com/zajca/pohunek/pull/110))\n- Fix post-merge subagent review findings ([#111](https://github.com/zajca/pohunek/pull/111))\n- Add shared macOS platform contracts ([#112](https://github.com/zajca/pohunek/pull/112))\n- Add harness milestone launch script and pr-handoff skill ([#114](https://github.com/zajca/pohunek/pull/114))\n- Add bundled Pohunek agent skill ([#113](https://github.com/zajca/pohunek/pull/113))\n- CI P0: nextest, split test/integration jobs, faster web e2e ([#128](https://github.com/zajca/pohunek/pull/128))\n- CI: cost-based nextest test shards (#120) ([#129](https://github.com/zajca/pohunek/pull/129))\n- CI: run relay PostgreSQL tests only when relay files change ([#130](https://github.com/zajca/pohunek/pull/130))\n- [P1] Deduplicate Rust builds: one build-bins job + artifact ([#131](https://github.com/zajca/pohunek/pull/131))\n- ci: cache bun/playwright installs and parallelize web typecheck ([#132](https://github.com/zajca/pohunek/pull/132))\n- [P2] sccache + mold/lld + sjednocena rust-cache (fixes #124) ([#134](https://github.com/zajca/pohunek/pull/134))\n- ci: gate heavy jobs behind paths-filter (issue #125) ([#135](https://github.com/zajca/pohunek/pull/135))\n- [P3] tsc -b references + cargo sweep politika (fixes #126) ([#137](https://github.com/zajca/pohunek/pull/137))\n- Document fast loops and add reproducible CI timing evidence ([#138](https://github.com/zajca/pohunek/pull/138))\n- Add secure macOS runtime paths and durable filesystem operations ([#136](https://github.com/zajca/pohunek/pull/136))\n- Add automatic session retention for stopped and lost sessions ([#154](https://github.com/zajca/pohunek/pull/154))\n- Implement native macOS process inspection and race-safe exit observation ([#153](https://github.com/zajca/pohunek/pull/153))\n- Implement relay account linking ([#155](https://github.com/zajca/pohunek/pull/155))\n- Settle the worker runtime before asserting the metadata apply ([#156](https://github.com/zajca/pohunek/pull/156))\n- Bind private worker requests to a kernel-attested peer ([#159](https://github.com/zajca/pohunek/pull/159))\n- Make worker PTY readiness portable to macOS ([#160](https://github.com/zajca/pohunek/pull/160))\n- Retry trusted reads that race an atomic rename ([#161](https://github.com/zajca/pohunek/pull/161))\n- Manage agent workflows through GitHub issues and projects ([#180](https://github.com/zajca/pohunek/pull/180))\n- Measure the dev loop and CI for before/after evidence ([#184](https://github.com/zajca/pohunek/pull/184))\n- Add a deliver-issue skill that takes one issue from plan to verified merge ([#199](https://github.com/zajca/pohunek/pull/199))\n- Supervise session workers through launchd and systemd transient units ([#181](https://github.com/zajca/pohunek/pull/181))\n- Reduce dev and test debuginfo to line tables ([#202](https://github.com/zajca/pohunek/pull/202))\n- Add cargo xtask affected to run only the tests a change can break ([#203](https://github.com/zajca/pohunek/pull/203))\n- Exceed the credential lifetime by a whole lifetime in the relay rotation tests ([#204](https://github.com/zajca/pohunek/pull/204))\n- Bound each worker reconnect attempt by the connect deadline ([#206](https://github.com/zajca/pohunek/pull/206))\n- Install mold and cargo-audit as verified prebuilt binaries in CI ([#208](https://github.com/zajca/pohunek/pull/208))\n- Refuse an unbindable worker socket before launch and end the connect wait when the worker exits ([#216](https://github.com/zajca/pohunek/pull/216))\n- Run the legacy migration under the service lock and unblock PTY reads on Darwin ([#201](https://github.com/zajca/pohunek/pull/201))\n- Keep the worker connect wait within its deadline while the job is inspected ([#242](https://github.com/zajca/pohunek/pull/242))\n- Retry heavy and relay-db tests diagnostically with flaky-result = fail ([#210](https://github.com/zajca/pohunek/pull/210))\n- Never cancel an answering worker's connect for a job-end report ([#245](https://github.com/zajca/pohunek/pull/245))\n- Keep one compile cache per CI job with per-type keys saved from main ([#246](https://github.com/zajca/pohunek/pull/246))\n- Stop retrying a busy controller lease once the worker job has ended ([#255](https://github.com/zajca/pohunek/pull/255))\n- Check unused dependencies with cargo-shear on every pull request ([#215](https://github.com/zajca/pohunek/pull/215))\n- Serialize inherited service transactions and give a locked command exact job control ([#256](https://github.com/zajca/pohunek/pull/256))\n- Add a bacon check job and scripts/dev-bootstrap for the local toolchain ([#214](https://github.com/zajca/pohunek/pull/214))\n- Seed worktree target dirs with btrfs reflinks (scripts/worktree-new) ([#200](https://github.com/zajca/pohunek/pull/200))\n- Retry transient failures when setup-mold downloads mold ([#262](https://github.com/zajca/pohunek/pull/262))\n- Add the delegated task runs and relay dark factory RFCs ([#241](https://github.com/zajca/pohunek/pull/241))\n- Run the release build only when release inputs change ([#264](https://github.com/zajca/pohunek/pull/264))\n- Resample transient /proc stat entries instead of aborting the process scan ([#267](https://github.com/zajca/pohunek/pull/267))\n- Build the test binaries once and run every test job from a nextest archive ([#268](https://github.com/zajca/pohunek/pull/268))\n- Run managed hooks in isolated Python mode; align the hook wait with the hook timeout ([#274](https://github.com/zajca/pohunek/pull/274))\n- Retry connection resets when setup-mold downloads mold ([#280](https://github.com/zajca/pohunek/pull/280))\n- Give the healthy first generation the dev connect contract in the adoption test ([#281](https://github.com/zajca/pohunek/pull/281))\n- Cover the notification hooks in the isolated-interpreter regression and document it ([#279](https://github.com/zajca/pohunek/pull/279))\n- Create the materializer temp directory exclusively ([#286](https://github.com/zajca/pohunek/pull/286))\n- Scan only the test's own process tree in the service engine tests ([#284](https://github.com/zajca/pohunek/pull/284))\n- Force the group-create replays to overlap instead of hoping they do ([#289](https://github.com/zajca/pohunek/pull/289))\n- Wait for the stand-in's own output before collecting usage ([#288](https://github.com/zajca/pohunek/pull/288))\n- Give healthy in-process workers the launch budget in the daemon session tests ([#290](https://github.com/zajca/pohunek/pull/290))\n- Keep one worker frame read pending across the attach select loops ([#301](https://github.com/zajca/pohunek/pull/301))\n- Cover a replayed removal whose process sweep cannot be confirmed ([#304](https://github.com/zajca/pohunek/pull/304))\n- Add Claude/Codex integration uninstall and doctor with transactional install ([#292](https://github.com/zajca/pohunek/pull/292))\n- Observe external transcripts through a backend-neutral watcher with a macOS backend ([#293](https://github.com/zajca/pohunek/pull/293))\n- List unreadable processes when a removal is refused by an unconfirmed sweep ([#307](https://github.com/zajca/pohunek/pull/307))\n- Replace the deprecated fetch_update in the watcher test sink ([#309](https://github.com/zajca/pohunek/pull/309))\n- Make the Hermes integration runtime and compatibility harness run natively on macOS ([#294](https://github.com/zajca/pohunek/pull/294))\n- Cover Node/Bun wrapper layouts in the launch identity policy tests ([#296](https://github.com/zajca/pohunek/pull/296))\n- Run the Hermes PTY scenario tests one at a time and report wait diagnostics ([#311](https://github.com/zajca/pohunek/pull/311))\n- Let an operator accept unreadable processes to finish a blocked removal ([#308](https://github.com/zajca/pohunek/pull/308))\n- Present cargo t as the default inner loop and cargo ta as the shared-host option ([#321](https://github.com/zajca/pohunek/pull/321))\n- Skip the worktree-new seed when the main target dir is stale ([#322](https://github.com/zajca/pohunek/pull/322))\n- Add platform-aware doctor checks and macOS setup behavior ([#315](https://github.com/zajca/pohunek/pull/315))\n- Resolve test binary, manifest and worker paths at run time ([#329](https://github.com/zajca/pohunek/pull/329))\n- Add the executable search-path policy and injection-safe attach templates ([#316](https://github.com/zajca/pohunek/pull/316))\n- Run the GUI on macOS with Terminal attach, notifications and Command shortcuts ([#317](https://github.com/zajca/pohunek/pull/317))\n- Classify Keychain lookup failures and test them against an isolated keychain ([#318](https://github.com/zajca/pohunek/pull/318))\n- Give the Hermes PTY scenario tests production-sized wait budgets ([#335](https://github.com/zajca/pohunek/pull/335))\n- Resolve the NetBird CLI with the trusted-executable policy ([#336](https://github.com/zajca/pohunek/pull/336))\n- Verify release archives before installing and build them reproducibly ([#337](https://github.com/zajca/pohunek/pull/337))\n- Keep main green on the clippy shipped with Rust 1.99 ([#352](https://github.com/zajca/pohunek/pull/352))\n- Add the delegated task layer error contract ([#306](https://github.com/zajca/pohunek/pull/306))\n- Rework the native GUI into a single session overview ([#353](https://github.com/zajca/pohunek/pull/353))\n- Build, audit, and install-test native macOS archives in CI ([#338](https://github.com/zajca/pohunek/pull/338))\n- Compare the review edit timestamps as instants ([#358](https://github.com/zajca/pohunek/pull/358))\n- Ship a signed and notarized macOS app bundle and archives ([#342](https://github.com/zajca/pohunek/pull/342))\n- Reject a failing notarytool and re-check the app smoke ([#367](https://github.com/zajca/pohunek/pull/367))\n- Package the owner web backend for macOS and run it as its own launchd agent ([#343](https://github.com/zajca/pohunek/pull/343))\n- Document installing, upgrading, and removing Pohunek on macOS ([#344](https://github.com/zajca/pohunek/pull/344))\n- Assert the dead host's error on the view captured when it was observed ([#369](https://github.com/zajca/pohunek/pull/369))\n- Reserve the closed-daemon endpoint instead of releasing its port ([#371](https://github.com/zajca/pohunek/pull/371))\n- Make the empty-base PTY environment test list the environment itself ([#372](https://github.com/zajca/pohunek/pull/372))\n- Make the lib timeout tests independent of the host process table ([#373](https://github.com/zajca/pohunek/pull/373))\n- Add test-support readiness waits bounded by one hang-guard ceiling ([#375](https://github.com/zajca/pohunek/pull/375))\n- Share the test-code classifier between xtask scans ([#379](https://github.com/zajca/pohunek/pull/379))\n- Publish the recorded prompt atomically in the loopback fake agent ([#382](https://github.com/zajca/pohunek/pull/382))\n- Add TestEnv: one hermetic per-test root, cwd, HOME/XDG and scrubbed env ([#376](https://github.com/zajca/pohunek/pull/376))\n- Give the review model an explicit clock so its tests assert exact instants ([#380](https://github.com/zajca/pohunek/pull/380))\n- Make daemon session instants follow tokio's clock ([#387](https://github.com/zajca/pohunek/pull/387))\n- Run the relay fence deadline on tokio's clock ([#389](https://github.com/zajca/pohunek/pull/389))\n- Assert the Hermes probe bounds by outcome, not by wall clock ([#383](https://github.com/zajca/pohunek/pull/383))\n- Advance the Hermes PTY harness only on terminated output lines ([#384](https://github.com/zajca/pohunek/pull/384))\n- Test the session-start hook contract without a wall-clock bound ([#388](https://github.com/zajca/pohunek/pull/388))\n- Make the service engine safe against descriptors inherited by sibling spawns ([#391](https://github.com/zajca/pohunek/pull/391))\n- Commit the stale-watcher test's new runtime through the registry's store ([#395](https://github.com/zajca/pohunek/pull/395))\n- Stabilize daemon session tests under slow fsync and host shells ([#394](https://github.com/zajca/pohunek/pull/394))\n- Resolve the owner backend's daemon socket with the shared runtime-path contract and test it on macOS ([#339](https://github.com/zajca/pohunek/pull/339))\n- Drive the busy-lease deadline test on a paused clock ([#398](https://github.com/zajca/pohunek/pull/398))\n- Install cancellation before the wait request and stop the fixture without a wake connection ([#399](https://github.com/zajca/pohunek/pull/399))\n- Let SDK callers choose where the request origin comes from ([#396](https://github.com/zajca/pohunek/pull/396))\n- Make session-worker tests hermetic: private temp dirs, scrubbed PTY children ([#403](https://github.com/zajca/pohunek/pull/403))\n- Share the paused-clock auto-advance inhibitor via test-support::time ([#411](https://github.com/zajca/pohunek/pull/411))\n- Observe the transient Starting phase through a test gate and use the production stop grace in session-worker tests ([#412](https://github.com/zajca/pohunek/pull/412))\n- Thread the request-origin source through the CLI connection context ([#414](https://github.com/zajca/pohunek/pull/414))\n- Type the Hermes exit command only after the idle prompt returns ([#386](https://github.com/zajca/pohunek/pull/386))\n- Drive the worker identity test step by step and bound daemon session waits by readiness ([#418](https://github.com/zajca/pohunek/pull/418))\n- Keep relay test authorities renewed and prove mutations survive the lease bound ([#393](https://github.com/zajca/pohunek/pull/393))\n- Wait for session rows before asserting the mobile drawer focus wrap ([#430](https://github.com/zajca/pohunek/pull/430))\n- Cover the dropped-lock and fresh-executable races under one-process libtest ([#404](https://github.com/zajca/pohunek/pull/404))\n- Make platform tests hermetic: private fixture roots, scrubbed child environments ([#407](https://github.com/zajca/pohunek/pull/407))\n- Make the daemon test suite hermetic: private self-removing fixtures and scrubbed children ([#427](https://github.com/zajca/pohunek/pull/427))\n- Keep the pre_exec descriptor test off the shell's own descriptors ([#432](https://github.com/zajca/pohunek/pull/432))\n- Give the owner backend a bounded, owner-private log file family ([#340](https://github.com/zajca/pohunek/pull/340))\n- Let the remote supervisor take a caller-supplied listener ([#429](https://github.com/zajca/pohunek/pull/429))\n- Place the client tests' Unix sockets in a TestEnv root ([#435](https://github.com/zajca/pohunek/pull/435))\n- Make the gui-core loopback tests hermetic ([#434](https://github.com/zajca/pohunek/pull/434))\n- Make xtask test fixtures hermetic and harden two xtask paths against ambient state ([#419](https://github.com/zajca/pohunek/pull/419))\n- Root the relay test fixtures in the shared test-support temp root ([#438](https://github.com/zajca/pohunek/pull/438))\n- Add test-support fs writers that cannot cause ETXTBSY ([#436](https://github.com/zajca/pohunek/pull/436))\n- Fail sibling-spawner waits at once when the spawner's spawn fails ([#437](https://github.com/zajca/pohunek/pull/437))\n- Keep the cause of relay AuthError::Durable as a private error source ([#440](https://github.com/zajca/pohunek/pull/440))\n- Define the default PTY stop grace once in service-config ([#442](https://github.com/zajca/pohunek/pull/442))\n- Pass daemon git children only an allow-list of user-level git variables ([#428](https://github.com/zajca/pohunek/pull/428))\n- Make the small crates' tests hermetic ([#443](https://github.com/zajca/pohunek/pull/443))\n- Make the CLI crate's tests hermetic ([#448](https://github.com/zajca/pohunek/pull/448))\n- Write xtask hermes test fixtures through the child-process writers ([#439](https://github.com/zajca/pohunek/pull/439))\n- Let the registry take its base-environment source from its configuration ([#447](https://github.com/zajca/pohunek/pull/447))\n- Prove procwatch removes a killed process through its exit watcher, not polling ([#446](https://github.com/zajca/pohunek/pull/446))\n- Gate test code against host-state access with a zero-violation scan ([#450](https://github.com/zajca/pohunek/pull/450))\n- Make the unit verifier configurable and route engine tests through it ([#449](https://github.com/zajca/pohunek/pull/449))\n- Write the CLI and platform test executables through the child-process writers ([#452](https://github.com/zajca/pohunek/pull/452))\n- Ratchet real-time waits in test code with a committed baseline ([#454](https://github.com/zajca/pohunek/pull/454))\n- Serialize test environment changes through one shared, unwind-safe override ([#455](https://github.com/zajca/pohunek/pull/455))\n- Extract the assistant launch orchestration into pohunek-assistant ([#457](https://github.com/zajca/pohunek/pull/457))\n- Move the TypeScript SDK to sdk/ts under one Bun workspace root ([#458](https://github.com/zajca/pohunek/pull/458))\n- Move the Hermes plugin real-CLI e2e into the SDK workspace ([#459](https://github.com/zajca/pohunek/pull/459))\n- Remove the native GUI from core ([#464](https://github.com/zajca/pohunek/pull/464))\n- Remove the web control center from core ([#465](https://github.com/zajca/pohunek/pull/465))\n- Remove the rofi/sway launchers from core ([#466](https://github.com/zajca/pohunek/pull/466))\n- State the UI-less core policy in the guides, docs and skills ([#467](https://github.com/zajca/pohunek/pull/467))\n- Assert the exact spawned image in the Darwin executable inspection test ([#468](https://github.com/zajca/pohunek/pull/468))\n- Build Linux release assets with a read-only token and publish them separately ([#469](https://github.com/zajca/pohunek/pull/469))\n- Install mold on every release build leg because host links use it ([#472](https://github.com/zajca/pohunek/pull/472))"
+    },
+    {
+      "tag": "v0.31.6",
+      "version": "0.31.6",
+      "publishedAt": "2026-09-01T20:11:24Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.31.6",
+      "source": "generated",
+      "markdown": "- Add dynamic shell completion ([#49](https://github.com/zajca/pohunek/pull/49))\n- Add session input wait and delivery confirmation ([#74](https://github.com/zajca/pohunek/pull/74))\n- Add session screen read API ([#75](https://github.com/zajca/pohunek/pull/75))\n- Add top and prompt-adjacent detection regions ([#76](https://github.com/zajca/pohunek/pull/76))\n- Add integration status and drift detection ([#77](https://github.com/zajca/pohunek/pull/77))\n- Add foreground process identity to active-agent reconciliation ([#78](https://github.com/zajca/pohunek/pull/78))\n- Refactor transport layer into a generic overlay abstraction ([#79](https://github.com/zajca/pohunek/pull/79))"
+    },
+    {
+      "tag": "v0.31.5",
+      "version": "0.31.5",
+      "publishedAt": "2026-08-14T20:39:43Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.31.5",
+      "source": "generated",
+      "markdown": "- Stabilize concurrent runtime transition tests ([#47](https://github.com/zajca/pohunek/pull/47))\n- Allow slower Hermes lifecycle probes ([#46](https://github.com/zajca/pohunek/pull/46))\n- Fetch remote-only worktree base branches ([#45](https://github.com/zajca/pohunek/pull/45))"
+    },
+    {
+      "tag": "v0.31.4",
+      "version": "0.31.4",
+      "publishedAt": "2026-08-13T20:10:28Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.31.4",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.31.3."
+    },
+    {
+      "tag": "v0.31.3",
+      "version": "0.31.3",
+      "publishedAt": "2026-08-13T19:30:04Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.31.3",
+      "source": "generated",
+      "markdown": "- Improve session attention and notification activity ([#43](https://github.com/zajca/pohunek/pull/43))"
+    },
+    {
+      "tag": "v0.31.2",
+      "version": "0.31.2",
+      "publishedAt": "2026-08-12T14:56:07Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.31.2",
+      "source": "generated",
+      "markdown": "- Fix launch form keyboard navigation ([#42](https://github.com/zajca/pohunek/pull/42))"
+    },
+    {
+      "tag": "v0.31.1",
+      "version": "0.31.1",
+      "publishedAt": "2026-08-12T13:32:28Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.31.1",
+      "source": "generated",
+      "markdown": "- Improve native GUI session navigation ([#41](https://github.com/zajca/pohunek/pull/41))"
+    },
+    {
+      "tag": "v0.31.0",
+      "version": "0.31.0",
+      "publishedAt": "2026-08-12T10:28:29Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.31.0",
+      "source": "generated",
+      "markdown": "- Handle ambiguous Hermes session start timeouts ([#40](https://github.com/zajca/pohunek/pull/40))\n- Simplify native session GUI ([#39](https://github.com/zajca/pohunek/pull/39))"
+    },
+    {
+      "tag": "v0.30.2",
+      "version": "0.30.2",
+      "publishedAt": "2026-08-12T06:41:45Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.30.2",
+      "source": "generated",
+      "markdown": "- Complete Hermes compatibility gates ([#37](https://github.com/zajca/pohunek/pull/37))\n- Improve native GUI keyboard navigation ([#38](https://github.com/zajca/pohunek/pull/38))"
+    },
+    {
+      "tag": "v0.30.1",
+      "version": "0.30.1",
+      "publishedAt": "2026-08-07T11:12:19Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.30.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.30.0."
+    },
+    {
+      "tag": "v0.30.0",
+      "version": "0.30.0",
+      "publishedAt": "2026-08-07T10:36:07Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.30.0",
+      "source": "generated",
+      "markdown": "- Hermes agent integration: RFC and implementation plan ([#24](https://github.com/zajca/pohunek/pull/24))\n- Add deterministic Hermes M2 compatibility evidence ([#34](https://github.com/zajca/pohunek/pull/34))\n- Add Hermes operator plugin ([#35](https://github.com/zajca/pohunek/pull/35))"
+    },
+    {
+      "tag": "v0.29.3",
+      "version": "0.29.3",
+      "publishedAt": "2026-08-03T18:26:12Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.29.3",
+      "source": "generated",
+      "markdown": "- Handle CSI-u attach shortcuts ([#33](https://github.com/zajca/pohunek/pull/33))"
+    },
+    {
+      "tag": "v0.29.2",
+      "version": "0.29.2",
+      "publishedAt": "2026-08-03T10:47:17Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.29.2",
+      "source": "generated",
+      "markdown": "- Fix supported GUI release targets ([#32](https://github.com/zajca/pohunek/pull/32))"
+    },
+    {
+      "tag": "v0.29.1",
+      "version": "0.29.1",
+      "publishedAt": "2026-08-03T10:16:05Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.29.1",
+      "source": "generated",
+      "markdown": "- Fix release package isolation ([#31](https://github.com/zajca/pohunek/pull/31))"
+    },
+    {
+      "tag": "v0.29.0",
+      "version": "0.29.0",
+      "publishedAt": "2026-08-03T09:43:53Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.29.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.28.6."
+    },
+    {
+      "tag": "v0.28.6",
+      "version": "0.28.6",
+      "publishedAt": "2026-07-29T14:39:11Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.28.6",
+      "source": "generated",
+      "markdown": "- Fix worker attach compatibility ([#28](https://github.com/zajca/pohunek/pull/28))\n- Isolate GUI release build ([#29](https://github.com/zajca/pohunek/pull/29))"
+    },
+    {
+      "tag": "v0.28.5",
+      "version": "0.28.5",
+      "publishedAt": "2026-07-29T12:34:29Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.28.5",
+      "source": "generated",
+      "markdown": "- Fix attach snapshots across terminal resizes ([#27](https://github.com/zajca/pohunek/pull/27))"
+    },
+    {
+      "tag": "v0.28.4",
+      "version": "0.28.4",
+      "publishedAt": "2026-07-28T21:40:16Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.28.4",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.28.3."
+    },
+    {
+      "tag": "v0.28.3",
+      "version": "0.28.3",
+      "publishedAt": "2026-07-28T17:33:53Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.28.3",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.28.2."
+    },
+    {
+      "tag": "v0.28.2",
+      "version": "0.28.2",
+      "publishedAt": "2026-07-28T12:58:30Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.28.2",
+      "source": "generated",
+      "markdown": "- Fix attach input reliability and terminal cleanup ([#26](https://github.com/zajca/pohunek/pull/26))"
+    },
+    {
+      "tag": "v0.28.1",
+      "version": "0.28.1",
+      "publishedAt": "2026-07-28T08:14:20Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.28.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.28.0."
+    },
+    {
+      "tag": "v0.28.0",
+      "version": "0.28.0",
+      "publishedAt": "2026-07-27T14:17:02Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.28.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.27.0."
+    },
+    {
+      "tag": "v0.27.0",
+      "version": "0.27.0",
+      "publishedAt": "2026-07-24T18:58:07Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.27.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.26.1."
+    },
+    {
+      "tag": "v0.26.1",
+      "version": "0.26.1",
+      "publishedAt": "2026-07-24T13:25:49Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.26.1",
+      "source": "generated",
+      "markdown": "- Implement durable session workers ([#21](https://github.com/zajca/pohunek/pull/21))\n- Show attach banner only with session menu ([#19](https://github.com/zajca/pohunek/pull/19))\n- Recover NetBird listener after startup ([#22](https://github.com/zajca/pohunek/pull/22))\n- Fix release worker test setup ([#23](https://github.com/zajca/pohunek/pull/23))"
+    },
+    {
+      "tag": "v0.25.0",
+      "version": "0.25.0",
+      "publishedAt": "2026-07-23T11:04:21Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.25.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.24.0."
+    },
+    {
+      "tag": "v0.24.0",
+      "version": "0.24.0",
+      "publishedAt": "2026-07-21T19:01:37Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.24.0",
+      "source": "generated",
+      "markdown": "- Diff review + comment-to-session loop (Track D.6) ([#18](https://github.com/zajca/pohunek/pull/18))"
+    },
+    {
+      "tag": "v0.23.1",
+      "version": "0.23.1",
+      "publishedAt": "2026-07-21T06:48:22Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.23.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.23.0."
+    },
+    {
+      "tag": "v0.23.0",
+      "version": "0.23.0",
+      "publishedAt": "2026-07-20T19:37:04Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.23.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.21.0."
+    },
+    {
+      "tag": "v0.21.0",
+      "version": "0.21.0",
+      "publishedAt": "2026-07-08T07:14:08Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.21.0",
+      "source": "generated",
+      "markdown": "- Terminal attach: mouse offset fix + session control modal (#11) ([#16](https://github.com/zajca/pohunek/pull/16))"
+    },
+    {
+      "tag": "v0.20.0",
+      "version": "0.20.0",
+      "publishedAt": "2026-07-07T19:30:03Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.20.0",
+      "source": "generated",
+      "markdown": "- Bulletproof agent lifecycle detection (#10) ([#15](https://github.com/zajca/pohunek/pull/15))"
+    },
+    {
+      "tag": "v0.19.0",
+      "version": "0.19.0",
+      "publishedAt": "2026-07-07T06:59:23Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.19.0",
+      "source": "generated",
+      "markdown": "- Add milestone-loop skills and document the NEXT.md workflow ([#3](https://github.com/zajca/pohunek/pull/3))"
+    },
+    {
+      "tag": "v0.18.2",
+      "version": "0.18.2",
+      "publishedAt": "2026-07-05T20:01:03Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.18.2",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.18.1."
+    },
+    {
+      "tag": "v0.18.1",
+      "version": "0.18.1",
+      "publishedAt": "2026-07-05T17:33:40Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.18.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.17.1."
+    },
+    {
+      "tag": "v0.17.1",
+      "version": "0.17.1",
+      "publishedAt": "2026-07-04T21:44:39Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.17.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.16.0."
+    },
+    {
+      "tag": "v0.16.0",
+      "version": "0.16.0",
+      "publishedAt": "2026-07-04T11:38:01Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.16.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.15.1."
+    },
+    {
+      "tag": "v0.15.1",
+      "version": "0.15.1",
+      "publishedAt": "2026-07-03T20:04:14Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.15.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.15.0."
+    },
+    {
+      "tag": "v0.15.0",
+      "version": "0.15.0",
+      "publishedAt": "2026-07-03T19:22:39Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.15.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.14.4."
+    },
+    {
+      "tag": "v0.14.4",
+      "version": "0.14.4",
+      "publishedAt": "2026-07-03T14:34:36Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.14.4",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.14.3."
+    },
+    {
+      "tag": "v0.14.3",
+      "version": "0.14.3",
+      "publishedAt": "2026-07-03T13:49:55Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.14.3",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.14.2."
+    },
+    {
+      "tag": "v0.14.2",
+      "version": "0.14.2",
+      "publishedAt": "2026-07-03T13:11:55Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.14.2",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.14.1."
+    },
+    {
+      "tag": "v0.14.1",
+      "version": "0.14.1",
+      "publishedAt": "2026-07-03T12:03:39Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.14.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.14.0."
+    },
+    {
+      "tag": "v0.14.0",
+      "version": "0.14.0",
+      "publishedAt": "2026-07-03T10:29:09Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.14.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.13.1."
+    },
+    {
+      "tag": "v0.13.1",
+      "version": "0.13.1",
+      "publishedAt": "2026-07-02T17:36:26Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.13.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.13.0."
+    },
+    {
+      "tag": "v0.13.0",
+      "version": "0.13.0",
+      "publishedAt": "2026-07-02T14:12:50Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.13.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.12.2."
+    },
+    {
+      "tag": "v0.12.2",
+      "version": "0.12.2",
+      "publishedAt": "2026-07-02T12:28:41Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.12.2",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.12.1."
+    },
+    {
+      "tag": "v0.12.1",
+      "version": "0.12.1",
+      "publishedAt": "2026-07-02T12:03:18Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.12.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.11.2."
+    },
+    {
+      "tag": "v0.11.2",
+      "version": "0.11.2",
+      "publishedAt": "2026-07-02T09:23:31Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.11.2",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.11.1."
+    },
+    {
+      "tag": "v0.11.1",
+      "version": "0.11.1",
+      "publishedAt": "2026-07-02T07:53:38Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.11.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.11.0."
+    },
+    {
+      "tag": "v0.11.0",
+      "version": "0.11.0",
+      "publishedAt": "2026-07-01T21:16:36Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.11.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.10.3."
+    },
+    {
+      "tag": "v0.10.3",
+      "version": "0.10.3",
+      "publishedAt": "2026-07-01T17:48:21Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.10.3",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.10.2."
+    },
+    {
+      "tag": "v0.10.2",
+      "version": "0.10.2",
+      "publishedAt": "2026-07-01T12:25:05Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.10.2",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.10.1."
+    },
+    {
+      "tag": "v0.10.1",
+      "version": "0.10.1",
+      "publishedAt": "2026-07-01T11:25:28Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.10.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.10.0."
+    },
+    {
+      "tag": "v0.10.0",
+      "version": "0.10.0",
+      "publishedAt": "2026-07-01T10:31:57Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.10.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.9.2."
+    },
+    {
+      "tag": "v0.9.2",
+      "version": "0.9.2",
+      "publishedAt": "2026-07-01T07:43:22Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.9.2",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.9.1."
+    },
+    {
+      "tag": "v0.9.1",
+      "version": "0.9.1",
+      "publishedAt": "2026-06-30T20:39:31Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.9.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.8.0."
+    },
+    {
+      "tag": "v0.8.0",
+      "version": "0.8.0",
+      "publishedAt": "2026-06-30T13:37:54Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.8.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.7.1."
+    },
+    {
+      "tag": "v0.7.1",
+      "version": "0.7.1",
+      "publishedAt": "2026-06-29T14:40:17Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.7.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.7.0."
+    },
+    {
+      "tag": "v0.7.0",
+      "version": "0.7.0",
+      "publishedAt": "2026-06-29T14:16:21Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.7.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.6.0."
+    },
+    {
+      "tag": "v0.6.0",
+      "version": "0.6.0",
+      "publishedAt": "2026-06-29T08:38:21Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.6.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.5.0."
+    },
+    {
+      "tag": "v0.5.0",
+      "version": "0.5.0",
+      "publishedAt": "2026-06-27T20:35:46Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.5.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.4.3."
+    },
+    {
+      "tag": "v0.4.3",
+      "version": "0.4.3",
+      "publishedAt": "2026-06-27T07:47:31Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.4.3",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.4.2."
+    },
+    {
+      "tag": "v0.4.2",
+      "version": "0.4.2",
+      "publishedAt": "2026-06-26T11:51:17Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.4.2",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.4.1."
+    },
+    {
+      "tag": "v0.4.1",
+      "version": "0.4.1",
+      "publishedAt": "2026-06-26T10:03:35Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.4.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.4.0."
+    },
+    {
+      "tag": "v0.4.0",
+      "version": "0.4.0",
+      "publishedAt": "2026-06-26T08:56:49Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.4.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.3.3."
+    },
+    {
+      "tag": "v0.3.3",
+      "version": "0.3.3",
+      "publishedAt": "2026-06-25T11:48:44Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.3.3",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.2.0."
+    },
+    {
+      "tag": "v0.2.0",
+      "version": "0.2.0",
+      "publishedAt": "2026-06-23T20:52:46Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.2.0",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.1.0."
+    },
+    {
+      "tag": "v0.1.0",
+      "version": "0.1.0",
+      "publishedAt": "2026-06-23T07:20:57Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.1.0",
+      "source": "generated",
+      "markdown": "First release."
+    }
+  ]
+}

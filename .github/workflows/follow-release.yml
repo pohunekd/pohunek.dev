@@ -1,27 +1,45 @@
-name: Follow pohunek releases
+name: Follow ecosystem releases
 
-# Moves the pin in pohunek.config.json to the latest stable pohunek release,
-# checks that the site still tests and builds at that release, pushes the bump
-# to main and starts a deploy. A push made with GITHUB_TOKEN does not start
-# other workflows, so the deploy is started explicitly through
-# workflow_dispatch, which GitHub exempts from that rule.
+# Moves every product pin in releases.config.json to the product's newest
+# release once that release's install assets verify, records the changelog of
+# every new release under src/data/changelog/, checks that the site still tests
+# and builds, pushes the change to main and starts a deploy. A push made with
+# GITHUB_TOKEN does not start other workflows, so the deploy is started
+# explicitly through workflow_dispatch, which GitHub exempts from that rule.
 #
-# The verify job installs and runs third-party build code, so it holds a
-# read-only token. Only the publish job, which installs nothing, can push, and
-# only the deploy job can start workflows; a failed dispatch is retried by
-# re-running that job alone.
+#   collect   read-only token; runs only this repository's dependency-free
+#             scripts (no package install), verifies assets and writes the data
+#             files, uploads them as an artifact and names the main commit it
+#             started from.
+#   verify    read-only token; installs dependencies, tests and builds that
+#             commit with the collected files. Third-party build code runs only
+#             here.
+#   publish   contents: write; installs and runs nothing but git. It checks out
+#             the same commit, downloads exactly the artifact `collect` uploaded
+#             (by id) outside the checkout, copies in only the expected regular
+#             files, commits and pushes. The push is a fast-forward of that
+#             commit, so a main that moved meanwhile fails the run instead of
+#             losing its change; the next run starts from the new main.
+#   deploy    actions: write; dispatches deploy.yml. A failed dispatch is
+#             retried by re-running this job alone.
+#   report    fails the run when a product could not be followed, after the
+#             other products went through; the collect log names the reason.
 #
 # Scheduled workflows of a public repository are disabled after 60 days
 # without repository activity. A manual run (workflow_dispatch) is the fallback
-# and re-enables the schedule. The repository_dispatch trigger lets the
-# upstream release workflow ping this one once it holds a dispatch token.
+# and re-enables the schedule. The repository_dispatch trigger lets a release
+# workflow upstream ping this one once it holds a dispatch token.
 on:
   schedule:
     - cron: "23 */3 * * *"
   workflow_dispatch:
     inputs:
-      tag:
-        description: "Newer release tag to pin, vX.Y.Z (default: latest stable release)"
+      product:
+        description: "Product id from releases.config.json (default: every product)"
+        required: false
+        type: string
+      version:
+        description: "Newer version to pin, X.Y.Z or X.Y.Z-pre.N; needs a product (default: newest release)"
         required: false
         type: string
   repository_dispatch:
@@ -33,19 +51,94 @@ concurrency:
   group: follow-release
   cancel-in-progress: false
 
+env:
+  DATA_ARTIFACT: release-data
+
 jobs:
-  verify:
+  collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     permissions:
       contents: read
     outputs:
-      ref: ${{ steps.pin.outputs.ref }}
+      base: ${{ steps.base.outputs.sha }}
+      artifact: ${{ steps.upload.outputs.artifact-id }}
+      changed: ${{ steps.follow.outputs.changed }}
+      summary: ${{ steps.follow.outputs.summary }}
+      failed: ${{ steps.follow.outputs.failed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
           persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: .bun-version
+
+      - name: Record the base commit
+        id: base
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Follow the releases
+        id: follow
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Untrusted input; follow-releases.ts validates the product id and the version.
+          PRODUCT: ${{ inputs.product || github.event.client_payload.product }}
+          VERSION: ${{ inputs.version || github.event.client_payload.version }}
+        run: |
+          set -euo pipefail
+          args=()
+          if [ -n "$PRODUCT" ]; then args+=(--product "$PRODUCT"); fi
+          if [ -n "$VERSION" ]; then args+=(--version "$VERSION"); fi
+          # Exit 2: some products failed and the others were followed; the report job fails the run.
+          status=0
+          moved="$(bun scripts/follow-releases.ts "${args[@]}")" || status=$?
+          case "$status" in
+            0) echo "failed=false" >> "$GITHUB_OUTPUT" ;;
+            2) echo "failed=true" >> "$GITHUB_OUTPUT" ;;
+            *) exit "$status" ;;
+          esac
+          if [ -z "$(git status --porcelain -- releases.config.json src/data/changelog)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ -n "$moved" ]; then summary="Follow $moved"; else summary="Record ecosystem changelog"; fi
+          {
+            echo "changed=true"
+            echo "summary=$summary"
+          } >> "$GITHUB_OUTPUT"
+
+      - if: steps.follow.outputs.changed == 'true'
+        id: upload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ env.DATA_ARTIFACT }}
+          path: |
+            releases.config.json
+            src/data/changelog/
+          if-no-files-found: error
+          retention-days: 7
+
+  verify:
+    needs: collect
+    if: needs.collect.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.collect.outputs.base }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          artifact-ids: ${{ needs.collect.outputs.artifact }}
+          path: ${{ runner.temp }}/release-data
+      - name: Take the collected data files
+        run: scripts/take-release-data "$RUNNER_TEMP/release-data/$DATA_ARTIFACT"
       # The astro CLI runs on Node and needs a newer release than the runner image ships.
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -53,39 +146,12 @@ jobs:
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version-file: .bun-version
-
-      - name: Move the pin to the release
-        id: pin
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-          # Untrusted input; bump-pin.ts rejects anything but a stable vX.Y.Z tag.
-          REQUESTED_TAG: ${{ inputs.tag || github.event.client_payload.tag }}
-        run: |
-          set -euo pipefail
-          tag="$REQUESTED_TAG"
-          if [ -z "$tag" ]; then
-            repository="$(jq -er .repository pohunek.config.json)"
-            # releases/latest skips drafts and pre-releases.
-            tag="$(gh api "repos/$repository/releases/latest" --jq .tag_name)"
-          fi
-          ref="$(bun scripts/bump-pin.ts "$tag")"
-          if git diff --quiet -- pohunek.config.json; then
-            echo "pin already at $ref"
-          else
-            echo "ref=$ref" >> "$GITHUB_OUTPUT"
-          fi
-
-      - if: steps.pin.outputs.ref != ''
-        run: bun install --frozen-lockfile
-      - if: steps.pin.outputs.ref != ''
-        run: bun test
-      - if: steps.pin.outputs.ref != ''
-        run: bun run build
+      - run: bun install --frozen-lockfile
+      - run: bun test
+      - run: bun run build
 
   publish:
-    needs: verify
-    if: needs.verify.outputs.ref != ''
+    needs: [collect, verify]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -93,28 +159,30 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: main
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+          ref: ${{ needs.collect.outputs.base }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          bun-version-file: .bun-version
+          artifact-ids: ${{ needs.collect.outputs.artifact }}
+          path: ${{ runner.temp }}/release-data
+      - name: Take the collected data files
+        run: scripts/take-release-data "$RUNNER_TEMP/release-data/$DATA_ARTIFACT"
 
-      # bump-pin.ts uses no dependencies, so nothing is installed next to the write token.
       - name: Commit and push
         shell: bash
         env:
-          REF: ${{ needs.verify.outputs.ref }}
+          SUMMARY: ${{ needs.collect.outputs.summary }}
         run: |
           set -euo pipefail
-          bun scripts/bump-pin.ts "$REF"
-          if git diff --quiet -- pohunek.config.json; then
-            echo "main already pins $REF"
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "the base commit already holds this release data"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pohunek.config.json
-          git commit -m "Follow pohunek $REF"
-          git push origin HEAD:main
+          git add releases.config.json src/data/changelog
+          git commit -m "$SUMMARY"
+          # HEAD is the base commit plus one; a main that moved since then rejects this push.
+          git push origin HEAD:refs/heads/main
 
   deploy:
     needs: publish
@@ -127,3 +195,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref main
+
+  report:
+    needs: [collect, deploy]
+    if: always() && needs.collect.outputs.failed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Fail for the products that were not followed
+        run: |
+          echo "::error::some products could not be followed; see the 'Follow the releases' step of the collect job"
+          exit 1

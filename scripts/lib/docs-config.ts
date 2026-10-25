@@ -22,18 +22,7 @@ export interface DocsSyncConfig {
   };
 }
 
-export interface ProductPin {
-  readonly repository: string;
-  readonly ref: string;
-}
-
-export interface ScreenshotPin extends ProductPin {
-  readonly manifest: string;
-}
-
 type JsonObject = Record<string, unknown>;
-
-const REPOSITORY_PATTERN = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 
 function asObject(value: unknown, where: string): JsonObject {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
@@ -115,24 +104,4 @@ export function parseDocsSyncConfig(raw: unknown): DocsSyncConfig {
       output: requireString(installRaw, 'output', `${where}.installPrompt`),
     },
   };
-}
-
-/** Validates pohunek.config.json, the pin of the product release whose docs are rendered. */
-export function parseProductPin(raw: unknown): ProductPin {
-  return parsePin(raw, 'pohunek.config.json');
-}
-
-/** Validates android.config.json, the pin of the Android release whose screenshot set is rendered. */
-export function parseScreenshotPin(raw: unknown): ScreenshotPin {
-  const where = 'android.config.json';
-  return { ...parsePin(raw, where), manifest: requireString(asObject(raw, where), 'manifest', where) };
-}
-
-function parsePin(raw: unknown, where: string): ProductPin {
-  const obj = asObject(raw, where);
-  const repository = requireString(obj, 'repository', where);
-  if (!REPOSITORY_PATTERN.test(repository)) {
-    throw new Error(`${where}.repository must look like "owner/name", got "${repository}"`);
-  }
-  return { repository, ref: requireString(obj, 'ref', where) };
 }

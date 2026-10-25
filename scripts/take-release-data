@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# Copies the release data collected by follow-releases.ts from an unpacked artifact into this checkout.
+# Usage: take-release-data <artifact directory>. Every entry of the artifact must be releases.config.json
+# or src/data/changelog/<product id>.json, as a regular file; anything else (another path, a symlink,
+# a device, a dotfile) aborts before a single file is copied.
+set -euo pipefail
+
+if [ "$#" -ne 1 ]; then
+  echo "usage: take-release-data <artifact directory>" >&2
+  exit 1
+fi
+source_dir="$1"
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+if [ ! -d "$source_dir" ] || [ -L "$source_dir" ]; then
+  echo "take-release-data: $source_dir is not a directory" >&2
+  exit 1
+fi
+
+allowed_file='^(releases\.config\.json|src/data/changelog/[a-z][a-z0-9-]*\.json)$'
+allowed_dir='^(src|src/data|src/data/changelog)$'
+
+files=()
+while IFS= read -r -d '' entry; do
+  relative="${entry#"$source_dir"/}"
+  if [ -L "$entry" ]; then
+    echo "take-release-data: refusing symlink $relative" >&2
+    exit 1
+  elif [ -d "$entry" ]; then
+    if ! [[ "$relative" =~ $allowed_dir ]]; then
+      echo "take-release-data: refusing directory $relative" >&2
+      exit 1
+    fi
+  elif [ -f "$entry" ]; then
+    if ! [[ "$relative" =~ $allowed_file ]]; then
+      echo "take-release-data: refusing file $relative" >&2
+      exit 1
+    fi
+    files+=("$relative")
+  else
+    echo "take-release-data: refusing special file $relative" >&2
+    exit 1
+  fi
+done < <(find "$source_dir" -mindepth 1 -print0)
+
+has_config=false
+for relative in "${files[@]}"; do
+  if [ "$relative" = releases.config.json ]; then
+    has_config=true
+  fi
+done
+if [ "$has_config" != true ]; then
+  echo "take-release-data: the artifact has no releases.config.json" >&2
+  exit 1
+fi
+
+for relative in "${files[@]}"; do
+  install -m 0644 -D -T "$source_dir/$relative" "$repo_root/$relative"
+  echo "take-release-data: $relative"
+done

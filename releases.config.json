@@ -1,0 +1,87 @@
+{
+  "$comment": "Every ecosystem release this site names. .github/workflows/follow-release.yml moves each version to the product's newest release once its assets verify; scripts/follow-releases.ts does it by hand. Asset names take {version}; every asset is checked against its .sha256 file and, when attested, with gh attestation verify bound to signerWorkflow and the release tag.",
+  "apiUrl": "https://api.github.com",
+  "changelogDir": "src/data/changelog",
+  "products": [
+    {
+      "id": "pohunek",
+      "name": "pohunek",
+      "repository": "zajca/pohunek",
+      "tagPrefix": "v",
+      "version": "0.35.2",
+      "prerelease": false,
+      "attested": true,
+      "signerWorkflow": ".github/workflows/release-evidence.yml",
+      "assets": [
+        "pohunek-daemon-{version}-x86_64-unknown-linux-gnu.tar.gz"
+      ]
+    },
+    {
+      "id": "companion",
+      "name": "Desktop companion",
+      "repository": "pohunekd/pohunek-companion",
+      "tagPrefix": "v",
+      "version": "0.1.4",
+      "prerelease": false,
+      "attested": true,
+      "signerWorkflow": ".github/workflows/release.yml",
+      "assets": [
+        "pohunek-companion-{version}-x86_64-unknown-linux-gnu.tar.gz",
+        "pohunek-companion-{version}-aarch64-apple-darwin.tar.gz"
+      ]
+    },
+    {
+      "id": "android",
+      "name": "Android companion",
+      "repository": "pohunekd/pohunek-companion-android",
+      "tagPrefix": "v",
+      "version": "0.1.0-pre.3",
+      "prerelease": true,
+      "attested": false,
+      "assets": [
+        "pohunek-companion-{version}.apk"
+      ],
+      "screenshotManifest": "docs/screenshots/manifest.json"
+    },
+    {
+      "id": "plugin",
+      "name": "pohunek-work plugin",
+      "repository": "zajca/pohunek-work",
+      "tagPrefix": "plugin-v",
+      "version": "0.7.1",
+      "prerelease": false,
+      "attested": true,
+      "signerWorkflow": ".github/workflows/release.yml",
+      "assets": [
+        "pohunek-work-plugin-{version}-noarch.tar.gz"
+      ]
+    },
+    {
+      "id": "launchers",
+      "name": "Sway launchers",
+      "repository": "zajca/pohunek-work",
+      "tagPrefix": "launchers-v",
+      "version": "0.4.0",
+      "prerelease": false,
+      "attested": true,
+      "signerWorkflow": ".github/workflows/release.yml",
+      "assets": [
+        "pohunek-launchers-{version}-noarch.tar.gz"
+      ]
+    },
+    {
+      "id": "web",
+      "name": "Web control center",
+      "repository": "zajca/pohunek-work",
+      "tagPrefix": "web-v",
+      "version": "0.3.1",
+      "prerelease": false,
+      "attested": true,
+      "signerWorkflow": ".github/workflows/release.yml",
+      "assets": [
+        "pohunek-web-{version}-linux-x86_64.tar.gz",
+        "pohunek-web-{version}-aarch64-apple-darwin.tar.gz"
+      ]
+    }
+  ]
+}

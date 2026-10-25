@@ -1,10 +1,11 @@
-import pohunek from '../../pohunek.config.json';
+import { pinnedTag, product } from '../data/ecosystem';
 
 export interface NavLink {
 	label: string;
 	href: string;
 }
 
+const pohunek = product('pohunek');
 const repoUrl = `https://github.com/${pohunek.repository}`;
 
 export const site = {
@@ -14,7 +15,7 @@ export const site = {
 	tagline: 'I herd. They code.',
 	description:
 		'A headless, multihost backbone for coding agents. One small daemon per machine, one durable terminal per agent, one JSON contract.',
-	release: pohunek.ref,
+	release: pinnedTag('pohunek'),
 	repoUrl,
 	releasesUrl: `${repoUrl}/releases`,
 	milestonesUrl: `${repoUrl}/milestones`,
@@ -32,6 +33,7 @@ export const nav: readonly NavLink[] = [
 	{ label: 'Surfaces', href: '/surfaces/' },
 	{ label: 'Plugins', href: '/plugins/' },
 	{ label: 'Roadmap', href: '/roadmap/' },
+	{ label: 'Changelog', href: '/changelog/' },
 	{ label: 'Docs', href: '/docs/' },
 ];
 

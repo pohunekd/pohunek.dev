@@ -1,5 +1,0 @@
-{
-  "$comment": "The pohunek release whose docs, README install prompt and version this site renders. .github/workflows/follow-release.yml moves ref to each new stable release; scripts/bump-pin.ts does it by hand.",
-  "repository": "zajca/pohunek",
-  "ref": "v0.35.2"
-}

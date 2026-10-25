@@ -1,0 +1,117 @@
+---
+import type { TimelineEntry } from '../data/changelog';
+
+interface Props {
+	entries: readonly TimelineEntry[];
+	/** Product names are left out on a single product's page. */
+	showProduct: boolean;
+}
+
+const { entries, showProduct } = Astro.props;
+
+const dateFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
+---
+
+<ol class="changelog">
+	{
+		entries.map(({ product, release, html }) => (
+			<li class="changelog-entry" id={`${product.id}-${release.version}`}>
+				<header class="changelog-head">
+					<h3>
+						{showProduct && <span class="changelog-product">{product.name}</span>}
+						<a href={release.url}>{release.tag}</a>
+					</h3>
+					<div class="changelog-meta">
+						<time datetime={release.publishedAt}>{dateFormat.format(new Date(release.publishedAt))}</time>
+						{release.prerelease && <span class="badge" data-status="in-progress">Pre-release</span>}
+						{release.source === 'generated' && (
+							<span class="badge" data-status="experimental" title="Generated from the titles of the merged pull requests; not curated.">
+								From pull requests
+							</span>
+						)}
+					</div>
+				</header>
+				<div class="changelog-body" set:html={html} />
+			</li>
+		))
+	}
+</ol>
+
+<style>
+	.changelog {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+	}
+	.changelog-entry {
+		padding: 1.6rem 0;
+		border-top: 1px solid var(--rule);
+		display: grid;
+		gap: 0.9rem;
+		min-width: 0;
+	}
+	/* The enclosing section already draws the rule above the first entry. */
+	.changelog-entry:first-child {
+		border-top: none;
+		padding-top: 0;
+	}
+	@media (min-width: 48rem) {
+		.changelog-entry {
+			grid-template-columns: 16rem minmax(0, 1fr);
+			gap: 2rem;
+		}
+	}
+	.changelog-head h3 {
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+		font-size: 1.15rem;
+		overflow-wrap: anywhere;
+	}
+	.changelog-product {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--leather);
+	}
+	.changelog-meta {
+		margin-top: 0.5rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		align-items: center;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--ink-faint);
+	}
+	.changelog-body {
+		min-width: 0;
+		color: var(--ink-muted);
+		overflow-wrap: anywhere;
+	}
+	.changelog-body :global(h4) {
+		margin: 0 0 0.4rem;
+		font-size: 0.95rem;
+		color: var(--ink-strong);
+	}
+	.changelog-body :global(h4:not(:first-child)) {
+		margin-top: 1.1rem;
+	}
+	.changelog-body :global(ul) {
+		margin: 0;
+		padding-left: 1.2rem;
+		display: grid;
+		gap: 0.35rem;
+	}
+	.changelog-body :global(p) {
+		margin: 0;
+	}
+	.changelog-body :global(code) {
+		font-family: var(--font-mono);
+		font-size: 0.85em;
+	}
+</style>

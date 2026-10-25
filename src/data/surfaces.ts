@@ -10,6 +10,8 @@ import companionNewSession from '../assets/screenshots/companion/new-session.png
 import companionAssistant from '../assets/screenshots/companion/assistant.png';
 import companionInstallPlan from '../assets/screenshots/companion/install-plan.png';
 import { androidScreenshots } from './generated/android-screenshots';
+import { isPrerelease } from '../../scripts/lib/releases-config';
+import { pinnedTag, product } from './ecosystem';
 
 export interface SurfaceScreenshot {
 	image: ImageMetadata;
@@ -39,8 +41,8 @@ export interface Surface {
 	screenshots: readonly SurfaceScreenshot[];
 }
 
-const companionRepo = 'https://github.com/pohunekd/pohunek-companion';
-const workRepo = 'https://github.com/zajca/pohunek-work';
+const companionRepo = `https://github.com/${product('companion').repository}`;
+const workRepo = `https://github.com/${product('plugin').repository}`;
 
 export const surfaces: readonly Surface[] = [
 	{
@@ -49,10 +51,10 @@ export const surfaces: readonly Surface[] = [
 		name: 'Desktop companion',
 		summary: 'A narrow native sidebar that lifts the sessions needing you to the top, with a tray badge and one-click attach.',
 		status: 'shipped',
-		statusNote: 'v0.1.4',
+		statusNote: pinnedTag('companion'),
 		platform: 'Linux · Wayland · macOS',
 		repoUrl: companionRepo,
-		release: 'v0.1.4',
+		release: pinnedTag('companion'),
 		icon: 'tiles',
 		screenshots: [
 			{
@@ -104,10 +106,10 @@ export const surfaces: readonly Surface[] = [
 		name: 'Android companion',
 		summary: 'A remote session list with live state and an embedded terminal over the NetBird overlay.',
 		status: 'in-progress',
-		statusNote: 'v0.1.0-pre.3 pre-release',
+		statusNote: isPrerelease(product('android').version) ? `${pinnedTag('android')} pre-release` : pinnedTag('android'),
 		platform: 'Android',
-		repoUrl: 'https://github.com/pohunekd/pohunek-companion-android',
-		release: 'v0.1.0-pre.3',
+		repoUrl: `https://github.com/${product('android').repository}`,
+		release: pinnedTag('android'),
 		icon: 'phone',
 		screenshots: androidScreenshots,
 	},
@@ -117,10 +119,10 @@ export const surfaces: readonly Surface[] = [
 		name: 'Terminal TUI',
 		summary: 'pohunek-work tui: Work, Sessions, Hosts and Activity views in one full-screen terminal interface.',
 		status: 'in-progress',
-		statusNote: 'plugin-v0.7.1 released, views still landing',
+		statusNote: `${pinnedTag('plugin')} released, views still landing`,
 		platform: 'Linux · macOS terminal',
 		repoUrl: workRepo,
-		release: 'plugin-v0.7.1',
+		release: pinnedTag('plugin'),
 		icon: 'terminal',
 		screenshots: [],
 	},
@@ -130,10 +132,10 @@ export const surfaces: readonly Surface[] = [
 		name: 'Sway + rofi launcher',
 		summary: 'Quick-switch attached agent terminals with a keybind and start work on Linear issues or GitHub PRs from rofi.',
 		status: 'shipped',
-		statusNote: 'launchers-v0.4.0',
+		statusNote: pinnedTag('launchers'),
 		platform: 'Linux · Wayland (Sway)',
 		repoUrl: workRepo,
-		release: 'launchers-v0.4.0',
+		release: pinnedTag('launchers'),
 		icon: 'window',
 		screenshots: [],
 	},
@@ -143,10 +145,10 @@ export const surfaces: readonly Surface[] = [
 		name: 'Web control center',
 		summary: 'An experimental self-hosted dashboard with a session rail across all hosts. It works, but it still needs a lot of polish.',
 		status: 'experimental',
-		statusNote: 'web-v0.3.1',
+		statusNote: pinnedTag('web'),
 		platform: 'Linux · macOS',
 		repoUrl: workRepo,
-		release: 'web-v0.3.1',
+		release: pinnedTag('web'),
 		icon: 'globe',
 		screenshots: [],
 	},
