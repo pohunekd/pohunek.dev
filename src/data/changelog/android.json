@@ -2,6 +2,15 @@
   "product": "android",
   "releases": [
     {
+      "tag": "v0.1.0-pre.4",
+      "version": "0.1.0-pre.4",
+      "publishedAt": "2026-10-27T10:14:53Z",
+      "prerelease": true,
+      "url": "https://github.com/pohunekd/pohunek-companion-android/releases/tag/v0.1.0-pre.4",
+      "source": "release-notes",
+      "markdown": "### Fixed\n\n- Swiping in the terminal now scrolls full-screen programs such as Claude Code: the swipe reaches the program as mouse wheel input or arrow keys, as in a desktop terminal, and still scrolls the local history for ordinary output. ([#151](https://github.com/pohunekd/pohunek-companion-android/issues/151))"
+    },
+    {
       "tag": "v0.1.0-pre.3",
       "version": "0.1.0-pre.3",
       "publishedAt": "2026-10-25T17:46:56Z",
