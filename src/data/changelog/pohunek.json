@@ -2,6 +2,15 @@
   "product": "pohunek",
   "releases": [
     {
+      "tag": "v0.37.1",
+      "version": "0.37.1",
+      "publishedAt": "2026-10-27T09:09:47Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.37.1",
+      "source": "generated",
+      "markdown": "No pull requests merged since v0.37.0."
+    },
+    {
       "tag": "v0.37.0",
       "version": "0.37.0",
       "publishedAt": "2026-10-24T14:42:50Z",
