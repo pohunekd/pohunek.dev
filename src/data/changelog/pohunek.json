@@ -2,6 +2,15 @@
   "product": "pohunek",
   "releases": [
     {
+      "tag": "v0.38.1",
+      "version": "0.38.1",
+      "publishedAt": "2026-10-28T21:33:11Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.38.1",
+      "source": "generated",
+      "markdown": "- Run package commands with command.run ([#1702](https://github.com/zajca/pohunek/pull/1702))\n- Add runCommand to the TypeScript SDK ([#1703](https://github.com/zajca/pohunek/pull/1703))\n- Scope the privacy sentinel tests' daemon logging to the test thread ([#1709](https://github.com/zajca/pohunek/pull/1709))\n- Add pohunek host command run (H13 CLI) ([#1707](https://github.com/zajca/pohunek/pull/1707))\n- Assert the dated-tree scan bound without a watch backend ([#1712](https://github.com/zajca/pohunek/pull/1712))\n- Serialize child spawns against the held directory lock in the knowledge materialize tests ([#1715](https://github.com/zajca/pohunek/pull/1715))\n- Wait for the exit watcher's loss classification before stopping a killed worker's session in reconcile tests ([#1717](https://github.com/zajca/pohunek/pull/1717))\n- Run the pipe-holding grandchild bind tests in a process of their own ([#1719](https://github.com/zajca/pohunek/pull/1719))"
+    },
+    {
       "tag": "v0.38.0",
       "version": "0.38.0",
       "publishedAt": "2026-10-28T14:55:19Z",
