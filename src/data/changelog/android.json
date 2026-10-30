@@ -2,6 +2,15 @@
   "product": "android",
   "releases": [
     {
+      "tag": "v0.1.0-pre.5",
+      "version": "0.1.0-pre.5",
+      "publishedAt": "2026-10-30T21:14:51Z",
+      "prerelease": true,
+      "url": "https://github.com/pohunekd/pohunek-companion-android/releases/tag/v0.1.0-pre.5",
+      "source": "release-notes",
+      "markdown": "### Fixed\n\n- Scrolling the terminal follows the finger smoothly instead of jumping a row at a time, and a swipe over a full-screen program such as Claude Code now sends its wheel input at a steady, per-frame pace. ([#154](https://github.com/pohunekd/pohunek-companion-android/issues/154))"
+    },
+    {
       "tag": "v0.1.0-pre.4",
       "version": "0.1.0-pre.4",
       "publishedAt": "2026-10-27T10:14:53Z",
