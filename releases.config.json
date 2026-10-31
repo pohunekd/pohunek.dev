@@ -35,7 +35,7 @@
       "name": "Android companion",
       "repository": "pohunekd/pohunek-companion-android",
       "tagPrefix": "v",
-      "version": "0.1.0-pre.5",
+      "version": "0.1.0-pre.6",
       "prerelease": true,
       "attested": false,
       "assets": [
