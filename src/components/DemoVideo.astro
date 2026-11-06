@@ -1,0 +1,134 @@
+---
+import type { AndroidMedia } from '../../scripts/lib/media-manifest';
+
+interface Props {
+	media: AndroidMedia | null | undefined;
+	/** Heading above the scene list. */
+	listTitle?: string;
+	/** Unique per page; links the video to its text alternative. */
+	id?: string;
+}
+
+const { media, listTitle = 'What the video shows', id = 'demo-video' } = Astro.props;
+const listId = `${id}-scenes`;
+---
+
+{
+	media && (
+		<figure class="demo-video">
+			<video
+				class="demo-video__player"
+				data-demo-video
+				muted
+				loop
+				playsinline
+				controls
+				preload="none"
+				poster={media.poster}
+				width={media.width}
+				height={media.height}
+				aria-label={media.alt}
+				aria-describedby={listId}
+			>
+				{media.sources.map((source) => (
+					<source src={source.src} type={`${source.type}; codecs="${source.codecs}"`} />
+				))}
+				<p>Your browser cannot play this video. The list beside it describes what it shows.</p>
+			</video>
+			<figcaption class="demo-video__scenes">
+				<h3>{listTitle}</h3>
+				<ol id={listId}>
+					{media.description.map((line) => (
+						<li>{line}</li>
+					))}
+				</ol>
+			</figcaption>
+		</figure>
+	)
+}
+
+<script>
+	// Autoplay is a progressive enhancement: without JS, or when reduced motion is requested,
+	// only the poster and the native controls (the WCAG 2.2.2 pause mechanism) are available.
+	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+	const videos = document.querySelectorAll<HTMLVideoElement>('video[data-demo-video]');
+
+	for (const video of videos) {
+		let pausedByPage = false;
+		let pausedByViewer = false;
+
+		video.addEventListener('pause', () => {
+			// A pause the page did not cause comes from the native controls; it stays paused.
+			pausedByViewer = !pausedByPage;
+			pausedByPage = false;
+		});
+		video.addEventListener('play', () => {
+			pausedByViewer = false;
+		});
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (entry.isIntersecting) {
+						if (!reducedMotion.matches && !pausedByViewer && video.paused) {
+							video.play().catch(() => {
+								// Autoplay refused by the browser: the poster and controls remain.
+							});
+						}
+					} else if (!video.paused) {
+						pausedByPage = true;
+						video.pause();
+					}
+				}
+			},
+			{ threshold: 0.5 },
+		);
+		observer.observe(video);
+
+		reducedMotion.addEventListener('change', () => {
+			if (reducedMotion.matches && !video.paused) {
+				pausedByPage = true;
+				video.pause();
+			}
+		});
+	}
+</script>
+
+<style>
+	.demo-video {
+		margin: 0;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.25rem;
+		align-items: start;
+		padding: 1rem;
+		background: var(--paper-raised);
+		border: 1px solid var(--rule);
+	}
+	.demo-video__player {
+		justify-self: center;
+		width: 100%;
+		max-width: 22rem;
+		height: auto;
+		background: var(--terminal-bg);
+		border-radius: 6px;
+		box-shadow: 0 0 0 1px var(--rule-strong);
+	}
+	.demo-video__scenes h3 {
+		margin: 0 0 0.6rem;
+	}
+	.demo-video__scenes ol {
+		margin: 0;
+		padding-left: 1.4rem;
+		display: grid;
+		gap: 0.5rem;
+		color: var(--ink-muted);
+	}
+	@media (min-width: 48rem) {
+		.demo-video {
+			grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+			gap: 2rem;
+			padding: 1.5rem;
+		}
+	}
+</style>
