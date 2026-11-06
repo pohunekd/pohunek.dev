@@ -17,6 +17,8 @@ export function getStaticPaths() {
 }
 
 interface Detail {
+	/** Page headline; the surface name is shown above it instead of as the h1. */
+	headline?: string;
 	/** Longer paragraph under the hero. */
 	body: string;
 	features: readonly { title: string; text: string }[];
@@ -138,35 +140,40 @@ const details: Record<string, Detail> = {
 		],
 	},
 	android: {
-		body: 'A native Android app (Kotlin and Jetpack Compose) for the owner of one or more daemons. It speaks the public protocol over the NetBird overlay and keeps no session state of its own: the daemons run the sessions, the phone lists them, opens a terminal on them and starts new ones.',
+		headline: 'Your agent sessions, in your pocket.',
+		body: 'See which sessions need you, open a real terminal on any of them and start new ones from your phone. It talks straight to your own daemons over your NetBird network: no account, no cloud service in between.',
 		features: [
+			{
+				title: 'Needs you, first',
+				text: 'Sessions waiting for you sit at the top of every view, from every host. An idle session counts as idle only after a configurable threshold.',
+			},
+			{
+				title: 'A terminal that feels native',
+				text: 'Rendered by libghostty-vt, with scrolling through the scrollback, an accessory bar for Esc, Tab, Ctrl and the arrows, and automatic re-attach when the network drops. After a drop it repaints from the daemon snapshot and gives up with an error only after a configurable time.',
+			},
+			{
+				title: 'Filters under your thumb',
+				text: 'One bottom bar holds search and the State, Project and Host chips; the Host chip appears once the app follows two or more hosts. It slides away while you scroll and comes back when you need it. The project picker is searchable and lists your recent projects first.',
+			},
+			{
+				title: 'Your groups, everywhere',
+				text: 'Groups are shared with the desktop companion through the session metadata key companion.group; reorder by long-press. Create, rename and delete groups and move a session from its action sheet. Order and collapse state stay on the phone.',
+			},
+			{
+				title: 'Start work from a template',
+				text: 'Pick a host and a project, and a project template fills in the agent and the prompt. A blank form with an optional branch and base branch is there too. A started session is created in the group of the row you launched it from.',
+			},
+			{
+				title: 'Private by design',
+				text: 'No account and no cloud service in between. The NetBird overlay is the boundary, and the app keeps no session state: the daemons run the sessions.',
+			},
 			{
 				title: 'Live sessions from several hosts',
 				text: 'One list holds the sessions of every host the app follows. Each row shows the agent, its owner state and its Work link. A host that drops off keeps its last rows, dimmed, until it is reachable again, and hosts that a connected daemon discovers on the NetBird overlay join the list without being stored.',
 			},
 			{
-				title: 'Needs you first',
-				text: 'Sessions that wait for you sit in a Needs you section at the top of every view. An idle session counts as idle only after a configurable threshold.',
-			},
-			{
-				title: 'Views and filters',
-				text: 'Switch the list between your own groups and read-only views by state, by project and by Work item. Chips narrow it by owner state, project and host, and a search field matches names, projects, agents and Work ids.',
-			},
-			{
-				title: 'Groups shared with the desktop',
-				text: 'Your groups are stored in the session metadata key companion.group, so the desktop companion shows the same membership. Create, rename and delete groups, move a session from its action sheet, and long-press a row or a group header to reorder. Order and collapse state stay on the phone.',
-			},
-			{
 				title: 'Session actions and details',
 				text: 'Every row has an action sheet: open the terminal, details, rename, start a new session next to it, move to a group, open its link, stop and remove. The details view lists the session id, host, agent, state and working directory, each with a copy button. An ended session that the daemon can resume gets a Resume action.',
-			},
-			{
-				title: 'New session',
-				text: 'Pick a host and a project, then start from a project template that fills the agent and the prompt, or from a blank form with an optional branch and base branch. A started session is created in the group of the row you launched it from.',
-			},
-			{
-				title: 'Full-screen terminal',
-				text: 'Open a session in a full-screen terminal, drawn by libghostty-vt, with an accessory bar for the keys a phone keyboard lacks. When the network drops, the terminal re-attaches with a growing wait, repaints from the daemon snapshot and gives up with an error only after a configurable time.',
 			},
 			{
 				title: 'Settings and logs',
@@ -269,8 +276,8 @@ const repoLabel = surface.repoUrl.replace('https://github.com/', '');
 	<section class="container hero-with-banner">
 		<header class="page-hero">
 			<a class="text-link" href="/surfaces/">Back to surfaces</a>
-			<span class="eyebrow"><Icon name={surface.icon} label="" /> {surface.platform}</span>
-			<h1>{surface.name}</h1>
+			<span class="eyebrow"><Icon name={surface.icon} label="" /> {surface.platform}{detail.headline ? ` · ${surface.name}` : ''}</span>
+			<h1>{detail.headline ?? surface.name}</h1>
 			<p class="lead">{detail.body}</p>
 			{detail.notice && <p class="notice">{detail.notice}</p>}
 			<div><StatusBadge status={surface.status} note={surface.statusNote} /></div>
