@@ -50,6 +50,8 @@ const listId = `${id}-scenes`;
 <script>
 	// Autoplay is a progressive enhancement: without JS, or when reduced motion is requested,
 	// only the poster and the native controls (the WCAG 2.2.2 pause mechanism) are available.
+	// The clip plays while at least this share of it is visible.
+	const VISIBLE_RATIO = 0.5;
 	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 	const videos = document.querySelectorAll<HTMLVideoElement>('video[data-demo-video]');
 
@@ -69,7 +71,7 @@ const listId = `${id}-scenes`;
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
-					if (entry.isIntersecting) {
+					if (entry.intersectionRatio >= VISIBLE_RATIO) {
 						if (!reducedMotion.matches && !pausedByViewer && video.paused) {
 							video.play().catch(() => {
 								// Autoplay refused by the browser: the poster and controls remain.
@@ -81,7 +83,7 @@ const listId = `${id}-scenes`;
 					}
 				}
 			},
-			{ threshold: 0.5 },
+			{ threshold: VISIBLE_RATIO },
 		);
 		observer.observe(video);
 
