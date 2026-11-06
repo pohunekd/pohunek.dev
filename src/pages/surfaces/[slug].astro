@@ -276,7 +276,7 @@ const repoLabel = surface.repoUrl.replace('https://github.com/', '');
 	<section class="container hero-with-banner">
 		<header class="page-hero">
 			<a class="text-link" href="/surfaces/">Back to surfaces</a>
-			<span class="eyebrow"><Icon name={surface.icon} label="" /> {surface.platform}{detail.headline ? ` · ${surface.name}` : ''}</span>
+			<span class="eyebrow"><Icon name={surface.icon} label="" /> {detail.headline ? surface.name : surface.platform}</span>
 			<h1>{detail.headline ?? surface.name}</h1>
 			<p class="lead">{detail.body}</p>
 			{detail.notice && <p class="notice">{detail.notice}</p>}
