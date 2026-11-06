@@ -94,6 +94,10 @@ This system avoids floating ambient shadows, blur effects, and artificial drop s
 - **Checkboxes:** 14px by 14px square boxes, 0px radius, 1px solid `#3E3024`. Checked state displays a solid deep-ink typographic `✕` in `#2B2118`.
 - **Radio Buttons:** 14px by 14px diamond or square rotated 45 degrees (or square marked with an internal filled 6px square), 1px solid `#3E3024`. Checked state fills the inner square with `#8A6A45`.
 
+### Demo Video
+- A raised sheet (`--paper-raised`, 1px `--rule`) holding the native `<video>` with its controls, 6px radius and a 1px `--rule-strong` ring, beside the numbered "What the video shows" list in `--ink-muted`. The list is the text alternative and stays visible; the video points at it with `aria-describedby`.
+- The video is muted, loops and never preloads. A small script starts it only while at least half of it is in the viewport and `prefers-reduced-motion` is not `reduce`; leaving the viewport pauses it. A pause from the native controls is kept until the viewer plays again. Without JS or with reduced motion only the poster and the controls show.
+
 ### Chips & Metadata Badges
 - **Parchment Badges:** Height 22px, sharp corners, `#FCF9F2` background, 1px solid `#C8BEA8` border. Label in `JetBrains Mono` (`label-sm`), color `#3E3024`.
 - **Terminal Status Badges:** Height 20px, `#1B1A17` background, 1px solid `#457A51`, glowing text in `#7BD88F`. Preceded by an ASCII status indicator (`[*]`, `[OK]`, `[!]`).

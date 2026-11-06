@@ -1,5 +1,6 @@
 ---
 import Banner from '../../components/Banner.astro';
+import DemoVideo from '../../components/DemoVideo.astro';
 import Screenshot from '../../components/Screenshot.astro';
 import MarketingLayout from '../../layouts/MarketingLayout.astro';
 import Icon from '../../components/Icon.astro';
@@ -288,6 +289,19 @@ const repoLabel = surface.repoUrl.replace('https://github.com/', '');
 		</header>
 		<Banner banner={getBanner(surface.slug)} />
 	</section>
+
+	{
+		surface.media && (
+			<section class="container section">
+				<div class="section-head">
+					<span class="eyebrow">Demo</span>
+					<h2>The app in motion</h2>
+					<p class="muted">Recorded from an isolated daemon filled with synthetic sessions, not from real work.</p>
+				</div>
+				<DemoVideo media={surface.media} id={`${surface.slug}-demo`} />
+			</section>
+		)
+	}
 
 	{
 		shots.length > 0 && (
