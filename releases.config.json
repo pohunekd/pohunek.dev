@@ -41,7 +41,8 @@
       "assets": [
         "pohunek-companion-{version}.apk"
       ],
-      "screenshotManifest": "docs/screenshots/manifest.json"
+      "screenshotManifest": "docs/screenshots/manifest.json",
+      "mediaManifest": "docs/media/manifest.json"
     },
     {
       "id": "plugin",

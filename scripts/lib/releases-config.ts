@@ -16,6 +16,8 @@ export interface Product {
   readonly assets: readonly string[];
   /** Path of the screenshot manifest inside the product repository, when the site renders its screenshots. */
   readonly screenshotManifest?: string;
+  /** Path of the optional demo-video manifest inside the product repository; releases without it render no video. */
+  readonly mediaManifest?: string;
 }
 
 export interface ReleasesConfig {
@@ -154,6 +156,7 @@ function parseProduct(raw: unknown, index: number): Product {
     'signerWorkflow',
     'assets',
     'screenshotManifest',
+    'mediaManifest',
   ]);
   for (const key of Object.keys(obj)) {
     if (!known.has(key)) {
@@ -196,6 +199,11 @@ function parseProduct(raw: unknown, index: number): Product {
     throw new Error(`${where}.screenshotManifest must be a non-empty string when present`);
   }
 
+  const mediaManifest = obj.mediaManifest;
+  if (mediaManifest !== undefined && (typeof mediaManifest !== 'string' || mediaManifest.length === 0)) {
+    throw new Error(`${where}.mediaManifest must be a non-empty string when present`);
+  }
+
   const attested = requireBoolean(obj, 'attested', where);
   const signerWorkflow = obj.signerWorkflow;
   if (attested) {
@@ -217,6 +225,7 @@ function parseProduct(raw: unknown, index: number): Product {
     signerWorkflow: attested ? (signerWorkflow as string) : undefined,
     assets,
     screenshotManifest,
+    mediaManifest,
   };
 }
 
