@@ -20,6 +20,7 @@ from GitHub Pages.
 | `src/styles/` | Design tokens and styles, see [DESIGN.md](DESIGN.md) |
 | `scripts/sync-docs.ts` | Pulls pohunek's docs at the pinned release |
 | `scripts/sync-screenshots.ts` | Pulls the Android screenshot set at the pinned release |
+| `scripts/sync-media.ts` | Pulls the Android demo video at the pinned release into `public/media/android/`; a release without `docs/media/manifest.json` renders no video |
 | `scripts/follow-releases.ts` | Moves the pins to new releases and records their changelog |
 | `releases.config.json` | Every ecosystem product: repository, tag prefix, pinned version, install assets |
 | `.github/assets/` | README hero of this repository |

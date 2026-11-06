@@ -10,6 +10,8 @@ import companionNewSession from '../assets/screenshots/companion/new-session.png
 import companionAssistant from '../assets/screenshots/companion/assistant.png';
 import companionInstallPlan from '../assets/screenshots/companion/install-plan.png';
 import { androidScreenshots } from './generated/android-screenshots';
+import { androidMedia } from './generated/android-media';
+import type { AndroidMedia } from '../../scripts/lib/media-manifest';
 import { isPrerelease } from '../../scripts/lib/releases-config';
 import { pinnedTag, product } from './ecosystem';
 
@@ -39,6 +41,8 @@ export interface Surface {
 	icon: IconName;
 	/** Real screenshots only; surfaces without captures leave this empty. */
 	screenshots: readonly SurfaceScreenshot[];
+	/** Demo video served from this site; absent when the pinned release carries none. */
+	media?: AndroidMedia;
 }
 
 const companionRepo = `https://github.com/${product('companion').repository}`;
@@ -112,6 +116,7 @@ export const surfaces: readonly Surface[] = [
 		release: pinnedTag('android'),
 		icon: 'phone',
 		screenshots: androidScreenshots,
+		media: androidMedia ?? undefined,
 	},
 	{
 		slug: 'tui',

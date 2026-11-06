@@ -3,13 +3,14 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "bun scripts/sync-docs.ts && bun scripts/sync-screenshots.ts && astro dev",
+    "dev": "bun scripts/sync-docs.ts && bun scripts/sync-screenshots.ts && bun scripts/sync-media.ts && astro dev",
     "start": "astro dev",
-    "build": "bun scripts/sync-docs.ts && bun scripts/sync-screenshots.ts && astro build",
+    "build": "bun scripts/sync-docs.ts && bun scripts/sync-screenshots.ts && bun scripts/sync-media.ts && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "sync-docs": "bun scripts/sync-docs.ts",
     "sync-screenshots": "bun scripts/sync-screenshots.ts",
+    "sync-media": "bun scripts/sync-media.ts",
     "follow-releases": "bun scripts/follow-releases.ts",
     "test": "bun test tests"
   },
