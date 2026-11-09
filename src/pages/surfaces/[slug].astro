@@ -200,7 +200,7 @@ const details: Record<string, Detail> = {
 		],
 	},
 	tui: {
-		body: 'pohunek-work is a Bun plugin with an Ink terminal interface. It answers one question for every open work item: who has to act next, me, an agent or a reviewer?',
+		body: 'pohunek-work is a separate, experimental Bun program with an Ink terminal interface. It answers one question for every open work item: who has to act next, me, an agent or a reviewer?',
 		features: [
 			{
 				title: 'Work',
@@ -223,12 +223,12 @@ const details: Record<string, Detail> = {
 			},
 			{
 				title: 'Configure and run',
-				intro: 'doctor reports a missing config until you write ~/.config/pohunek/plugins/work/config.toml. Every key is required, there are no hidden defaults; the plugin guide lists them. Projects go in ~/.config/pohunek/plugins/work/projects/<label>.toml.',
+				intro: 'doctor reports a missing config until you write ~/.config/pohunek/plugins/work/config.toml. Every key is required, there are no hidden defaults; the pohunek-work README lists them. Projects go in ~/.config/pohunek/plugins/work/projects/<label>.toml.',
 				lines: ['pohunek-work doctor', 'pohunek-work tui'],
 			},
 		],
 		notes: [
-			`Status: ${pinnedTag('plugin')} is released, and the plugin README still lists the Sessions, Hosts and Activity views as in progress. Check the release notes for the exact scope.`,
+			`Status: ${pinnedTag('plugin')} is released, and the pohunek-work README still lists the Sessions, Hosts and Activity views as in progress. Check the release notes for the exact scope.`,
 		],
 	},
 	web: {
