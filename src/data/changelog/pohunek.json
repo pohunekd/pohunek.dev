@@ -2,6 +2,15 @@
   "product": "pohunek",
   "releases": [
     {
+      "tag": "v0.41.0",
+      "version": "0.41.0",
+      "publishedAt": "2026-11-09T15:48:38Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek/releases/tag/v0.41.0",
+      "source": "generated",
+      "markdown": "- Type the index check-entry predicates and close the plugin tooling LOWs ([#2022](https://github.com/zajca/pohunek/pull/2022))\n- Close the plugin W2 follow-up LOWs (redirect limit, error class, scenarios, runbooks) ([#2026](https://github.com/zajca/pohunek/pull/2026))\n- Bind checkout trust to the create-time directory and harden the declared-file read ([#2024](https://github.com/zajca/pohunek/pull/2024))\n- Remove the fixed reporter socket timeout and name the leftovers in two flaky assertions ([#2031](https://github.com/zajca/pohunek/pull/2031))\n- Bound the release gate prune loop and fix migration fixture version pairings ([#2032](https://github.com/zajca/pohunek/pull/2032))\n- Fix the cli and session-worker flaky test waits ([#2029](https://github.com/zajca/pohunek/pull/2029))\n- Retire the one-time legacy daemon migration ([#2059](https://github.com/zajca/pohunek/pull/2059))\n- OSC status model: typed OSC 9;4, gated OSC 7501, visible status source ([#2063](https://github.com/zajca/pohunek/pull/2063))\n- Prune wave 0: remove workflow plugins, idle-stop, session fork and debug commands ([#2060](https://github.com/zajca/pohunek/pull/2060))\n- Move the team relay out of core ([#2067](https://github.com/zajca/pohunek/pull/2067))\n- Serve the assistant bundle from a context package ([#2065](https://github.com/zajca/pohunek/pull/2065))\n- Cut the notification lifecycle: attention-only inbox, turn signals, protocol 5 ([#2070](https://github.com/zajca/pohunek/pull/2070))\n- Relay removal follow-ups, probe_answered docs and B1 test follow-ups ([#2072](https://github.com/zajca/pohunek/pull/2072))\n- Resolve zero-offset wrapped aliases in the release compat check ([#2075](https://github.com/zajca/pohunek/pull/2075))"
+    },
+    {
       "tag": "v0.40.1",
       "version": "0.40.1",
       "publishedAt": "2026-11-06T19:14:46Z",
