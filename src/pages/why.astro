@@ -14,7 +14,7 @@ pohunek assistant "why does attach fail on my laptop?"`;
 const rows = [
 	{
 		need: 'Know whether the agent is working, blocked on an approval, or idle',
-		gives: 'Live working, blocked and idle detection from OSC titles, screen patterns and PTY activity. Detection rules are TOML manifests, so a new agent needs no recompile.',
+		gives: 'Live working, blocked and idle detection from OSC signals first, with screen patterns and PTY activity as the fallback. Detection rules are TOML manifests, so a new agent needs no recompile.',
 	},
 	{
 		need: 'Submit a multi-line prompt into an Ink TUI without it being half-swallowed',
@@ -29,8 +29,8 @@ const rows = [
 		gives: '--branch creates a worktree per session off the base branch. Ownership is recorded and checked before any reuse or cleanup.',
 	},
 	{
-		need: 'Get a conversation back, or branch it',
-		gives: 'Hooks capture the agent session id for an explicit session resume. session fork branches a Claude Code conversation into a new session.',
+		need: 'Get a conversation back',
+		gives: 'Hooks capture the agent session id for an explicit session resume.',
 	},
 	{
 		need: 'Watch without stealing the terminal',

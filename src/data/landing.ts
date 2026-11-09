@@ -88,7 +88,7 @@ const hosts: Host[] = [
 const comparison: ComparisonRow[] = [
 	{
 		need: 'Know whether the agent is working, blocked or idle',
-		answer: 'Live detection from OSC titles, screen patterns and PTY activity, driven by TOML manifests.',
+		answer: 'Live detection from OSC signals first, with screen patterns and PTY activity as the fallback, driven by TOML manifests.',
 	},
 	{
 		need: 'Submit a multi-line prompt without it being half-swallowed',
@@ -103,8 +103,8 @@ const comparison: ComparisonRow[] = [
 		answer: 'A worktree per session off the base branch, with ownership checked before any reuse or cleanup.',
 	},
 	{
-		need: 'Get a conversation back, or branch it',
-		answer: "The agent's own session id is captured for an explicit resume; Claude Code conversations can be forked.",
+		need: 'Get a conversation back',
+		answer: "The agent's own session id is captured for an explicit resume.",
 	},
 	{
 		need: 'Watch without stealing the terminal',

@@ -19,28 +19,6 @@ const runtimes = [
 	{ name: 'OpenCode 2.x', status: 'planned' as const, note: 'planned, zajca/pohunek#227' },
 ];
 
-const manifest = `schema = 1
-
-[plugin]
-id = "acme.work"
-version = "1.2.0"
-description = "Work overview"
-
-[actions.overview]
-argv = ["bin/work", "overview"]
-args = "passthrough"
-timeout_ms = 30000
-
-[jobs.poll]
-argv = ["bin/work", "poll"]
-every_s = 300`;
-
-const workflowCommands = `pohunek workflow install work.tar.zst --sha256 <digest>        # review, nothing installed
-pohunek workflow install work.tar.zst --sha256 <digest> --yes  # install, enabled
-pohunek workflow list [--json]
-pohunek workflow run [--json] acme.work overview --since 1d
-pohunek workflow disable acme.work`;
-
 const runtimeCommands = `pohunek plugin list
 pohunek plugin install ./acme-pi-1.0.0.tar.zst --sha256 sha256:<64 hex>
 pohunek plugin inspect acme.pi
@@ -50,15 +28,15 @@ pohunek plugin doctor`;
 
 <MarketingLayout
 	title="Plugins"
-	description="Runtime packages add agent CLIs to a host. Workflow plugins add owner tooling that acts through the public CLI and SDK."
+	description="Runtime packages add agent CLIs to a host. Context packages carry knowledge, such as the assistant bundle."
 >
 	<section class="container hero-with-banner">
 		<header class="page-hero">
 			<span class="eyebrow">Plugins</span>
-			<h1>Two kinds of plugin, one trust model</h1>
+			<h1>Packages the daemon installs</h1>
 			<p class="lead">
-				Runtime packages teach the daemon a new agent CLI. Workflow plugins are owner tooling that runs as you, over the
-				public CLI and SDK. They are separate on purpose: a workflow plugin never extends the daemon.
+				Runtime packages teach the daemon a new agent CLI. Context packages carry knowledge, such as the bundle behind
+				<code>pohunek assistant</code>. Both are signed, content-addressed archives installed per host.
 			</p>
 		</header>
 		<Banner banner={banners.plugins} />
@@ -99,23 +77,14 @@ pohunek plugin doctor`;
 
 	<section class="container section">
 		<div class="section-head">
-			<span class="eyebrow">Workflow plugins</span>
-			<h2>Owner tooling with declared actions</h2>
+			<span class="eyebrow">Context packages</span>
+			<h2>Knowledge the assistant reads</h2>
 			<p class="muted">
-				A workflow plugin declares named actions as argv arrays, plus optional periodic jobs, long-running services and
-				event reactions. It is pinned by the digest you approve. The install step prints every argv before anything is
-				created.
+				The assistant knowledge no longer ships inside the pohunek binaries. It is the context package
+				<code>pohunekd/plugin-assistant</code>, installed by digest and available from the first core release after this
+				change. Until it is installed, <code>pohunek assistant</code> answers <code>assistant_package_missing</code> and
+				names the step to take.
 			</p>
-		</div>
-		<div class="grid cols-2">
-			<div class="stack">
-				<h3>workflow.toml</h3>
-				<CopyBox title="workflow.toml" text={manifest} />
-			</div>
-			<div class="stack">
-				<h3>Commands</h3>
-				<CopyBox title="pohunek workflow" text={workflowCommands} />
-			</div>
 		</div>
 	</section>
 
@@ -125,10 +94,10 @@ pohunek plugin doctor`;
 			<h2>pohunek-work</h2>
 		</div>
 		<article class="card featured">
-			<div class="card-kicker"><Icon name="package" label="" /><span>Workflow plugin</span></div>
+			<div class="card-kicker"><Icon name="package" label="" /><span>Companion tool</span></div>
 			<h3>{work.name}</h3>
 			<p>
-				A workflow plugin that answers who has to act next on every open work item, joining Linear, GitHub and pohunek
+				A companion tool that answers who has to act next on every open work item, joining Linear, GitHub and pohunek
 				sessions. It ships a terminal interface, a rofi and sway launcher and a web control center.
 			</p>
 			<div class="card-foot">
@@ -144,9 +113,9 @@ pohunek plugin doctor`;
 			<div>
 				<h3>Trust boundary</h3>
 				<p>
-					Both kinds of plugin run with your account's full authority, the same owner trust boundary as any script you run.
-					The digest proves which bytes you approved. It does not confine them. Install only plugins whose source you trust,
-					and read the argv the consent step prints.
+					Packages run with your account's full authority, the same owner trust boundary as any script you run.
+					The digest proves which bytes you approved. It does not confine them. Install only packages whose source you trust,
+					and read what the consent step prints.
 				</p>
 			</div>
 		</div>
@@ -158,8 +127,7 @@ pohunek plugin doctor`;
 			<h2>Build a plugin</h2>
 		</div>
 		<div class="actions">
-			<a class="button" href="/docs/guides/workflow-plugins/">Workflow plugins guide</a>
-			<a class="button secondary" href="/docs/guides/runtime-packages/">Runtime packages guide</a>
+			<a class="button" href="/docs/guides/runtime-packages/">Runtime packages guide</a>
 			<a class="button secondary" href="/docs/guides/ts-sdk/">TypeScript SDK guide</a>
 		</div>
 	</section>

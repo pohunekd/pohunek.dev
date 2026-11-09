@@ -25,14 +25,6 @@ export const roadmapTracks: readonly RoadmapTrack[] = [
 		issues: [{ number: 139 }],
 	},
 	{
-		title: 'Workflow plugins',
-		goal: 'Bounded, out-of-process plugins with declared actions and event reactions, invoked from the CLI.',
-		status: 'shipped',
-		statusNote: 'all four children landed',
-		progress: { done: 4, total: 4 },
-		issues: [{ number: 148 }, { number: 325 }, { number: 326 }],
-	},
-	{
 		title: 'More agents',
 		goal: 'Further first-class runtimes beyond the official packages. OpenCode 2.x is planned.',
 		status: 'in-progress',
@@ -48,7 +40,7 @@ export const roadmapTracks: readonly RoadmapTrack[] = [
 	},
 	{
 		title: 'Durability and detection',
-		goal: 'Recovery from crashes and host-wide session loss in one action, and explainable working, blocked and idle detection.',
+		goal: 'Recovery from crashes and host-wide session loss in one action, and explainable working, blocked and idle detection. Detection reads OSC signals first (OSC 9;4, and OSC 7501 for Claude Code 2.1.309 and later) and falls back to screen text.',
 		status: 'in-progress',
 		statusNote: 'lost classification and recovery binding landed',
 		issues: [{ number: 426 }, { number: 67 }],
@@ -62,7 +54,7 @@ export const roadmapTracks: readonly RoadmapTrack[] = [
 	},
 	{
 		title: 'Optional team relay',
-		goal: 'A multi-team control plane. Hosts open the WireGuard link to the relay themselves. The direct owner path stays first-class.',
+		goal: 'A multi-team control plane. Hosts open the WireGuard link to the relay themselves. The direct owner path stays first-class. Developed in a separate private repository.',
 		status: 'in-progress',
 		statusNote: 'authentication and credentials implemented; transport pending',
 		issues: [{ number: 56 }],
