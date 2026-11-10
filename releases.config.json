@@ -21,7 +21,7 @@
       "name": "Desktop companion",
       "repository": "pohunekd/pohunek-companion",
       "tagPrefix": "v",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "prerelease": false,
       "attested": true,
       "signerWorkflow": ".github/workflows/release.yml",

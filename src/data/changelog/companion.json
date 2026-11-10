@@ -2,6 +2,15 @@
   "product": "companion",
   "releases": [
     {
+      "tag": "v0.1.7",
+      "version": "0.1.7",
+      "publishedAt": "2026-11-10T07:20:52Z",
+      "prerelease": false,
+      "url": "https://github.com/pohunekd/pohunek-companion/releases/tag/v0.1.7",
+      "source": "release-notes",
+      "markdown": "### Fixed\n\n- The companion connects to Pohunek 0.41 daemons again, and the assistant dialog now uses the daemon's plugin-assistant context package. ([#235](https://github.com/pohunekd/pohunek-companion/issues/235))"
+    },
+    {
       "tag": "v0.1.6",
       "version": "0.1.6",
       "publishedAt": "2026-10-25T13:54:29Z",
