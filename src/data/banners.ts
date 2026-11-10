@@ -35,6 +35,12 @@ export const banners = {
 		caption: 'Everyone watches the field in their own way.',
 		credit: androidRobotCredit,
 	},
+	omarchy: {
+		image: bannerSurfaces,
+		alt: 'Engraving: onlookers lean on a fence to watch three server cabinets plow the field: the farmhand with a spyglass, a farm girl with a chalk slate, a copper Android robot holding a phone, and a cat sitting on a tiny terminal.',
+		caption: 'Everyone watches the field in their own way.',
+		credit: androidRobotCredit,
+	},
 	companion: {
 		image: bannerCompanion,
 		alt: 'Engraving: the farmhand steers a plow pulled by three server cabinets labelled codex, claude and hermes. A farm girl with a chalk slate of ticks and one exclamation mark points at the claude cabinet, which has stopped in the furrow with steam rising from it.',

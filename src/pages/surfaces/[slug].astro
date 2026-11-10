@@ -26,6 +26,8 @@ interface Detail {
 	/** Install routes: a heading, an optional sentence of context, and shell lines. */
 	install: { title: string; intro?: string; lines: readonly string[] }[];
 	notes?: readonly string[];
+	/** A dedicated site for the surface, linked next to the source button. */
+	homepage?: string;
 	/** A caution shown under the hero, for surfaces that are not ready for daily use. */
 	notice?: string;
 }
@@ -81,6 +83,70 @@ const details: Record<string, Detail> = {
 		notes: [
 			'Optional bindings: bindsym $mod+i exec exec ~/.local/share/pohunek/bin/pohunek-rofi-issue <project> linear starts the issue picker for one project.',
 			'The scripts read ~/.config/pohunek/launcher.conf: host, terminal, list timeout, the Linear CLI and the pohunek-work binary. pohunek attach reads its own attach keys from the same file.',
+		],
+	},
+	omarchy: {
+		homepage: site.omarchyUrl,
+		headline: 'Every coding agent on every machine, one keypress away in your Omarchy bar.',
+		body: 'Who is working, who is stuck waiting for you, and a real terminal on any of them in one click. A bar widget for Omarchy that reads the sessions of every pohunek daemon you can reach through the pohunek CLI. This is an independent project, not affiliated with or endorsed by Omarchy or Basecamp.',
+		features: [
+			{
+				title: 'Needs you, first',
+				text: 'Sessions blocked on an approval or a question sit on top of every view, from every host, oldest wait first. The bar icon turns amber and counts them. A desktop notification pops up, and clicking it opens that session\'s terminal.',
+			},
+			{
+				title: 'Every machine, one list',
+				text: 'This machine, your other Omarchy machines and any pohunek daemon on your NetBird or Tailscale network, side by side, each row with its host chip. A machine that drops off keeps its rows, dimmed.',
+			},
+			{
+				title: 'A real terminal, one click away',
+				text: 'Enter or a click attaches with pohunek attach. Ctrl+] detaches and the agent keeps working.',
+			},
+			{
+				title: 'Your groups, everywhere',
+				text: 'Groups live in the companion.group session metadata, so they are the same groups the desktop and Android companions show. Switch between My groups and By state, and narrow the list with State, Project and Host filters or a fuzzy search.',
+			},
+			{
+				title: 'New sessions without the CLI',
+				text: 'Pick a host, a project and an agent (with fuzzy search when the lists get long), write the first prompt and press Ctrl+Enter.',
+			},
+			{
+				title: 'The bar icon carries the state',
+				text: 'The pohunek plate with its prompt cut out; only the cursor changes: amber when a session needs you, red for a runtime problem, green while agents are working, cut out when all quiet. Middle click jumps into the session that has waited longest, right click refreshes every host.',
+			},
+			{
+				title: 'Hyprland keys',
+				text: 'Super+Alt+P opens the panel and Super+Shift+Alt+P starts a new session. Help, Add these shortcuts to Hyprland (or tools/add-shortcuts) refuses keys that are already taken, backs up bindings.lua and checks Hyprland for config errors.',
+			},
+			{
+				title: 'Roll it out to every machine',
+				text: 'The Hosts page lists the herdr machines that do not run pohunek yet, each with Install there; tools/distribute does the same from a terminal. Hosts → Set up network (or tools/setup-network) installs NetBird or Tailscale, joins the network and restarts the daemon; live sessions keep running.',
+			},
+			{
+				title: 'Safe by design',
+				text: 'The list is read through pohunek session list --json and nothing changes a session until you pick an action; stop and remove ask first. Session names and prompts are untrusted plain text. Every command is an argv array, never a shell string.',
+			},
+			{
+				title: 'Verified pohunek install',
+				text: 'No pohunek on the machine yet? The panel offers Install pohunek: it checks the release SHA-256 and, when gh is signed in, its GitHub build attestation, shows what will be written where and asks once.',
+			},
+		],
+		install: [
+			{
+				title: 'Add the widget',
+				intro: 'Omarchy installs the plugin from the repository and enables it.',
+				lines: installCommands.omarchyPluginAdd,
+			},
+			{
+				title: 'Or check the pinned release archive',
+				intro: 'The release archive holds the same files as the repository at the release tag. These lines download it and verify its checksum and its build attestation.',
+				lines: installCommands.omarchyFromRelease,
+			},
+		],
+		notes: [
+			'The widget needs the pohunek CLI; without it the panel offers to install pohunek for you.',
+			`Released as ${pinnedTag('omarchy')}.`,
+			'Not affiliated with or endorsed by Omarchy or Basecamp.',
 		],
 	},
 	companion: {
@@ -283,6 +349,7 @@ const repoLabel = surface.repoUrl.replace('https://github.com/', '');
 			{detail.notice && <p class="notice">{detail.notice}</p>}
 			<div><StatusBadge status={surface.status} note={surface.statusNote} /></div>
 			<div class="actions">
+				{detail.homepage && <a class="button" href={detail.homepage}>Website ({detail.homepage.replace('https://', '')})</a>}
 				<a class="button secondary" href={surface.repoUrl}>Source on GitHub ({repoLabel})</a>
 				{surface.release && <a class="button secondary" href={`${surface.repoUrl}/releases/tag/${surface.release}`}>Release {surface.release}</a>}
 			</div>

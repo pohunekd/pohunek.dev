@@ -38,6 +38,7 @@ describe('parseReleasesConfig', () => {
       'plugin',
       'launchers',
       'web',
+      'omarchy',
     ]);
   });
 

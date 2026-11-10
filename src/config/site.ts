@@ -22,6 +22,7 @@ export const site = {
 	issuesUrl: `${repoUrl}/issues`,
 	websiteRepoUrl: 'https://github.com/pohunekd/pohunek.dev',
 	orgUrl: 'https://github.com/pohunekd',
+	omarchyUrl: 'https://omarchy.pohunek.dev',
 	homebrewTapUrl: 'https://github.com/zajca/homebrew-pohunek',
 	homebrewInstall: 'brew install zajca/pohunek/pohunek',
 	licenseUrl: `${repoUrl}/blob/main/LICENSE`,
