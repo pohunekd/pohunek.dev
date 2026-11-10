@@ -9,6 +9,13 @@ import companionSessionDetail from '../assets/screenshots/companion/session-deta
 import companionNewSession from '../assets/screenshots/companion/new-session.png';
 import companionAssistant from '../assets/screenshots/companion/assistant.png';
 import companionInstallPlan from '../assets/screenshots/companion/install-plan.png';
+import omarchyList from '../assets/screenshots/omarchy/list.png';
+import omarchyState from '../assets/screenshots/omarchy/state.png';
+import omarchyActions from '../assets/screenshots/omarchy/actions.png';
+import omarchyNew from '../assets/screenshots/omarchy/new.png';
+import omarchyHelp from '../assets/screenshots/omarchy/help.png';
+import omarchyHosts from '../assets/screenshots/omarchy/hosts.png';
+import omarchyBar from '../assets/screenshots/omarchy/bar.png';
 import { androidScreenshots } from './generated/android-screenshots';
 import { androidMedia } from './generated/android-media';
 import type { AndroidMedia } from '../../scripts/lib/media-manifest';
@@ -46,6 +53,7 @@ export interface Surface {
 }
 
 const companionRepo = `https://github.com/${product('companion').repository}`;
+const omarchyRepo = `https://github.com/${product('omarchy').repository}`;
 const workRepo = `https://github.com/${product('plugin').repository}`;
 
 export const surfaces: readonly Surface[] = [
@@ -117,6 +125,55 @@ export const surfaces: readonly Surface[] = [
 		icon: 'phone',
 		screenshots: androidScreenshots,
 		media: androidMedia ?? undefined,
+	},
+	{
+		slug: 'omarchy',
+		featured: true,
+		name: 'Omarchy bar widget',
+		summary: 'Every agent session on every machine in your Omarchy bar: the ones that need you on top, one click to a real terminal.',
+		status: 'shipped',
+		statusNote: pinnedTag('omarchy'),
+		platform: 'Omarchy · Hyprland',
+		repoUrl: omarchyRepo,
+		release: pinnedTag('omarchy'),
+		icon: 'bell',
+		screenshots: [
+			{
+				image: omarchyList,
+				alt: 'My groups view with sessions that need the owner on top, then Inbox and user groups, each row showing state, agent, project, branch and host',
+				caption: 'My groups',
+			},
+			{
+				image: omarchyState,
+				alt: 'By state view with Needs you, Working, Idle and Runtime problem sections',
+				caption: 'By state',
+			},
+			{
+				image: omarchyActions,
+				alt: 'Row actions sheet for one session',
+				caption: 'Row actions',
+			},
+			{
+				image: omarchyNew,
+				alt: 'New session form with host, project, agent, name, branch and first prompt fields',
+				caption: 'New session',
+			},
+			{
+				image: omarchyHelp,
+				alt: 'Help page listing the keys of the panel and of an attached terminal',
+				caption: 'Help',
+			},
+			{
+				image: omarchyHosts,
+				alt: 'Hosts page listing the reachable pohunek daemons and the network that carries them',
+				caption: 'Hosts',
+			},
+			{
+				image: omarchyBar,
+				alt: 'The Omarchy bar with the pohunek icon, a cream plate with a prompt whose cursor is amber, and the number 2',
+				caption: 'Bar icon',
+			},
+		],
 	},
 	{
 		slug: 'tui',

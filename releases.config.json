@@ -83,6 +83,19 @@
         "pohunek-web-{version}-linux-x86_64.tar.gz",
         "pohunek-web-{version}-aarch64-apple-darwin.tar.gz"
       ]
+    },
+    {
+      "id": "omarchy",
+      "name": "Omarchy bar widget",
+      "repository": "pohunekd/omarchy",
+      "tagPrefix": "v",
+      "version": "0.3.0",
+      "prerelease": false,
+      "attested": true,
+      "signerWorkflow": ".github/workflows/release.yml",
+      "assets": [
+        "pohunek-omarchy-{version}-noarch.tar.gz"
+      ]
     }
   ]
 }

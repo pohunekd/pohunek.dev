@@ -31,6 +31,7 @@ const daemonArchive = archive('pohunek', 'x86_64-unknown-linux-gnu');
 const launchersArchive = archive('launchers', 'noarch');
 const pluginArchive = archive('plugin', 'noarch');
 const webArchive = archive('web', 'linux-x86_64');
+const omarchyArchive = archive('omarchy', 'noarch');
 
 /** Shell lines for the install boxes. */
 export const installCommands = {
@@ -81,4 +82,9 @@ export const installCommands = {
 		'systemctl --user enable --now pohunek-backend.service',
 	],
 	webMacos: ['brew install zajca/pohunek/pohunek-web'],
+
+	/** The Omarchy plugin manager clones the default branch of the repository. */
+	omarchyPluginAdd: [`omarchy plugin add https://github.com/${product('omarchy').repository} --enable`],
+	/** The pinned release archive, verified; the plugin files of the repository at the release tag. */
+	omarchyFromRelease: fetchAndVerify(product('omarchy').repository, pinnedTag('omarchy'), `${omarchyArchive}.tar.gz`),
 } as const;

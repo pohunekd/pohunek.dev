@@ -10,7 +10,7 @@ import {
 /** The pinned release of every ecosystem product, validated at build time. */
 export const ecosystem: ReleasesConfig = parseReleasesConfig(rawConfig);
 
-export type ProductId = 'pohunek' | 'companion' | 'android' | 'plugin' | 'launchers' | 'web';
+export type ProductId = 'pohunek' | 'companion' | 'android' | 'plugin' | 'launchers' | 'web' | 'omarchy';
 
 export function product(id: ProductId): Product {
 	return findProduct(ecosystem, id);

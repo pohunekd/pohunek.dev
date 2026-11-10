@@ -1,0 +1,14 @@
+{
+  "product": "omarchy",
+  "releases": [
+    {
+      "tag": "v0.3.0",
+      "version": "0.3.0",
+      "publishedAt": "2026-11-10T11:45:42Z",
+      "prerelease": false,
+      "url": "https://github.com/pohunekd/omarchy/releases/tag/v0.3.0",
+      "source": "release-notes",
+      "markdown": "### Added\n\n- First public release as `pohunekd/omarchy`.\n- Sessions of every host (this machine, herdr machines, NetBird / Tailscale peers), Needs you first.\n- My groups / By state, shared `companion.group` groups, State / Project / Host filters, fuzzy search.\n- Row actions, details, new session form, help page, hosts page.\n- Bar icon: the pohunek plate with a state-coloured cursor; clickable desktop notifications that attach.\n- `tools/`: install-pohunek, setup-network, distribute, add-shortcuts, demo-pohunek."
+    }
+  ]
+}

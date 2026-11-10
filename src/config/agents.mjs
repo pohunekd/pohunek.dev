@@ -32,7 +32,7 @@ export const llmsTxt = {
 	],
 	optionalLinks: [
 		{ label: 'Why pohunek', url: `${siteUrl}/why/`, description: 'why agents need a farmhand, not an IDE' },
-		{ label: 'Surfaces', url: `${siteUrl}/surfaces/`, description: 'optional owner UIs: desktop and Android companions, TUI, Sway launcher, web' },
+		{ label: 'Surfaces', url: `${siteUrl}/surfaces/`, description: 'optional owner UIs: desktop and Android companions, Omarchy bar widget, TUI, Sway launcher, web' },
 		{ label: 'Plugins', url: `${siteUrl}/plugins/`, description: 'runtime packages and context packages' },
 		{ label: 'Roadmap', url: `${siteUrl}/roadmap/`, description: 'tracks and their state' },
 		{

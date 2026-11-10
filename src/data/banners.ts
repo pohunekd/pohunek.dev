@@ -23,18 +23,21 @@ export interface Banner {
 const androidRobotCredit =
 	'The Android robot is reproduced or modified from work created and shared by Google and used according to terms described in the Creative Commons 3.0 Attribution License.';
 
+const surfacesBanner = {
+	image: bannerSurfaces,
+	alt: 'Engraving: onlookers lean on a fence to watch three server cabinets plow the field: the farmhand with a spyglass, a farm girl with a chalk slate, a copper Android robot holding a phone, and a cat sitting on a tiny terminal.',
+	caption: 'Everyone watches the field in their own way.',
+	credit: androidRobotCredit,
+} as const satisfies Banner;
+
 export const banners = {
 	why: {
 		image: bannerWhy,
 		alt: 'Engraving: the farmhand naps in a haystack with his cap over his eyes while three server cabinets plow straight furrows on their own. A salesman in a top hat waves an ornate console full of dials at him, and nobody looks.',
 		caption: 'The salesman brought a better view of the plow.',
 	},
-	surfaces: {
-		image: bannerSurfaces,
-		alt: 'Engraving: onlookers lean on a fence to watch three server cabinets plow the field: the farmhand with a spyglass, a farm girl with a chalk slate, a copper Android robot holding a phone, and a cat sitting on a tiny terminal.',
-		caption: 'Everyone watches the field in their own way.',
-		credit: androidRobotCredit,
-	},
+	surfaces: surfacesBanner,
+	omarchy: surfacesBanner,
 	companion: {
 		image: bannerCompanion,
 		alt: 'Engraving: the farmhand steers a plow pulled by three server cabinets labelled codex, claude and hermes. A farm girl with a chalk slate of ticks and one exclamation mark points at the claude cabinet, which has stopped in the furrow with steam rising from it.',

@@ -39,8 +39,8 @@ needs a deploy at least every 180 days.
 ## Releases and changelog
 
 `releases.config.json` pins one release of every product the site names:
-pohunek, the desktop and Android companions, and the pohunek-work plugin,
-launchers and web surfaces. The header badge, the docs, the Android
+pohunek, the desktop and Android companions, the Omarchy bar widget, and the
+pohunek-work plugin, launchers and web surfaces. The header badge, the docs, the Android
 screenshots, the surface pages and the install commands all read their versions
 from it; no version is written anywhere else.
 
