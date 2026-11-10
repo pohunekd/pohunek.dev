@@ -165,7 +165,7 @@ export const surfaces: readonly Surface[] = [
 			},
 			{
 				image: omarchyHosts,
-				alt: 'Hosts page listing the reachable pohunek daemons and the Omarchy machines that do not run pohunek yet',
+				alt: 'Hosts page listing the reachable pohunek daemons and the network that carries them',
 				caption: 'Hosts',
 			},
 			{

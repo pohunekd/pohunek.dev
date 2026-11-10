@@ -85,6 +85,6 @@ export const installCommands = {
 
 	/** The Omarchy plugin manager clones the default branch of the repository. */
 	omarchyPluginAdd: [`omarchy plugin add https://github.com/${product('omarchy').repository} --enable`],
-	/** The pinned release archive, verified; the same files as the repository at the release tag. */
+	/** The pinned release archive, verified; the plugin files of the repository at the release tag. */
 	omarchyFromRelease: fetchAndVerify(product('omarchy').repository, pinnedTag('omarchy'), `${omarchyArchive}.tar.gz`),
 } as const;

@@ -116,7 +116,7 @@ const details: Record<string, Detail> = {
 			},
 			{
 				title: 'Hyprland keys',
-				text: 'Super+Alt+P opens the panel and Super+Shift+Alt+P starts a new session. Help, Add these shortcuts to Hyprland (or tools/add-shortcuts) refuses keys that are already taken, backs up bindings.lua and checks Hyprland for config errors.',
+				text: 'Super+Alt+P opens the panel and Super+Shift+Alt+P starts a new session. Add both with one click under Help, Add these shortcuts to Hyprland, or run tools/add-shortcuts: it refuses keys that are already taken, backs up bindings.lua and checks Hyprland for config errors.',
 			},
 			{
 				title: 'Roll it out to every machine',
@@ -139,7 +139,7 @@ const details: Record<string, Detail> = {
 			},
 			{
 				title: 'Or check the pinned release archive',
-				intro: 'The release archive holds the same files as the repository at the release tag. These lines download it and verify its checksum and its build attestation.',
+				intro: 'The release archive holds the plugin files of the repository at the release tag, without its CI, agent and test files. These lines download it and verify its checksum and its build attestation.',
 				lines: installCommands.omarchyFromRelease,
 			},
 		],
