@@ -4,6 +4,7 @@ import bannerAndroid from '../assets/brand/banner-android.png';
 import bannerCompanion from '../assets/brand/banner-companion.png';
 import bannerDocs from '../assets/brand/banner-docs.png';
 import bannerInstall from '../assets/brand/banner-install.png';
+import bannerOmarchy from '../assets/brand/banner-omarchy.png';
 import bannerPlugins from '../assets/brand/banner-plugins.png';
 import bannerRoadmap from '../assets/brand/banner-roadmap.png';
 import bannerSurfaces from '../assets/brand/banner-surfaces.png';
@@ -37,7 +38,11 @@ export const banners = {
 		caption: 'The salesman brought a better view of the plow.',
 	},
 	surfaces: surfacesBanner,
-	omarchy: surfacesBanner,
+	omarchy: {
+		image: bannerOmarchy,
+		alt: 'Engraving: on a barn wall a slim wooden rail holds a row of small green lanterns and tin flags, one flag raised with its lantern burning brighter. The farmhand reaches up to press it; below, a hatch in the wall has swung open on a little green-screen terminal with a cat beside it, while three server cabinets plow the field behind.',
+		caption: 'The raised flag goes first. One touch opens the terminal.',
+	},
 	companion: {
 		image: bannerCompanion,
 		alt: 'Engraving: the farmhand steers a plow pulled by three server cabinets labelled codex, claude and hermes. A farm girl with a chalk slate of ticks and one exclamation mark points at the claude cabinet, which has stopped in the furrow with steam rising from it.',
