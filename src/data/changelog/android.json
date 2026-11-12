@@ -2,6 +2,15 @@
   "product": "android",
   "releases": [
     {
+      "tag": "v0.1.0-pre.11",
+      "version": "0.1.0-pre.11",
+      "publishedAt": "2026-11-12T09:22:15Z",
+      "prerelease": true,
+      "url": "https://github.com/pohunekd/pohunek-companion-android/releases/tag/v0.1.0-pre.11",
+      "source": "release-notes",
+      "markdown": "### Changed\n\n- The terminal's jump-to-bottom button is now a larger accent-coloured circle that stands out on any theme, and TalkBack offers it as a \"Jump to bottom\" action. ([#252](https://github.com/pohunekd/pohunek-companion-android/issues/252))\n\n### Fixed\n\n- A session whose state the app does not recognize, for example from a newer Pohunek host, no longer blanks the host's session list or drops that session's updates. ([#255](https://github.com/pohunekd/pohunek-companion-android/issues/255))"
+    },
+    {
       "tag": "v0.1.0-pre.10",
       "version": "0.1.0-pre.10",
       "publishedAt": "2026-11-10T07:18:40Z",
