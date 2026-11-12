@@ -2,6 +2,15 @@
   "product": "companion",
   "releases": [
     {
+      "tag": "v0.1.8",
+      "version": "0.1.8",
+      "publishedAt": "2026-11-12T08:26:00Z",
+      "prerelease": false,
+      "url": "https://github.com/pohunekd/pohunek-companion/releases/tag/v0.1.8",
+      "source": "release-notes",
+      "markdown": "### Changed\n\n- The companion works with Pohunek 0.42 and keeps showing sessions that wait for you, whichever kind of wait the daemon reports. ([#245](https://github.com/pohunekd/pohunek-companion/issues/245))"
+    },
+    {
       "tag": "v0.1.7",
       "version": "0.1.7",
       "publishedAt": "2026-11-10T07:20:52Z",
