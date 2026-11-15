@@ -2,6 +2,15 @@
   "product": "android",
   "releases": [
     {
+      "tag": "v0.1.0-pre.12",
+      "version": "0.1.0-pre.12",
+      "publishedAt": "2026-11-15T07:32:15Z",
+      "prerelease": true,
+      "url": "https://github.com/pohunekd/pohunek-companion-android/releases/tag/v0.1.0-pre.12",
+      "source": "release-notes",
+      "markdown": "### Added\n\n- The app now works with Pohunek v0.43.0 hosts. A session below a parent that isolates attention (`pohunek.attention.children=isolate`) no longer appears in Needs you or its counts, even while it waits for its manager; its own row still shows its state. ([#261](https://github.com/pohunekd/pohunek-companion-android/issues/261))"
+    },
+    {
       "tag": "v0.1.0-pre.11",
       "version": "0.1.0-pre.11",
       "publishedAt": "2026-11-12T09:22:15Z",
