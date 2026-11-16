@@ -109,8 +109,12 @@ async function publish(
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
-  const docsConfig = parseDocsSyncConfig(await readJsonFile('docs-sync.config.json'));
-  const pin = findProduct(parseReleasesConfig(await readJsonFile('releases.config.json')), SCREENSHOT_PRODUCT);
+  const releases = parseReleasesConfig(await readJsonFile('releases.config.json'));
+  const docsConfig = parseDocsSyncConfig(
+    await readJsonFile('docs-sync.config.json'),
+    releases.products.map((product) => product.id),
+  );
+  const pin = findProduct(releases, SCREENSHOT_PRODUCT);
   if (pin.screenshotManifest === undefined) {
     throw new DocsSyncError(`releases.config.json product "${SCREENSHOT_PRODUCT}" has no screenshotManifest`);
   }
