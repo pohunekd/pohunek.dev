@@ -242,6 +242,17 @@ describe('planPages', () => {
       ),
     ).toThrow('route "same" is produced by both');
   });
+
+  test('routes the index page of a globbed directory to the directory', () => {
+    const planned = planPages(
+      [{ source: 'docs/knowledge/guides/**/*.md', routeBase: 'docs/knowledge' }],
+      ['docs/knowledge/guides/index.md', 'docs/knowledge/guides/setup.md'],
+    );
+    expect(planned.map((page) => [page.sourcePath, page.route])).toEqual([
+      ['docs/knowledge/guides/index.md', 'guides'],
+      ['docs/knowledge/guides/setup.md', 'guides/setup'],
+    ]);
+  });
 });
 
 describe('rewriteMarkdownLinks', () => {
@@ -373,6 +384,51 @@ describe('rewriteMarkdownLinks', () => {
     const { text, warnings } = rewriteMarkdownLinks('[up](../../outside.md)', 'docs/install.md', targets);
     expect(text).toBe('[up](../../outside.md)');
     expect(warnings).toEqual(['docs/install.md: link escapes the repository root: ../../outside.md']);
+  });
+});
+
+describe('rewriteMarkdownLinks for a second product', () => {
+  const files = [
+    'docs/policy.md',
+    'docs/knowledge/guides/index.md',
+    'docs/knowledge/guides/solo-maintainer.md',
+    'examples/solo-maintainer/policy.yaml',
+  ];
+  const planned = planPages(
+    [
+      { source: 'docs/policy.md', route: 'policy' },
+      { source: 'docs/knowledge/guides/**/*.md', routeBase: 'docs/knowledge' },
+    ],
+    files,
+  );
+  const targets = createLinkTargets({
+    files,
+    routes: new Map(planned.map((page) => [page.sourcePath, page.route])),
+    repository: 'pohunekd/autoreview',
+    ref: 'v0.4.0',
+    githubUrl: 'https://github.com',
+    rawUrl: 'https://raw.githubusercontent.com',
+    routePrefix: 'autoreview',
+  });
+
+  test('links pages under its own prefix, example files at its tag and pohunek docs as written', () => {
+    const { text, warnings } = rewriteMarkdownLinks(
+      [
+        '[policy](../../policy.md#rules), [use cases](index.md),',
+        '[example](../../../examples/solo-maintainer/policy.yaml) and',
+        '[remote hosts](https://pohunek.dev/docs/guides/remote-hosts/)',
+      ].join('\n'),
+      'docs/knowledge/guides/solo-maintainer.md',
+      targets,
+    );
+    expect(text).toBe(
+      [
+        '[policy](/autoreview/policy/#rules), [use cases](/autoreview/guides/),',
+        '[example](https://github.com/pohunekd/autoreview/blob/v0.4.0/examples/solo-maintainer/policy.yaml) and',
+        '[remote hosts](https://pohunek.dev/docs/guides/remote-hosts/)',
+      ].join('\n'),
+    );
+    expect(warnings).toEqual([]);
   });
 });
 

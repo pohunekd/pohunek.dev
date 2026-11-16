@@ -13,22 +13,33 @@ from GitHub Pages.
 | Path | Content |
 |---|---|
 | `src/pages/` | Landing, why, surfaces, plugins, roadmap, changelog, install |
-| `src/content/docs/docs/` | Generated documentation (gitignored, see below) |
+| `src/content/docs/<routePrefix>/` | Generated documentation, one directory per product (gitignored, see below) |
 | `src/data/` | Page data: landing copy, surfaces, roadmap, page banners |
 | `src/data/changelog/` | Recorded changelog of every product release (written by `scripts/follow-releases.ts`) |
 | `src/config/agents.mjs` | `llms.txt`, `robots.txt` and `/.well-known/security.txt` settings |
 | `src/styles/` | Design tokens and styles, see [DESIGN.md](DESIGN.md) |
-| `scripts/sync-docs.ts` | Pulls pohunek's docs at the pinned release |
+| `scripts/sync-docs.ts` | Pulls each product's docs at its pinned release |
 | `scripts/sync-screenshots.ts` | Pulls the Android screenshot set at the pinned release |
 | `scripts/sync-media.ts` | Pulls the Android demo video at the pinned release into `public/media/android/`; a release without `docs/media/manifest.json` renders no video |
 | `scripts/follow-releases.ts` | Moves the pins to new releases and records their changelog |
 | `releases.config.json` | Every ecosystem product: repository, tag prefix, pinned version, install assets |
 | `.github/assets/` | README hero of this repository |
 
-The documentation is never edited here. `scripts/sync-docs.ts` takes a
-whitelisted set of files from `zajca/pohunek` at the tag of the `pohunek`
-product in `releases.config.json`, rewrites their links and writes them into the Starlight
-content collection. Fix docs upstream, then bump the tag.
+The documentation is never edited here. `docs-sync.config.json` lists one
+source per product: `scripts/sync-docs.ts` takes its whitelisted files from the
+product's repository at the tag pinned in `releases.config.json`, rewrites
+their links and writes them into the Starlight content collection under the
+source's `routePrefix` (`/docs/` for pohunek). Each prefix is one path segment
+of its own, so syncing one product never touches another's pages. A link to a
+repository file that is not a page becomes a GitHub link at the tag; a link
+into another product's docs is written upstream as an absolute
+`https://pohunek.dev/...` URL. Fix docs upstream, then bump the tag.
+
+To preview one product's docs from a checkout or a branch before it is tagged:
+
+```bash
+bun scripts/sync-docs.ts --product pohunek --source ../pohunek --ref main
+```
 
 Agents get the same docs as plain text: `starlight-llms-txt` renders
 `/llms.txt`, `/llms-full.txt`, `/llms-small.txt` and the sets under
