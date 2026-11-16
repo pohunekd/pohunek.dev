@@ -2,6 +2,15 @@
   "product": "web",
   "releases": [
     {
+      "tag": "web-v0.4.0",
+      "version": "0.4.0",
+      "publishedAt": "2026-11-15T23:46:19Z",
+      "prerelease": false,
+      "url": "https://github.com/zajca/pohunek-work/releases/tag/web-v0.4.0",
+      "source": "release-notes",
+      "markdown": "### Fixed\n\n- **Breaking:** The plugin CLI and the web control center now speak daemon protocol 5 and are pinned to pohunek 0.43.1, so `pohunek-work list` no longer reports `protocol_mismatch` and the web backend starts against a current daemon. Protocol 4 daemons are no longer supported, and the session fork action and notification read, acknowledge, archive and policy actions are removed because the daemon no longer offers them. ([#229](https://github.com/zajca/pohunek-work/issues/229))"
+    },
+    {
       "tag": "web-v0.3.1",
       "version": "0.3.1",
       "publishedAt": "2026-10-10T12:00:33Z",
