@@ -3,6 +3,8 @@ import { pinnedTag, product } from '../data/ecosystem';
 export interface NavLink {
 	label: string;
 	href: string;
+	/** Other path prefixes whose pages mark this item as the current one. */
+	sections?: readonly string[];
 }
 
 const pohunek = product('pohunek');
@@ -33,10 +35,16 @@ export const nav: readonly NavLink[] = [
 	{ label: 'Why', href: '/why/' },
 	{ label: 'Surfaces', href: '/surfaces/' },
 	{ label: 'Plugins', href: '/plugins/' },
+	{ label: 'Built on', href: '/built-on/', sections: ['/autoreview/'] },
 	{ label: 'Roadmap', href: '/roadmap/' },
 	{ label: 'Changelog', href: '/changelog/' },
 	{ label: 'Docs', href: '/docs/' },
 ];
+
+/** Whether a nav item is the current one for a page path; shared by the marketing and docs headers. */
+export function isCurrentNav(link: NavLink, pathname: string): boolean {
+	return [link.href, ...(link.sections ?? [])].some((prefix) => pathname.startsWith(prefix));
+}
 
 export const footerLinks: readonly NavLink[] = [
 	{ label: 'Source', href: site.repoUrl },

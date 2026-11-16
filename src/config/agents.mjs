@@ -44,6 +44,16 @@ export const llmsTxt = {
 		{ label: 'Why pohunek', url: `${siteUrl}/why/`, description: 'why agents need a farmhand, not an IDE' },
 		{ label: 'Surfaces', url: `${siteUrl}/surfaces/`, description: 'optional owner UIs: desktop and Android companions, Omarchy bar widget, TUI, Sway launcher, web' },
 		{ label: 'Plugins', url: `${siteUrl}/plugins/`, description: 'runtime packages and context packages' },
+		{
+			label: 'Built on pohunek',
+			url: `${siteUrl}/built-on/`,
+			description: 'products that drive agents in pohunek sessions, each maintained in its own repository',
+		},
+		{
+			label: 'Šafář review',
+			url: `${siteUrl}/autoreview/`,
+			description: 'product page of the pull request reviewer that runs coding agents in pohunek sessions',
+		},
 		{ label: 'Roadmap', url: `${siteUrl}/roadmap/`, description: 'tracks and their state' },
 		{
 			label: 'Changelog',

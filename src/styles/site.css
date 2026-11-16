@@ -256,6 +256,7 @@ kbd {
 	color: var(--ink-muted);
 	padding-block: 0.3rem;
 	border-bottom: 1px solid transparent;
+	white-space: nowrap;
 }
 .site-nav a:hover,
 .site-nav a[aria-current='page'] {
@@ -289,7 +290,8 @@ kbd {
 .menu-toggle {
 	display: none;
 }
-@media (max-width: 52rem) {
+/* The inline nav fits from about 56rem with the release badge; below 58rem it moves into the menu. */
+@media (max-width: 58rem) {
 	.release-badge {
 		display: none;
 	}

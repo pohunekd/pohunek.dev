@@ -1,0 +1,104 @@
+---
+import { Image } from 'astro:assets';
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import StatusBadge from '../components/StatusBadge.astro';
+import { builtOn } from '../data/built-on';
+---
+
+<MarketingLayout
+	title="Built on pohunek"
+	description="Products that drive agents in pohunek sessions, each maintained in its own repository."
+>
+	<section class="container">
+		<header class="page-hero">
+			<span class="eyebrow">Built on</span>
+			<h1>Built on pohunek</h1>
+			<p class="lead">
+				Products that drive agents in pohunek sessions through its public contract. Each one is maintained in its own
+				repository, with its own docs and releases, and is not part of pohunek itself.
+			</p>
+		</header>
+	</section>
+	<section class="container section">
+		<div class="built-on-list">
+			{
+				builtOn.map((item) => (
+					<article class="card built-on-card">
+						<div class="plate built-on-image">
+							<Image
+								class="engraving"
+								src={item.image}
+								alt={item.imageAlt}
+								widths={[434, 868]}
+								sizes="(max-width: 48rem) 100vw, 22rem"
+								loading="lazy"
+							/>
+						</div>
+						<div class="built-on-body">
+							<span class="card-kicker">
+								<span>{item.kind}</span>
+							</span>
+							<h2>
+								<a href={item.href}>{item.name}</a>
+							</h2>
+							<p>{item.summary}</p>
+							<p class="maintainer">
+								Maintained in the <code>{item.repository}</code> repository.
+							</p>
+							<div class="card-foot">
+								<StatusBadge status={item.status} note={item.statusNote} />
+								<span class="built-on-links">
+									<a class="text-link" href={item.href}>Product page</a>
+									<a class="text-link" href={item.docsHref}>Docs</a>
+									<a class="text-link" href={`https://github.com/${item.repository}`}>Source on GitHub</a>
+								</span>
+							</div>
+						</div>
+					</article>
+				))
+			}
+		</div>
+	</section>
+</MarketingLayout>
+
+<style>
+	.built-on-list {
+		display: grid;
+		gap: 1.25rem;
+	}
+	.card.built-on-card {
+		display: grid;
+		gap: 1.25rem 1.6rem;
+	}
+	@media (min-width: 48rem) {
+		.card.built-on-card {
+			grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+			align-items: start;
+		}
+	}
+	.built-on-image {
+		margin: 0;
+	}
+	.built-on-body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		height: 100%;
+	}
+	.built-on-body h2 {
+		font-size: 1.3rem;
+	}
+	.built-on-body h2 a {
+		color: inherit;
+		text-decoration: none;
+	}
+	.built-on-body h2 a:hover {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.built-on-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+</style>

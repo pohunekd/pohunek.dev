@@ -12,9 +12,9 @@ from GitHub Pages.
 
 | Path | Content |
 |---|---|
-| `src/pages/` | Landing, why, surfaces, plugins, roadmap, changelog, install, the Šafář review product page (`/autoreview/`) |
+| `src/pages/` | Landing, why, surfaces, plugins, built on pohunek (`/built-on/`), roadmap, changelog, install, the Šafář review product page (`/autoreview/`) |
 | `src/content/docs/<routePrefix>/` | Generated documentation, one directory per product (gitignored, see below) |
-| `src/data/` | Page data: landing copy, surfaces, roadmap, page banners |
+| `src/data/` | Page data: landing copy, surfaces, products built on pohunek (`built-on.ts`, one entry per product), roadmap, page banners |
 | `src/data/changelog/` | Recorded changelog of every product release (written by `scripts/follow-releases.ts`) |
 | `src/config/agents.mjs` | `llms.txt`, `robots.txt` and `/.well-known/security.txt` settings |
 | `src/styles/` | Design tokens and styles, see [DESIGN.md](DESIGN.md) |
