@@ -32,6 +32,20 @@ const launchersArchive = archive('launchers', 'noarch');
 const pluginArchive = archive('plugin', 'noarch');
 const webArchive = archive('web', 'linux-x86_64');
 const omarchyArchive = archive('omarchy', 'noarch');
+const autoreviewArchive = archive('autoreview', 'x86_64-unknown-linux-musl');
+
+/** The attestation check autoreview's install page asks for: its release workflow, the release tag, a GitHub-hosted runner. */
+function autoreviewAttestation(archiveFile: string): string[] {
+	const { repository, signerWorkflow } = product('autoreview');
+	if (signerWorkflow === undefined) {
+		throw new Error('releases.config.json product "autoreview" has no signerWorkflow');
+	}
+	return [
+		`gh attestation verify ${archiveFile} --repo ${repository} \\`,
+		`  --signer-workflow ${repository}/${signerWorkflow} \\`,
+		`  --source-ref refs/tags/${pinnedTag('autoreview')} --deny-self-hosted-runners`,
+	];
+}
 
 /** Shell lines for the install boxes. */
 export const installCommands = {
@@ -87,4 +101,14 @@ export const installCommands = {
 	omarchyPluginAdd: [`omarchy plugin add https://github.com/${product('omarchy').repository} --enable`],
 	/** The pinned release archive, verified; the plugin files of the repository at the release tag. */
 	omarchyFromRelease: fetchAndVerify(product('omarchy').repository, pinnedTag('omarchy'), `${omarchyArchive}.tar.gz`),
+
+	/** The static x86_64 binary of the pinned release, from the archive's top directory of the same name. */
+	autoreviewLinux: [
+		`gh release download ${pinnedTag('autoreview')} -R ${product('autoreview').repository} -p '${autoreviewArchive}.tar.gz*'`,
+		`sha256sum -c ${autoreviewArchive}.tar.gz.sha256`,
+		...autoreviewAttestation(`${autoreviewArchive}.tar.gz`),
+		`tar -xzf ${autoreviewArchive}.tar.gz`,
+		`sudo install -m 0755 ${autoreviewArchive}/autoreview /usr/local/bin/autoreview`,
+		'autoreview --version',
+	],
 } as const;
