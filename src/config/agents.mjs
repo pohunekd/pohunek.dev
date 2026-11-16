@@ -38,7 +38,7 @@ export const llmsTxt = {
 		{
 			label: 'Changelog',
 			url: `${siteUrl}/changelog.txt`,
-			description: 'every release of pohunek, the companions and the pohunek-work surfaces as Markdown, newest first',
+			description: 'every release of pohunek, the companions, the pohunek-work surfaces and Šafář review as Markdown, newest first',
 		},
 		{ label: 'Source', url: 'https://github.com/zajca/pohunek', description: 'repository, issues and releases' },
 	],
