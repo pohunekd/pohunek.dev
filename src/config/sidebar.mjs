@@ -44,10 +44,11 @@ export const docsSidebar = [
 // gone is left out and an unlisted page is shown under "More pages", each with a build warning.
 /** @type {import('@astrojs/starlight/types').StarlightUserConfig['sidebar']} */
 export const autoreviewSidebar = [
-	{ label: 'Šafář review', slug: 'autoreview/features' },
+	{ label: 'Šafář review', link: '/autoreview/' },
 	{
 		label: 'Start here',
 		items: [
+			{ label: 'Features', slug: 'autoreview/features' },
 			{ label: 'Getting started', slug: 'autoreview/guides/getting-started' },
 			{ label: 'Quickstart', slug: 'autoreview/guides/quickstart' },
 			{ label: 'Install', slug: 'autoreview/install' },

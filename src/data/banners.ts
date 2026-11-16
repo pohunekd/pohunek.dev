@@ -1,6 +1,7 @@
 import type { ImageMetadata } from 'astro';
 import banner404 from '../assets/brand/banner-404.png';
 import bannerAndroid from '../assets/brand/banner-android.png';
+import bannerAutoreview from '../assets/brand/banner-autoreview.png';
 import bannerCompanion from '../assets/brand/banner-companion.png';
 import bannerDocs from '../assets/brand/banner-docs.png';
 import bannerInstall from '../assets/brand/banner-install.png';
@@ -88,6 +89,11 @@ export const banners = {
 		image: bannerDocs,
 		alt: 'Engraving: by lantern light in the barn the farmhand reads a thick almanac while the codex, claude and hermes cabinets lean over his shoulders, their green screens lighting the pages; a cat sleeps on a crate.',
 		caption: 'Read the almanac once. The herd reads it every day.',
+	},
+	autoreview: {
+		image: bannerAutoreview,
+		alt: 'Engraving: four server cabinets in harness plow a field while two smaller cabinets walk the fresh furrows behind them, one peering at the soil through a magnifying glass, the other carrying a lantern and a marker stake past little flags. At the edge of the field the farmhand sleeps against the hay under a tree, a cat asleep on his chest and his whip laid aside.',
+		caption: 'Every furrow gets checked. He can sleep.',
 	},
 	notFound: {
 		image: banner404,
