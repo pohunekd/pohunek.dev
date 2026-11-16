@@ -39,7 +39,20 @@ describe('parseReleasesConfig', () => {
       'launchers',
       'web',
       'omarchy',
+      'autoreview',
     ]);
+  });
+
+  test('pins every attested archive of autoreview under the release workflow', async () => {
+    const parsed = parseReleasesConfig(await Bun.file('releases.config.json').json());
+    const autoreview = parsed.products.find((entry) => entry.id === 'autoreview') as Product;
+    expect(autoreview.name).toBe('Šafář review');
+    expect(autoreview.signerWorkflow).toBe('.github/workflows/release.yml');
+    expect(assetNames(autoreview, '0.5.0')).toEqual([
+      'autoreview-0.5.0-x86_64-unknown-linux-musl.tar.gz',
+      'autoreview-0.5.0-aarch64-unknown-linux-musl.tar.gz',
+    ]);
+    expect(versionOfTag(autoreview, 'v0.6.0')).toBe('0.6.0');
   });
 
   test('fails on a missing key instead of inventing a default', () => {
@@ -144,5 +157,10 @@ describe('renderWithVersion', () => {
 
   test('fails for an unknown product', () => {
     expect(() => renderWithVersion(config(), 'nope', '1.0.0')).toThrow('has no product "nope"');
+  });
+
+  test('writes the committed display names back unescaped when follow-release moves a pin', async () => {
+    const text = await Bun.file('releases.config.json').text();
+    expect(renderWithVersion(JSON.parse(text), 'autoreview', '9.9.9')).toContain('"name": "Šafář review"');
   });
 });
