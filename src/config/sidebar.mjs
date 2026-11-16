@@ -40,7 +40,8 @@ export const docsSidebar = [
 
 // autoreview docs, rendered under src/content/docs/autoreview/. The slugs follow the reading order of
 // autoreview's docs/knowledge/index.md, and for the guides that of docs/knowledge/guides/index.md, which file
-// names do not give; a slug that is gone fails the build.
+// names do not give. astro.config.mjs fits it to the synced pages (src/config/synced-sidebar.mjs): a slug that is
+// gone is left out and an unlisted page is shown under "More pages", each with a build warning.
 /** @type {import('@astrojs/starlight/types').StarlightUserConfig['sidebar']} */
 export const autoreviewSidebar = [
 	{ label: 'Šafář review', slug: 'autoreview/features' },
