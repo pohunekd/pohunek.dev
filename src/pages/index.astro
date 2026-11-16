@@ -7,6 +7,7 @@ import StatusBadge from '../components/StatusBadge.astro';
 import Terminal from '../components/Terminal.astro';
 import { site } from '../config/site';
 import installPrompt from '../data/generated/install-prompt.txt?raw';
+import { builtOn } from '../data/built-on';
 import { landing } from '../data/landing';
 import { surfaces } from '../data/surfaces';
 import MarketingLayout from '../layouts/MarketingLayout.astro';
@@ -230,6 +231,37 @@ import MarketingLayout from '../layouts/MarketingLayout.astro';
 	</section>
 
 	<section class="section">
+		<div class="container">
+			<div class="section-head">
+				<span class="eyebrow">Built on pohunek</span>
+				<h2>Products that run on pohunek</h2>
+				<p class="lead">
+					Separate products, each in its own repository, drive agents in pohunek sessions through pohunek's public contract.
+				</p>
+			</div>
+			<div class="grid cols-3">
+				{
+					builtOn.map((item) => (
+						<a class="card" href={item.href}>
+							<span class="card-kicker">
+								<span>{item.kind}</span>
+							</span>
+							<h3>{item.name}</h3>
+							<p>{item.summary}</p>
+							<span class="card-foot">
+								<StatusBadge status={item.status} note={item.statusNote} />
+							</span>
+						</a>
+					))
+				}
+			</div>
+			<p class="built-on-more">
+				<a class="text-link" href="/built-on/">Everything built on pohunek</a>
+			</p>
+		</div>
+	</section>
+
+	<section class="section">
 		<div class="container install">
 			<div class="section-head center">
 				<span class="eyebrow">Install</span>
@@ -325,7 +357,8 @@ import MarketingLayout from '../layouts/MarketingLayout.astro';
 		font-size: 1.15rem;
 		color: var(--ink-strong);
 	}
-	.herd-more {
+	.herd-more,
+	.built-on-more {
 		margin-top: 1.25rem;
 	}
 	.diagram {

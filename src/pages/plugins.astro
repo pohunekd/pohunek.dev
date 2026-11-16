@@ -6,11 +6,9 @@ import CopyBox from '../components/CopyBox.astro';
 import Icon from '../components/Icon.astro';
 import StatusBadge from '../components/StatusBadge.astro';
 import { site } from '../config/site';
-import { pinnedTag, product } from '../data/ecosystem';
 import { getSurface } from '../data/surfaces';
 
 const work = getSurface('tui');
-const autoreview = product('autoreview');
 
 const runtimes = [
 	{ name: 'Codex', status: 'shipped' as const, note: 'official runtime package' },
@@ -110,23 +108,10 @@ pohunek plugin doctor`;
 	</section>
 
 	<section class="container section">
-		<div class="section-head">
-			<span class="eyebrow">Pull request review</span>
-			<h2>{autoreview.name}</h2>
-		</div>
-		<article class="card featured">
-			<div class="card-kicker"><Icon name="shield" label="" /><span>Review service</span></div>
-			<h3>{autoreview.name}</h3>
-			<p>
-				A service that reviews GitHub pull requests with Claude Code or Codex running as read-only reviewers in pohunek
-				sessions, and publishes one GitHub review under a policy you write.
-			</p>
-			<div class="card-foot">
-				<StatusBadge status="shipped" note={pinnedTag('autoreview')} />
-				<a class="text-link" href="/autoreview/">Product page</a>
-				<a class="text-link" href={`https://github.com/${autoreview.repository}`}>Source on GitHub</a>
-			</div>
-		</article>
+		<p class="muted">
+			Šafář review, the pull request reviewer, is neither a package the daemon installs nor part of pohunek-work. It is a
+			separate product, listed under <a class="text-link" href="/built-on/">Built on pohunek</a>.
+		</p>
 	</section>
 
 	<section class="container section">
