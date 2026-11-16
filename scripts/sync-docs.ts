@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
-// Renders the whitelisted pohunek docs at the pinned ref into src/content/docs/<routePrefix>/
-// and extracts the install prompt into src/data/generated/. Generated output is never committed.
+// Renders the whitelisted docs of every source in docs-sync.config.json at its product's pinned ref into
+// src/content/docs/<routePrefix>/ and extracts install prompts into src/data/generated/. Generated output is never committed.
 import { mkdir, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
-import { parseDocsSyncConfig, type DocsSyncConfig } from './lib/docs-config.ts';
-import { findProduct, parseReleasesConfig, tagOf } from './lib/releases-config.ts';
+import { parseDocsSyncConfig, type DocsSyncConfig, type ProductDocs } from './lib/docs-config.ts';
+import { findProduct, parseReleasesConfig, tagOf, type Product } from './lib/releases-config.ts';
 import { cloneSource, DocsSyncError, openLocalSource, type DocsSource } from './lib/docs-source.ts';
 import {
   buildDocPage,
@@ -15,28 +15,32 @@ import {
 } from './lib/docs-transform.ts';
 
 interface CliArgs {
+  readonly product?: string;
   readonly source?: string;
   readonly ref?: string;
 }
 
 const REPO_ROOT = resolve(dirname(import.meta.path), '..');
-/** The product in releases.config.json whose docs this site renders. */
-const DOCS_PRODUCT = 'pohunek';
+const USAGE = 'usage: sync-docs.ts [--product <id> [--source <checkout>] [--ref <tag>]]';
 
 function parseArgs(argv: readonly string[]): CliArgs {
   const values: Record<string, string> = {};
   for (let i = 0; i < argv.length; i += 2) {
     const flag = argv[i];
     const value = argv[i + 1];
-    if (flag !== '--source' && flag !== '--ref') {
-      throw new DocsSyncError(`unknown argument "${flag}"; usage: sync-docs.ts [--source <checkout>] [--ref <tag>]`);
+    if (flag !== '--product' && flag !== '--source' && flag !== '--ref') {
+      throw new DocsSyncError(`unknown argument "${flag}"; ${USAGE}`);
     }
     if (value === undefined || value.startsWith('--')) {
       throw new DocsSyncError(`${flag} needs a value`);
     }
     values[flag.slice(2)] = value;
   }
-  return { source: values.source, ref: values.ref };
+  // A checkout or a ref belongs to one repository, so it names the product it is read for.
+  if ((values.source !== undefined || values.ref !== undefined) && values.product === undefined) {
+    throw new DocsSyncError(`--source and --ref need --product; ${USAGE}`);
+  }
+  return { product: values.product, source: values.source, ref: values.ref };
 }
 
 async function readJsonFile(relativePath: string): Promise<unknown> {
@@ -58,11 +62,12 @@ async function writeFileAtomic(path: string, content: string): Promise<void> {
 async function buildPages(
   source: DocsSource,
   config: DocsSyncConfig,
+  docs: ProductDocs,
   repository: string,
   ref: string,
 ): Promise<{ pages: BuiltPage[]; files: string[] }> {
   const files = await source.listFiles();
-  const planned = planPages(config.pages, files);
+  const planned = planPages(docs.pages, files);
   const routes = new Map(planned.map((page) => [page.sourcePath, page.route]));
   const targets = createLinkTargets({
     files,
@@ -71,7 +76,7 @@ async function buildPages(
     ref,
     githubUrl: config.githubUrl,
     rawUrl: config.rawUrl,
-    routePrefix: config.routePrefix,
+    routePrefix: docs.routePrefix,
   });
 
   const pages: BuiltPage[] = [];
@@ -82,7 +87,7 @@ async function buildPages(
         sourcePath: page.sourcePath,
         text,
         planned: page,
-        editUrl: `${config.githubUrl}/${repository}/blob/${config.editBranch}/${page.sourcePath}`,
+        editUrl: `${config.githubUrl}/${repository}/blob/${docs.editBranch}/${page.sourcePath}`,
         targets,
       }),
     );
@@ -102,16 +107,14 @@ async function publish(pages: readonly BuiltPage[], stagingDir: string, outputDi
   await rename(stagingDir, outputDir);
 }
 
-async function main(): Promise<void> {
-  const args = parseArgs(process.argv.slice(2));
-  const config = parseDocsSyncConfig(await readJsonFile('docs-sync.config.json'));
-  const pin = findProduct(parseReleasesConfig(await readJsonFile('releases.config.json')), DOCS_PRODUCT);
+/** Syncs one product into its own route prefix; the output of every other product is left as it is. */
+async function syncProduct(config: DocsSyncConfig, docs: ProductDocs, pin: Product, args: CliArgs): Promise<void> {
   const ref = args.ref ?? tagOf(pin);
-
-  const cacheRoot = join(REPO_ROOT, config.cacheDir);
+  // Keyed by product as well as ref: two products may release the same tag name.
+  const cacheRoot = join(REPO_ROOT, config.cacheDir, docs.product);
   const cloneDir = join(cacheRoot, ref.replace(/[^A-Za-z0-9._-]/g, '_'));
   const stagingDir = join(cacheRoot, 'staging');
-  const outputDir = join(REPO_ROOT, config.contentRoot, config.routePrefix);
+  const outputDir = join(REPO_ROOT, config.contentRoot, docs.routePrefix);
 
   const source =
     args.source !== undefined
@@ -123,30 +126,53 @@ async function main(): Promise<void> {
         });
 
   try {
-    console.error(`sync-docs: reading ${source.description}`);
-    const { pages, files } = await buildPages(source, config, pin.repository, ref);
-    const prompt = extractInstallPrompt(
-      await source.readText(config.installPrompt.readme),
-      config.installPrompt.heading,
-    );
+    console.error(`sync-docs: ${docs.product}: reading ${source.description}`);
+    const { pages, files } = await buildPages(source, config, docs, pin.repository, ref);
+    const installPrompt = docs.installPrompt;
+    const prompt =
+      installPrompt === undefined
+        ? undefined
+        : {
+            path: join(REPO_ROOT, config.generatedDir, installPrompt.output),
+            text: extractInstallPrompt(await source.readText(installPrompt.readme), installPrompt.heading),
+          };
 
     await publish(pages, stagingDir, outputDir);
-    await writeFileAtomic(join(REPO_ROOT, config.generatedDir, config.installPrompt.output), prompt);
+    if (prompt !== undefined) {
+      await writeFileAtomic(prompt.path, prompt.text);
+    }
 
     for (const page of pages) {
-      console.error(`  /${config.routePrefix}/${page.route === '' ? '' : `${page.route}/`}  <- ${page.sourcePath}`);
+      console.error(`  /${docs.routePrefix}/${page.route === '' ? '' : `${page.route}/`}  <- ${page.sourcePath}`);
       for (const warning of page.warnings) {
         console.error(`    warning: ${warning}`);
       }
     }
     const warnings = pages.reduce((count, page) => count + page.warnings.length, 0);
     console.error(
-      `sync-docs: ${pages.length} pages from ${files.length} files at ${ref}, ${warnings} unresolved link warning(s)`,
+      `sync-docs: ${docs.product}: ${pages.length} pages from ${files.length} files at ${ref}, ${warnings} unresolved link warning(s)`,
     );
   } finally {
     if (args.source === undefined) {
       await rm(cloneDir, { recursive: true, force: true });
     }
+  }
+}
+
+async function main(): Promise<void> {
+  const args = parseArgs(process.argv.slice(2));
+  const releases = parseReleasesConfig(await readJsonFile('releases.config.json'));
+  const config = parseDocsSyncConfig(
+    await readJsonFile('docs-sync.config.json'),
+    releases.products.map((product) => product.id),
+  );
+  const selected =
+    args.product === undefined ? config.sources : config.sources.filter((docs) => docs.product === args.product);
+  if (selected.length === 0) {
+    throw new DocsSyncError(`docs-sync.config.json has no source for product "${args.product}"`);
+  }
+  for (const docs of selected) {
+    await syncProduct(config, docs, findProduct(releases, docs.product), args);
   }
 }
 

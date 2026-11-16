@@ -404,8 +404,9 @@ function findClosingBacktickRun(text: string, from: number, length: number): num
 }
 
 function routeFromBase(sourcePath: string, routeBase: string): string {
-  const relative = sourcePath.slice(routeBase.length + 1);
-  return relative.replace(/\.md$/, '');
+  const relative = sourcePath.slice(routeBase.length + 1).replace(/\.md$/, '');
+  // Starlight serves `<dir>/index.md` at `/<dir>/`, so the page and every link to it take the directory route.
+  return relative === 'index' ? '' : relative.replace(/\/index$/, '');
 }
 
 function normalizeNewlines(text: string): string {

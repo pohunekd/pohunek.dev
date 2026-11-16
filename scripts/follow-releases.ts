@@ -293,7 +293,10 @@ async function main(): Promise<number> {
   const args = parseArgs(process.argv.slice(2));
   const config = parseReleasesConfig(await Bun.file(join(REPO_ROOT, CONFIG_FILE)).json());
   const github = new GithubClient(config.apiUrl, requireEnv('GH_TOKEN'));
-  const { githubUrl } = parseDocsSyncConfig(await Bun.file(join(REPO_ROOT, 'docs-sync.config.json')).json());
+  const { githubUrl } = parseDocsSyncConfig(
+    await Bun.file(join(REPO_ROOT, 'docs-sync.config.json')).json(),
+    config.products.map((product) => product.id),
+  );
   const selected = args.product === undefined ? config.products : [findProduct(config, args.product)];
 
   const releasesByRepository = new Map<string, GithubRelease[]>();
