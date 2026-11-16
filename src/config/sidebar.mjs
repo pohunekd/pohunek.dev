@@ -37,3 +37,82 @@ export const docsSidebar = [
 		items: [{ autogenerate: { directory: 'docs/safety' } }],
 	},
 ];
+
+// autoreview docs, rendered under src/content/docs/autoreview/. The slugs follow the reading order of
+// autoreview's docs/knowledge/index.md, and for the guides that of docs/knowledge/guides/index.md, which file
+// names do not give; a slug that is gone fails the build.
+/** @type {import('@astrojs/starlight/types').StarlightUserConfig['sidebar']} */
+export const autoreviewSidebar = [
+	{ label: 'Šafář review', slug: 'autoreview/features' },
+	{
+		label: 'Start here',
+		items: [
+			{ label: 'Getting started', slug: 'autoreview/guides/getting-started' },
+			{ label: 'Quickstart', slug: 'autoreview/guides/quickstart' },
+			{ label: 'Install', slug: 'autoreview/install' },
+		],
+	},
+	{
+		label: 'Concepts',
+		items: [
+			'autoreview/concepts/how-it-works',
+			'autoreview/concepts/reviewers-and-adapters',
+			'autoreview/concepts/decisions',
+			'autoreview/concepts/incremental-reviews',
+			'autoreview/concepts/verification',
+			'autoreview/concepts/finding-outcomes',
+			'autoreview/concepts/review-report',
+			'autoreview/concepts/notifications',
+			'autoreview/concepts/github-identity',
+			'autoreview/concepts/state-and-recovery',
+		],
+	},
+	{
+		label: 'Guides',
+		items: [
+			'autoreview/guides',
+			'autoreview/guides/single-repo-comment',
+			'autoreview/guides/public-repositories',
+			'autoreview/guides/human-approval',
+			'autoreview/guides/auto-approve',
+			'autoreview/guides/org-wildcard',
+			'autoreview/guides/notes-handoff',
+			'autoreview/guides/coding-agent-drafts',
+			'autoreview/guides/solo-maintainer',
+			'autoreview/guides/multihost',
+			'autoreview/guides/combining',
+			'autoreview/guides/text-guard',
+			'autoreview/guides/notifiers',
+			'autoreview/guides/writing-prompts',
+			'autoreview/guides/hermes-approval',
+			'autoreview/guides/mcp-server',
+		],
+	},
+	{
+		label: 'Reference',
+		items: [
+			{ label: 'Policy', slug: 'autoreview/policy' },
+			{ label: 'Configuration', slug: 'autoreview/configuration' },
+			{ label: 'CLI', slug: 'autoreview/cli' },
+			{ label: 'Review statistics', slug: 'autoreview/stats' },
+		],
+	},
+	{
+		label: 'Runbooks',
+		items: [
+			'autoreview/runbooks/troubleshooting',
+			'autoreview/runbooks/retry-and-recovery',
+			'autoreview/runbooks/stale-sessions-and-branches',
+			'autoreview/runbooks/upgrade-and-backup',
+		],
+	},
+	{
+		label: 'Safety',
+		items: [
+			'autoreview/safety/threat-model',
+			'autoreview/safety/untrusted-authors',
+			'autoreview/safety/prompt-injection',
+			'autoreview/safety/secrets',
+		],
+	},
+];

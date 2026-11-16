@@ -29,8 +29,10 @@ The documentation is never edited here. `docs-sync.config.json` lists one
 source per product: `scripts/sync-docs.ts` takes its whitelisted files from the
 product's repository at the tag pinned in `releases.config.json`, rewrites
 their links and writes them into the Starlight content collection under the
-source's `routePrefix` (`/docs/` for pohunek). Each prefix is one path segment
-of its own, so syncing one product never touches another's pages. A link to a
+source's `routePrefix` (`/docs/` for pohunek, `/autoreview/` for autoreview).
+Each prefix is one path segment of its own, so syncing one product never
+touches another's pages, and each docs page shows only its own product's
+sidebar (`src/config/sidebar.mjs`, filtered by `src/route-middleware.ts`). A link to a
 repository file that is not a page becomes a GitHub link at the tag; a link
 into another product's docs is written upstream as an absolute
 `https://pohunek.dev/...` URL. Fix docs upstream, then bump the tag.

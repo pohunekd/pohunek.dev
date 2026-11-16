@@ -57,6 +57,53 @@
         "heading": "## Install with an agent",
         "output": "install-prompt.txt"
       }
+    },
+    {
+      "product": "autoreview",
+      "routePrefix": "autoreview",
+      "editBranch": "main",
+      "pages": [
+        {
+          "source": "docs/features.md",
+          "route": "features"
+        },
+        {
+          "source": "docs/install.md",
+          "route": "install"
+        },
+        {
+          "source": "docs/policy.md",
+          "route": "policy"
+        },
+        {
+          "source": "docs/configuration.md",
+          "route": "configuration"
+        },
+        {
+          "source": "docs/cli.md",
+          "route": "cli"
+        },
+        {
+          "source": "docs/stats.md",
+          "route": "stats"
+        },
+        {
+          "source": "docs/knowledge/concepts/**/*.md",
+          "routeBase": "docs/knowledge"
+        },
+        {
+          "source": "docs/knowledge/guides/**/*.md",
+          "routeBase": "docs/knowledge"
+        },
+        {
+          "source": "docs/knowledge/runbooks/**/*.md",
+          "routeBase": "docs/knowledge"
+        },
+        {
+          "source": "docs/knowledge/safety/**/*.md",
+          "routeBase": "docs/knowledge"
+        }
+      ]
     }
   ]
 }

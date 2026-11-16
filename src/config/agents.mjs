@@ -15,6 +15,7 @@ export const llmsTxt = {
 		'- To drive pohunek, use the CLI with `--json`: every automation command returns one versioned envelope with typed errors. The CLI reference set below is the contract.',
 		'- Agent CLIs (Codex, Claude Code, Hermes, Pi, and any other through a runtime package) run inside pohunek sessions; pohunek does not write code itself.',
 		`- The docs are rendered from the pohunek repository at a pinned release; the version is shown on ${siteUrl}/docs/.`,
+		'- Šafář review (the `autoreview` service) reviews GitHub pull requests with coding agents that run as read-only reviewers in pohunek sessions; its docs, rendered from its repository at a pinned release, are the autoreview set below.',
 	].join('\n'),
 	// llms-full.txt opens with what an agent needs first: what pohunek does, how to install it, the CLI.
 	promote: ['docs/features*', 'docs/install*', 'docs/cli*'],
@@ -29,6 +30,14 @@ export const llmsTxt = {
 			description: 'installation, upgrades, remote hosts and runbooks',
 			paths: ['docs/install*', 'docs/guides/**', 'docs/runbooks/**'],
 		},
+		// starlight-llms-txt derives the set's URL from its label (/_llms-txt/<slug>.txt), so the label stays the ASCII
+		// product id and the description carries the display name.
+		{
+			label: 'autoreview',
+			description:
+				'Šafář review, pull request reviews by coding agents in pohunek sessions: install, policy, configuration, CLI, use cases, runbooks and safety',
+			paths: ['autoreview/**'],
+		},
 	],
 	optionalLinks: [
 		{ label: 'Why pohunek', url: `${siteUrl}/why/`, description: 'why agents need a farmhand, not an IDE' },
@@ -41,6 +50,11 @@ export const llmsTxt = {
 			description: 'every release of pohunek, the companions, the pohunek-work surfaces and Šafář review as Markdown, newest first',
 		},
 		{ label: 'Source', url: 'https://github.com/zajca/pohunek', description: 'repository, issues and releases' },
+		{
+			label: 'Šafář review source',
+			url: 'https://github.com/pohunekd/autoreview',
+			description: 'repository, issues and releases of `autoreview`',
+		},
 	],
 };
 
