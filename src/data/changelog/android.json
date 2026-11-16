@@ -2,6 +2,15 @@
   "product": "android",
   "releases": [
     {
+      "tag": "v0.1.0-pre.14",
+      "version": "0.1.0-pre.14",
+      "publishedAt": "2026-11-16T18:28:14Z",
+      "prerelease": true,
+      "url": "https://github.com/pohunekd/pohunek-companion-android/releases/tag/v0.1.0-pre.14",
+      "source": "release-notes",
+      "markdown": "### Fixed\n\n- The Project chip in the filter bar keeps its label when the Sub-sessions chip is shown; the chips scroll sideways when they do not all fit. ([#307](https://github.com/pohunekd/pohunek-companion-android/issues/307))\n- The picked project on the filter bar's Project chip shows a longer name instead of cutting it to a few letters, and the scrolling chip row fades at the edge that has more chips beyond it. ([#311](https://github.com/pohunekd/pohunek-companion-android/issues/311))"
+    },
+    {
       "tag": "v0.1.0-pre.13",
       "version": "0.1.0-pre.13",
       "publishedAt": "2026-11-16T10:48:19Z",
