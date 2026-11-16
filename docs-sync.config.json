@@ -103,7 +103,12 @@
           "source": "docs/knowledge/safety/**/*.md",
           "routeBase": "docs/knowledge"
         }
-      ]
+      ],
+      "installPrompt": {
+        "readme": "README.md",
+        "heading": "## Install with an agent",
+        "output": "autoreview/install-prompt.txt"
+      }
     }
   ]
 }

@@ -45,7 +45,8 @@ bun scripts/sync-docs.ts --product pohunek --source ../pohunek --ref main
 
 Agents get the same docs as plain text: `starlight-llms-txt` renders
 `/llms.txt`, `/llms-full.txt`, `/llms-small.txt` and the sets under
-`/_llms-txt/`, and `/install-prompt.txt` serves the README install prompt.
+`/_llms-txt/`. `/install-prompt.txt` serves the install prompt of the pohunek
+README and `/autoreview/install-prompt.txt` that of the autoreview README.
 `/.well-known/security.txt` gets a fresh `Expires` on every build, so the site
 needs a deploy at least every 180 days.
 

@@ -60,6 +60,10 @@ describe('parseDocsSyncConfig', () => {
       releases.products.map((product) => product.id),
     );
     expect(config.sources.find((source) => source.product === 'pohunek')?.routePrefix).toBe('docs');
+    // src/pages/autoreview/install-prompt.txt.ts imports this file from generatedDir.
+    expect(config.sources.find((source) => source.product === 'autoreview')?.installPrompt?.output).toBe(
+      'autoreview/install-prompt.txt',
+    );
   });
 
   test('accepts a second product with its own route prefix and no install prompt', () => {
@@ -116,6 +120,25 @@ describe('parseDocsSyncConfig', () => {
       parseDocsSyncConfig(validConfig({ sources: [pohunekSource(), autoreviewSource({ installPrompt })] }), PRODUCTS),
     ).toThrow('two sources write the install prompt "install-prompt.txt"');
   });
+
+  test('accepts an install prompt in a directory of the generated output', () => {
+    const installPrompt = { readme: 'README.md', heading: '## Install', output: 'autoreview/install-prompt.txt' };
+    const config = parseDocsSyncConfig(
+      validConfig({ sources: [pohunekSource(), autoreviewSource({ installPrompt })] }),
+      PRODUCTS,
+    );
+    expect(config.sources[1].installPrompt?.output).toBe('autoreview/install-prompt.txt');
+  });
+
+  test.each(['../install-prompt.txt', '/install-prompt.txt', 'autoreview/../x.txt', 'autoreview//x.txt', 'x.md', 'X.txt'])(
+    'rejects install prompt output %p',
+    (output) => {
+      const installPrompt = { readme: 'README.md', heading: '## Install', output };
+      expect(() =>
+        parseDocsSyncConfig(validConfig({ sources: [pohunekSource(), autoreviewSource({ installPrompt })] }), PRODUCTS),
+      ).toThrow('installPrompt.output must be a relative .txt path');
+    },
+  );
 
   test('requires exactly one of route or routeBase', () => {
     expect(() => parseDocsSyncConfig(withPages([{ source: 'docs/a.md' }]), PRODUCTS)).toThrow(

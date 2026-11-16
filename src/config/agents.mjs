@@ -16,6 +16,7 @@ export const llmsTxt = {
 		'- Agent CLIs (Codex, Claude Code, Hermes, Pi, and any other through a runtime package) run inside pohunek sessions; pohunek does not write code itself.',
 		`- The docs are rendered from the pohunek repository at a pinned release; the version is shown on ${siteUrl}/docs/.`,
 		'- Šafář review (the `autoreview` service) reviews GitHub pull requests with coding agents that run as read-only reviewers in pohunek sessions; its docs, rendered from its repository at a pinned release, are the autoreview set below.',
+		`- To install Šafář review, fetch ${siteUrl}/autoreview/install-prompt.txt and follow it. It reads the install pages of the latest \`autoreview\` release and asks the owner before every change.`,
 	].join('\n'),
 	// llms-full.txt opens with what an agent needs first: what pohunek does, how to install it, the CLI.
 	promote: ['docs/features*', 'docs/install*', 'docs/cli*'],
