@@ -29,8 +29,13 @@ The documentation is never edited here. `docs-sync.config.json` lists one
 source per product: `scripts/sync-docs.ts` takes its whitelisted files from the
 product's repository at the tag pinned in `releases.config.json`, rewrites
 their links and writes them into the Starlight content collection under the
-source's `routePrefix` (`/docs/` for pohunek). Each prefix is one path segment
-of its own, so syncing one product never touches another's pages. A link to a
+source's `routePrefix` (`/docs/` for pohunek, `/autoreview/` for autoreview).
+Each prefix is one path segment of its own, so syncing one product never
+touches another's pages, and each docs page shows only its own product's
+sidebar (`src/config/sidebar.mjs`, filtered by `src/route-middleware.ts`). The
+autoreview sidebar follows the synced pages, so a release that adds or removes
+a page deploys without a sidebar edit; the build log warns about each such page,
+and its sidebar line belongs in `src/config/sidebar.mjs` afterwards. A link to a
 repository file that is not a page becomes a GitHub link at the tag; a link
 into another product's docs is written upstream as an absolute
 `https://pohunek.dev/...` URL. Fix docs upstream, then bump the tag.
@@ -43,7 +48,8 @@ bun scripts/sync-docs.ts --product pohunek --source ../pohunek --ref main
 
 Agents get the same docs as plain text: `starlight-llms-txt` renders
 `/llms.txt`, `/llms-full.txt`, `/llms-small.txt` and the sets under
-`/_llms-txt/`, and `/install-prompt.txt` serves the README install prompt.
+`/_llms-txt/`. `/install-prompt.txt` serves the install prompt of the pohunek
+README and `/autoreview/install-prompt.txt` that of the autoreview README.
 `/.well-known/security.txt` gets a fresh `Expires` on every build, so the site
 needs a deploy at least every 180 days.
 

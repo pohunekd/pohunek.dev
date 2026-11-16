@@ -3,7 +3,8 @@ import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 import starlightLlmsTxt from 'starlight-llms-txt';
 import { llmsTxt, siteUrl } from './src/config/agents.mjs';
-import { docsSidebar } from './src/config/sidebar.mjs';
+import { autoreviewSidebar, docsSidebar } from './src/config/sidebar.mjs';
+import { productSidebar } from './src/config/synced-sidebar.mjs';
 
 export default defineConfig({
 	site: siteUrl,
@@ -28,7 +29,10 @@ export default defineConfig({
 			components: {
 				Header: './src/components/starlight/Header.astro',
 			},
-			sidebar: docsSidebar,
+			// autoreview's pin moves with its releases; its sidebar follows the synced pages (src/config/synced-sidebar.mjs).
+			sidebar: [...docsSidebar, ...productSidebar(autoreviewSidebar, 'autoreview', 'More pages')],
+			// Keeps each product's docs pages on its own sidebar entries and previous/next links.
+			routeMiddleware: './src/route-middleware.ts',
 			disable404Route: true,
 			plugins: [starlightLlmsTxt(llmsTxt)],
 		}),

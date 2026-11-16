@@ -34,6 +34,8 @@ export interface DocsSyncConfig {
 type JsonObject = Record<string, unknown>;
 
 const ROUTE_PREFIX_PATTERN = /^[a-z][a-z0-9-]*$/;
+// A path inside generatedDir: lowercase segments without dots, so it can never leave that directory.
+const INSTALL_PROMPT_OUTPUT_PATTERN = /^(?:[a-z][a-z0-9-]*\/)*[a-z][a-z0-9-]*\.txt$/;
 
 function asObject(value: unknown, where: string): JsonObject {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
@@ -89,10 +91,14 @@ function parsePageRule(raw: unknown, where: string): PageRule {
 
 function parseInstallPrompt(raw: unknown, where: string): InstallPromptConfig {
   const obj = asObject(raw, where);
+  const output = requireString(obj, 'output', where);
+  if (!INSTALL_PROMPT_OUTPUT_PATTERN.test(output)) {
+    throw new Error(`${where}.output must be a relative .txt path matching ${INSTALL_PROMPT_OUTPUT_PATTERN}, got "${output}"`);
+  }
   return {
     readme: requireString(obj, 'readme', where),
     heading: requireString(obj, 'heading', where),
-    output: requireString(obj, 'output', where),
+    output,
   };
 }
 
