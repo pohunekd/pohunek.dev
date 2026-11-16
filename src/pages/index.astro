@@ -239,7 +239,7 @@ import MarketingLayout from '../layouts/MarketingLayout.astro';
 					Separate products, each in its own repository, drive agents in pohunek sessions through pohunek's public contract.
 				</p>
 			</div>
-			<div class="grid cols-3">
+			<div class="grid cols-3 built-on-grid">
 				{
 					builtOn.map((item) => (
 						<a class="card" href={item.href}>
@@ -360,6 +360,10 @@ import MarketingLayout from '../layouts/MarketingLayout.astro';
 	.herd-more,
 	.built-on-more {
 		margin-top: 1.25rem;
+	}
+	/* auto-fill keeps the empty tracks, so a single entry stays one column wide like the surface cards above. */
+	.grid.cols-3.built-on-grid {
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
 	}
 	.diagram {
 		display: grid;

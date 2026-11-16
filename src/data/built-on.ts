@@ -4,7 +4,8 @@ import { pinnedTag, product } from './ecosystem';
 import type { Status } from './status';
 
 /**
- * A product that runs on pohunek sessions but is not part of pohunek: it has its own repository, docs and releases.
+ * A product that drives agents in pohunek sessions but is not part of pohunek: it has its own repository, docs and
+ * releases.
  * Listed on /built-on/; it is not a `Surface`, so `src/pages/surfaces/[slug].astro` makes no page for it.
  */
 export interface BuiltOnProduct {
