@@ -29,6 +29,8 @@ export default defineConfig({
 				Header: './src/components/starlight/Header.astro',
 			},
 			sidebar: docsSidebar,
+			// Keeps each product's docs pages on its own sidebar entries and previous/next links.
+			routeMiddleware: './src/route-middleware.ts',
 			disable404Route: true,
 			plugins: [starlightLlmsTxt(llmsTxt)],
 		}),
