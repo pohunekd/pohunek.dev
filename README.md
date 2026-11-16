@@ -12,7 +12,7 @@ from GitHub Pages.
 
 | Path | Content |
 |---|---|
-| `src/pages/` | Landing, why, surfaces, plugins, roadmap, changelog, install |
+| `src/pages/` | Landing, why, surfaces, plugins, roadmap, changelog, install, the Šafář review product page (`/autoreview/`) |
 | `src/content/docs/<routePrefix>/` | Generated documentation, one directory per product (gitignored, see below) |
 | `src/data/` | Page data: landing copy, surfaces, roadmap, page banners |
 | `src/data/changelog/` | Recorded changelog of every product release (written by `scripts/follow-releases.ts`) |
