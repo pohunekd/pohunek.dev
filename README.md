@@ -62,20 +62,31 @@ screenshots, the surface pages and the install commands all read their versions
 from it; no version is written anywhere else.
 
 `.github/workflows/follow-release.yml` moves the pins on its own every three
-hours. `scripts/follow-releases.ts` finds each product's newest release (a
-pre-release only for a product that follows them), downloads every install
-asset the config names, checks it against its `.sha256` file and GitHub's
-digest and, for an attested product, runs `gh attestation verify`. Only then
-does it move the pin. It also records the changelog of every release up to
-the pin in `src/data/changelog/<product>.json`: the block between
+hours. `scripts/follow-releases.ts` follows every product on its own: it finds
+each product's newest release (a pre-release only for a product that follows
+them), downloads every install asset the config names, checks it against its
+`.sha256` file and GitHub's digest and, for an attested product, runs
+`gh attestation verify`, then checks that the new pin's docs still sync (the
+whitelisted pages and install prompt of `docs-sync.config.json`, plus the
+screenshot and media manifests of a product that names them). Only then does
+it move the pin. A product whose assets, attestation or docs fail keeps its
+old pin (and its old changelog entries) while every product that passed still
+moves; the site builds and deploys with those pins. The script also records
+the changelog of every release up to the pin in
+`src/data/changelog/<product>.json`: the block between
 `<!-- pohunek-changelog:start -->` and `<!-- pohunek-changelog:end -->` of the
 release body (the ecosystem changelog contract,
 [zajca/pohunek#1588](https://github.com/zajca/pohunek/issues/1588)), or, for a
 release without one, the titles of the pull requests merged since the previous
 release, marked as generated. The workflow then tests and builds the site,
-pushes the data to `main` and starts a deploy; a failed check leaves every pin
-where it was. Run it by hand from the Actions tab to follow a release at once,
-or with a product and a version to pin a newer release.
+pushes the data to `main` and starts a deploy. Run it by hand from the Actions
+tab to follow a release at once, or with a product and a version to pin a
+newer release.
+
+A failing product is reported, not retried: the run's summary carries one
+table row per product (`moved`, `unchanged`, or `FAILED` with the reason),
+the `collect` job's log names the same reason, and the workflow fails at the
+end through its `report` job after the products that passed went through.
 
 Locally (needs `gh` signed in):
 

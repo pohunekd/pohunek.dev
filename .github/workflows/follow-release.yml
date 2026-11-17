@@ -1,16 +1,20 @@
 name: Follow ecosystem releases
 
 # Moves every product pin in releases.config.json to the product's newest
-# release once that release's install assets verify, records the changelog of
-# every new release under src/data/changelog/, checks that the site still tests
-# and builds, pushes the change to main and starts a deploy. A push made with
+# release once that release's install assets verify and its docs still sync,
+# records the changelog of every new release under src/data/changelog/, checks
+# that the site still tests and builds, pushes the change to main and starts a
+# deploy. One product's failing release keeps its old pin and is reported in
+# the run summary while the products that passed still move. A push made with
 # GITHUB_TOKEN does not start other workflows, so the deploy is started
 # explicitly through workflow_dispatch, which GitHub exempts from that rule.
 #
 #   collect   read-only token; runs only this repository's dependency-free
-#             scripts (no package install), verifies assets and writes the data
-#             files, uploads them as an artifact and names the main commit it
-#             started from.
+#             scripts (no package install), verifies assets and the new pins'
+#             docs and writes the data files, uploads them as an artifact and
+#             names the main commit it started from. A failing product leaves
+#             its old pin in place and is reported in the step summary; the
+#             step exits 2 and the run fails at the end through `report`.
 #   verify    read-only token; installs dependencies, tests and builds that
 #             commit with the collected files. Third-party build code runs only
 #             here.
@@ -66,6 +70,7 @@ jobs:
       changed: ${{ steps.follow.outputs.changed }}
       summary: ${{ steps.follow.outputs.summary }}
       failed: ${{ steps.follow.outputs.failed }}
+      outcome: ${{ steps.follow.outcome }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -82,6 +87,9 @@ jobs:
       - name: Follow the releases
         id: follow
         shell: bash
+        # Exit 2 (some products failed, the rest moved) still records the pins that passed;
+        # the workflow fails at the end through the report job instead of dropping everything.
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           # Untrusted input; follow-releases.ts validates the product id and the version.
