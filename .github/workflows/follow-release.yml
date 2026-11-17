@@ -1,33 +1,41 @@
 name: Follow ecosystem releases
 
 # Moves every product pin in releases.config.json to the product's newest
-# release once that release's install assets verify and its docs still sync,
-# records the changelog of every new release under src/data/changelog/, checks
-# that the site still tests and builds, pushes the change to main and starts a
-# deploy. One product's failing release keeps its old pin and is reported in
-# the run summary while the products that passed still move. A push made with
+# release once that release's install assets verify, records the changelog of
+# every new release under src/data/changelog/, syncs each moved product's
+# docs on its own, checks that the site still tests and builds, pushes the
+# change to main and starts a deploy. One product's failing release or docs
+# sync keeps its old pin and is reported while the products that passed still
+# move. A push made with
 # GITHUB_TOKEN does not start other workflows, so the deploy is started
 # explicitly through workflow_dispatch, which GitHub exempts from that rule.
 #
 #   collect   read-only token; runs only this repository's dependency-free
-#             scripts (no package install), verifies assets and the new pins'
-#             docs and writes the data files, uploads them as an artifact and
-#             names the main commit it started from. A failing product leaves
-#             its old pin in place and is reported in the step summary; the
-#             step exits 2 and the run fails at the end through `report`.
-#   verify    read-only token; installs dependencies, tests and builds that
-#             commit with the collected files. Third-party build code runs only
-#             here.
+#             scripts (no package install; run with bun --no-install so any
+#             new npm import fails loudly), verifies assets and attestations
+#             per product and writes the data files of the products that
+#             passed, uploads them as an artifact and names the main commit it
+#             started from. A failing product keeps its old pin and is named
+#             in the failed outcome; the step exits 2 and the run fails at the
+#             end through `report`.
+#   verify    read-only token; installs dependencies, syncs each moved
+#             product's docs on its own (--keep-going), reverts every product
+#             whose sync failed to its base-commit pin and changelog, then
+#             tests and builds with that tree. Third-party build code runs
+#             only here.
 #   publish   contents: write; installs and runs nothing but git. It checks out
-#             the same commit, downloads exactly the artifact `collect` uploaded
-#             (by id) outside the checkout, copies in only the expected regular
-#             files, commits and pushes. The push is a fast-forward of that
-#             commit, so a main that moved meanwhile fails the run instead of
-#             losing its change; the next run starts from the new main.
+#             the same commit, downloads exactly the artifacts `collect` and
+#             `verify` uploaded (by id) outside the checkout, copies in only
+#             the expected regular files, commits and pushes. The push is a
+#             fast-forward of that commit, so a main that moved meanwhile
+#             fails the run instead of losing its change; the next run starts
+#             from the new main.
 #   deploy    actions: write; dispatches deploy.yml. A failed dispatch is
 #             retried by re-running this job alone.
-#   report    fails the run when a product could not be followed, after the
-#             other products went through; the collect log names the reason.
+#   report    writes one row per product to the run summary and fails the run
+#             when a product could not be followed or synced, after the other
+#             products went through; the collect and verify logs name
+#             the reason.
 #
 # Scheduled workflows of a public repository are disabled after 60 days
 # without repository activity. A manual run (workflow_dispatch) is the fallback
@@ -70,7 +78,9 @@ jobs:
       changed: ${{ steps.follow.outputs.changed }}
       summary: ${{ steps.follow.outputs.summary }}
       failed: ${{ steps.follow.outputs.failed }}
-      outcome: ${{ steps.follow.outcome }}
+      failed_products: ${{ steps.follow.outputs.failed_products }}
+      failed_reasons: ${{ steps.follow.outputs.failed_reasons }}
+      moved_products: ${{ steps.follow.outputs.moved_products }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -88,8 +98,7 @@ jobs:
         id: follow
         shell: bash
         # Exit 2 (some products failed, the rest moved) still records the pins that passed;
-        # the workflow fails at the end through the report job instead of dropping everything.
-        continue-on-error: true
+        # any other non-zero status fails the step and the run, as before this change.
         env:
           GH_TOKEN: ${{ github.token }}
           # Untrusted input; follow-releases.ts validates the product id and the version.
@@ -102,12 +111,19 @@ jobs:
           if [ -n "$VERSION" ]; then args+=(--version "$VERSION"); fi
           # Exit 2: some products failed and the others were followed; the report job fails the run.
           status=0
-          moved="$(bun scripts/follow-releases.ts "${args[@]}")" || status=$?
+          moved="$(bun --no-install scripts/follow-releases.ts "${args[@]}")" || status=$?
+          failed=false
           case "$status" in
-            0) echo "failed=false" >> "$GITHUB_OUTPUT" ;;
-            2) echo "failed=true" >> "$GITHUB_OUTPUT" ;;
+            0) ;;
+            2) failed=true ;;
             *) exit "$status" ;;
           esac
+          echo "moved<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$moved" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "failed=$failed" >> "$GITHUB_OUTPUT"
+          # Failed products keep their old pins; pass them to the other jobs as JSON arrays.
+          echo "$moved" | bun --no-install scripts/follow-outcomes.ts "$failed" >> "$GITHUB_OUTPUT"
           if [ -z "$(git status --porcelain -- releases.config.json src/data/changelog)" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
@@ -136,6 +152,11 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
+    outputs:
+      verified: ${{ steps.upload-verified.outputs.artifact-id }}
+      failed_products: ${{ steps.sync.outputs.failed_products }}
+      failed_reasons: ${{ steps.sync.outputs.failed_reasons }}
+      failed: ${{ steps.sync.outputs.failed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -156,7 +177,47 @@ jobs:
           bun-version-file: .bun-version
       - run: bun install --frozen-lockfile
       - run: bun test
+      - name: Sync each product's docs on its own
+        id: sync
+        shell: bash
+        env:
+          BASE: ${{ needs.collect.outputs.base }}
+          COLLECT_FAILED_PRODUCTS: ${{ needs.collect.outputs.failed_products }}
+          COLLECT_FAILED_REASONS: ${{ needs.collect.outputs.failed_reasons }}
+          COLLECT_MOVED_PRODUCTS: ${{ needs.collect.outputs.moved_products }}
+        run: |
+          set -euo pipefail
+          rm -f failed-sync.json
+          # A failing product's sync leaves its previously synced output as it was at the base
+          # commit; the build below renders the passing products with their new pins.
+          bun scripts/sync-docs.ts --keep-going
+          bun scripts/sync-screenshots.ts --keep-going
+          bun scripts/sync-media.ts --keep-going
+          bun scripts/revert-products.ts "$BASE"
+          {
+            echo "failed_products=$COLLECT_FAILED_PRODUCTS"
+            echo "failed_reasons=$COLLECT_FAILED_REASONS"
+            echo "moved_products=$COLLECT_MOVED_PRODUCTS"
+          } >> "$GITHUB_OUTPUT"
+          if [ -f failed-sync.json ]; then
+            bun scripts/merge-failed-sync.ts >> "$GITHUB_OUTPUT"
+          else
+            echo "failed=false" >> "$GITHUB_OUTPUT"
+          fi
       - run: bun run build
+      - id: upload-verified
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          # The tree the verify job built and tested: new pins for the products that passed,
+          # base-commit pins for the products whose sync failed. failed-sync.json is absent
+          # when every product synced.
+          name: ${{ env.DATA_ARTIFACT }}-verified
+          path: |
+            releases.config.json
+            src/data/changelog/
+            failed-sync.json
+          if-no-files-found: warn
+          retention-days: 7
 
   publish:
     needs: [collect, verify]
@@ -170,10 +231,10 @@ jobs:
           ref: ${{ needs.collect.outputs.base }}
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          artifact-ids: ${{ needs.collect.outputs.artifact }}
+          artifact-ids: ${{ needs.verify.outputs.verified }}
           path: ${{ runner.temp }}/release-data
-      - name: Take the collected data files
-        run: scripts/take-release-data "$RUNNER_TEMP/release-data/$DATA_ARTIFACT"
+      - name: Take the verified data files
+        run: scripts/take-release-data "$RUNNER_TEMP/release-data/$DATA_ARTIFACT-verified"
 
       - name: Commit and push
         shell: bash
@@ -205,13 +266,21 @@ jobs:
         run: gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref main
 
   report:
-    needs: [collect, deploy]
-    if: always() && needs.collect.outputs.failed == 'true'
+    needs: [collect, verify, deploy]
+    if: always() && (needs.collect.outputs.failed == 'true' || needs.verify.outputs.failed == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions: {}
     steps:
-      - name: Fail for the products that were not followed
+      - name: Write the per-product table and fail the run
+        env:
+          COLLECT_FAILED_PRODUCTS: ${{ needs.collect.outputs.failed_products }}
+          COLLECT_FAILED_REASONS: ${{ needs.collect.outputs.failed_reasons }}
+          COLLECT_MOVED_PRODUCTS: ${{ needs.collect.outputs.moved_products }}
+          VERIFY_FAILED_PRODUCTS: ${{ needs.verify.outputs.failed_products }}
+          VERIFY_FAILED_REASONS: ${{ needs.verify.outputs.failed_reasons }}
         run: |
-          echo "::error::some products could not be followed; see the 'Follow the releases' step of the collect job"
+          set -euo pipefail
+          bun scripts/follow-report.ts >> "$GITHUB_STEP_SUMMARY"
+          echo "::error::some products could not be followed; see the table above"
           exit 1

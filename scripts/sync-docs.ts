@@ -1,6 +1,8 @@
 #!/usr/bin/env bun
 // Renders the whitelisted docs of every source in docs-sync.config.json at its product's pinned ref into
 // src/content/docs/<routePrefix>/ and extracts install prompts into src/data/generated/. Generated output is never committed.
+// With --keep-going (follow-release's verify job) every product's sync runs on its own: a failing
+// product is reported in failed-sync.json and the other products still sync.
 import { mkdir, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { parseDocsSyncConfig, type DocsSyncConfig, type ProductDocs } from './lib/docs-config.ts';
@@ -13,21 +15,32 @@ import {
   planPages,
   type BuiltPage,
 } from './lib/docs-transform.ts';
+import { recordFailedSync } from './lib/failed-sync.ts';
 
-interface CliArgs {
+export interface CliArgs {
   readonly product?: string;
   readonly source?: string;
   readonly ref?: string;
+  readonly keepGoing?: boolean;
 }
 
 const REPO_ROOT = resolve(dirname(import.meta.path), '..');
-const USAGE = 'usage: sync-docs.ts [--product <id> [--source <checkout>] [--ref <tag>]]';
+const USAGE = 'usage: sync-docs.ts [--product <id> [--source <checkout>] [--ref <tag>]] [--keep-going]';
 
-function parseArgs(argv: readonly string[]): CliArgs {
+export function parseArgs(argv: readonly string[]): CliArgs {
+  let keepGoing = false;
+  const rest: string[] = [];
+  for (const arg of argv) {
+    if (arg === '--keep-going') {
+      keepGoing = true;
+    } else {
+      rest.push(arg);
+    }
+  }
   const values: Record<string, string> = {};
-  for (let i = 0; i < argv.length; i += 2) {
-    const flag = argv[i];
-    const value = argv[i + 1];
+  for (let i = 0; i < rest.length; i += 2) {
+    const flag = rest[i];
+    const value = rest[i + 1];
     if (flag !== '--product' && flag !== '--source' && flag !== '--ref') {
       throw new DocsSyncError(`unknown argument "${flag}"; ${USAGE}`);
     }
@@ -40,7 +53,7 @@ function parseArgs(argv: readonly string[]): CliArgs {
   if ((values.source !== undefined || values.ref !== undefined) && values.product === undefined) {
     throw new DocsSyncError(`--source and --ref need --product; ${USAGE}`);
   }
-  return { product: values.product, source: values.source, ref: values.ref };
+  return { product: values.product, source: values.source, ref: values.ref, keepGoing };
 }
 
 async function readJsonFile(relativePath: string): Promise<unknown> {
@@ -159,7 +172,7 @@ async function syncProduct(config: DocsSyncConfig, docs: ProductDocs, pin: Produ
   }
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const releases = parseReleasesConfig(await readJsonFile('releases.config.json'));
   const config = parseDocsSyncConfig(
@@ -171,18 +184,30 @@ async function main(): Promise<void> {
   if (selected.length === 0) {
     throw new DocsSyncError(`docs-sync.config.json has no source for product "${args.product}"`);
   }
+  const failedFile = args.keepGoing === true ? join(REPO_ROOT, 'failed-sync.json') : undefined;
   for (const docs of selected) {
-    await syncProduct(config, docs, findProduct(releases, docs.product), args);
+    try {
+      await syncProduct(config, docs, findProduct(releases, docs.product), args);
+    } catch (error) {
+      if (failedFile === undefined) {
+        throw error;
+      }
+      const reason = error instanceof Error ? error.message : String(error);
+      await recordFailedSync(failedFile, { script: 'sync-docs', product: docs.product, reason });
+      console.error(`sync-docs: ${docs.product}: FAILED ${reason}`);
+    }
   }
 }
 
-try {
-  await main();
-} catch (error) {
-  if (error instanceof DocsSyncError) {
-    console.error(`sync-docs: ${error.message}`);
-  } else {
-    console.error(error);
+if (import.meta.main) {
+  try {
+    await main();
+  } catch (error) {
+    if (error instanceof DocsSyncError) {
+      console.error(`sync-docs: ${error.message}`);
+    } else {
+      console.error(error);
+    }
+    process.exit(1);
   }
-  process.exit(1);
 }

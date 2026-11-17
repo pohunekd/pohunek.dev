@@ -1,11 +1,13 @@
 #!/usr/bin/env bun
 // Pulls the Android screenshot set at the pinned ref into src/assets/screenshots/android/ and writes
 // the module that surfaces.ts imports. Both outputs are generated and never committed.
+// With --keep-going a failing sync is reported in failed-sync.json instead of aborting.
 import { mkdir, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
 import { parseDocsSyncConfig } from './lib/docs-config.ts';
 import { findProduct, parseReleasesConfig, tagOf } from './lib/releases-config.ts';
 import { cloneSource, DocsSyncError, openLocalSource, type DocsSource } from './lib/docs-source.ts';
+import { recordFailedSync } from './lib/failed-sync.ts';
 import {
   parseScreenshotManifest,
   renderScreenshotModule,
@@ -13,9 +15,10 @@ import {
   type ScreenshotManifest,
 } from './lib/screenshot-manifest.ts';
 
-interface CliArgs {
+export interface CliArgs {
   readonly source?: string;
   readonly ref?: string;
+  readonly keepGoing?: boolean;
 }
 
 const REPO_ROOT = resolve(dirname(import.meta.path), '..');
@@ -25,20 +28,31 @@ const IMAGES_DIR = 'src/assets/screenshots/android';
 const MODULE_PATH = 'android-screenshots.ts';
 const CACHE_DIR = '.cache/screenshots-sync';
 
-function parseArgs(argv: readonly string[]): CliArgs {
+const USAGE = 'usage: sync-screenshots.ts [--source <checkout>] [--ref <tag>] [--keep-going]';
+
+export function parseArgs(argv: readonly string[]): CliArgs {
+  let keepGoing = false;
+  const rest: string[] = [];
+  for (const arg of argv) {
+    if (arg === '--keep-going') {
+      keepGoing = true;
+    } else {
+      rest.push(arg);
+    }
+  }
   const values: Record<string, string> = {};
-  for (let i = 0; i < argv.length; i += 2) {
-    const flag = argv[i];
-    const value = argv[i + 1];
+  for (let i = 0; i < rest.length; i += 2) {
+    const flag = rest[i];
+    const value = rest[i + 1];
     if (flag !== '--source' && flag !== '--ref') {
-      throw new DocsSyncError(`unknown argument "${flag}"; usage: sync-screenshots.ts [--source <checkout>] [--ref <tag>]`);
+      throw new DocsSyncError(`unknown argument "${flag}"; ${USAGE}`);
     }
     if (value === undefined || value.startsWith('--')) {
       throw new DocsSyncError(`${flag} needs a value`);
     }
     values[flag.slice(2)] = value;
   }
-  return { source: values.source, ref: values.ref };
+  return { source: values.source, ref: values.ref, keepGoing };
 }
 
 async function readJsonFile(relativePath: string): Promise<unknown> {
@@ -107,7 +121,7 @@ async function publish(
   await writeFileAtomic(modulePath, moduleSource);
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const releases = parseReleasesConfig(await readJsonFile('releases.config.json'));
   const docsConfig = parseDocsSyncConfig(
@@ -133,6 +147,7 @@ async function main(): Promise<void> {
           cloneDir,
         });
 
+  const failedFile = args.keepGoing === true ? join(REPO_ROOT, 'failed-sync.json') : undefined;
   try {
     console.error(`sync-screenshots: reading ${source.description}`);
     const manifest = await readManifest(source, manifestPath, where);
@@ -148,6 +163,14 @@ async function main(): Promise<void> {
       console.error(`  ${IMAGES_DIR}/${shot.id}.png  <- ${shot.file} (${shot.width}x${shot.height})`);
     }
     console.error(`sync-screenshots: ${manifest.shots.length} screenshots (app tree ${manifest.appTree}) at ${ref}`);
+  } catch (error) {
+    if (failedFile === undefined) {
+      throw error;
+    }
+    const reason = error instanceof Error ? error.message : String(error);
+    await recordFailedSync(failedFile, { script: 'sync-screenshots', product: SCREENSHOT_PRODUCT, reason });
+    console.error(`sync-screenshots: ${SCREENSHOT_PRODUCT}: FAILED ${reason}`);
+    return;
   } finally {
     if (args.source === undefined) {
       await rm(cloneDir, { recursive: true, force: true });
@@ -155,13 +178,15 @@ async function main(): Promise<void> {
   }
 }
 
-try {
-  await main();
-} catch (error) {
-  if (error instanceof DocsSyncError) {
-    console.error(`sync-screenshots: ${error.message}`);
-  } else {
-    console.error(error);
+if (import.meta.main) {
+  try {
+    await main();
+  } catch (error) {
+    if (error instanceof DocsSyncError) {
+      console.error(`sync-screenshots: ${error.message}`);
+    } else {
+      console.error(error);
+    }
+    process.exit(1);
   }
-  process.exit(1);
 }

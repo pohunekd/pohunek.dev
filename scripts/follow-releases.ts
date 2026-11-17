@@ -1,15 +1,16 @@
 #!/usr/bin/env bun
 // Moves every product pin in releases.config.json to the product's newest eligible release once the
-// release's assets verify, and records the changelog of every release up to the pin.
-// Every product is followed on its own: one product's failing assets, attestation or docs sync keep
-// that product's old pin (and its old changelog entries) while the products that pass still move.
+// release's install assets verify, and records the changelog of every release up to the pin.
+// Every product is followed on its own: one product's failing assets or attestation keep that
+// product's old pin while the products that pass still move. The verify job then syncs each moved
+// product's docs on its own (see sync-docs.ts --keep-going).
 // Usage: follow-releases.ts [--product <id> [--version <X.Y.Z>]]. Needs GH_TOKEN (read access) and gh.
 // Prints one line naming the moved pins (empty when none moved) on stdout; progress goes to stderr.
 // Exits 2 when some products failed (the others are still followed), 1 when nothing could run.
 import { createHash } from 'node:crypto';
-import { appendFile, mkdtemp, rename, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, rename, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { join } from 'node:path';
 import {
   CHANGELOG_START,
   extractChangelogBlock,
@@ -20,11 +21,6 @@ import {
   type ChangelogRelease,
   type ProductChangelog,
 } from './lib/changelog.ts';
-import { parseDocsSyncConfig, type DocsSyncConfig } from './lib/docs-config.ts';
-import { DocsSyncError } from './lib/docs-source.ts';
-import { buildDocPage, createLinkTargets, extractInstallPrompt, planPages } from './lib/docs-transform.ts';
-import { parseMediaManifest, verifyMediaFile } from './lib/media-manifest.ts';
-import { parseScreenshotManifest, verifyShotImage } from './lib/screenshot-manifest.ts';
 import {
   GithubClient,
   type GithubAsset,
@@ -43,7 +39,7 @@ import {
   type ReleasesConfig,
 } from './lib/releases-config.ts';
 
-interface CliArgs {
+export interface CliArgs {
   readonly product?: string;
   readonly version?: string;
 }
@@ -53,8 +49,6 @@ interface Eligible {
   readonly release: GithubRelease;
 }
 
-// Overridable for tests, which run the follow against a scratch root instead of this checkout.
-const REPO_ROOT = process.env.FOLLOW_RELEASES_ROOT ?? resolve(dirname(import.meta.path), '..');
 const CONFIG_FILE = 'releases.config.json';
 const SHA256_LINE = /^([0-9a-f]{64}) [ *](\S+)\n?$/;
 
@@ -176,8 +170,8 @@ export async function verifyAssets(github: ReleaseFetcher, product: Product, tar
 
 async function generatedMarkdown(
   github: ReleaseFetcher,
-  product: Product,
   githubUrl: string,
+  product: Product,
   previous: Eligible | undefined,
   current: Eligible,
 ): Promise<string> {
@@ -216,13 +210,14 @@ async function readChangelog(path: string, product: Product): Promise<ProductCha
 /** Adds every eligible release up to the pin that the changelog does not hold yet. Recorded releases are kept as they are. */
 async function updateChangelog(
   github: ReleaseFetcher,
-  config: ReleasesConfig,
   githubUrl: string,
+  config: ReleasesConfig,
+  root: string,
   product: Product,
   pinned: string,
   eligible: readonly Eligible[],
 ): Promise<number> {
-  const path = join(REPO_ROOT, config.changelogDir, `${product.id}.json`);
+  const path = join(root, config.changelogDir, `${product.id}.json`);
   const changelog = await readChangelog(path, product);
   const known = new Set(changelog.releases.map((release) => release.tag));
   const included = eligible.filter((entry) => compareVersions(entry.version, pinned) <= 0);
@@ -234,7 +229,7 @@ async function updateChangelog(
     }
     const block = extractChangelogBlock(entry.release.body);
     const markdown =
-      block ?? (await generatedMarkdown(github, product, githubUrl, included[index - 1], entry));
+      block ?? (await generatedMarkdown(github, githubUrl, product, included[index - 1], entry));
     added.push({
       tag: entry.release.tagName,
       version: entry.version,
@@ -277,30 +272,15 @@ export interface ReleaseFetcher {
   getPull(repository: string, number: number): Promise<GithubPull | undefined>;
 }
 
-interface ProductDocsCheck {
-  (
-    docsConfig: DocsSyncConfig,
-    product: Product,
-    version: string,
-    fetchText: (repository: string, ref: string, path: string) => Promise<string>,
-    fetchBytes: (repository: string, ref: string, path: string) => Promise<Uint8Array>,
-  ): Promise<void>;
-}
-
 /** Follows one product: the pin moves only after its assets verify and the changelog up to it is written. */
 export async function followProduct(
   github: ReleaseFetcher,
   config: ReleasesConfig,
   githubUrl: string,
+  root: string,
   product: Product,
   releases: readonly GithubRelease[],
   requestedVersion: string | undefined,
-  check?: {
-    readonly docsConfig: DocsSyncConfig;
-    readonly checkDocs: ProductDocsCheck;
-    readonly fetchText: (repository: string, ref: string, path: string) => Promise<string>;
-    readonly fetchBytes: (repository: string, ref: string, path: string) => Promise<Uint8Array>;
-  },
 ): Promise<Followed> {
   const eligible = eligibleReleases(product, releases);
   if (eligible.length === 0) {
@@ -318,209 +298,22 @@ export async function followProduct(
   }
   if (order === 0) {
     console.error(`follow-releases: ${product.id} already at ${product.version}`);
-    return { recorded: await updateChangelog(github, config, githubUrl, product, product.version, eligible) };
+    return { recorded: await updateChangelog(github, githubUrl, config, root, product, product.version, eligible) };
   }
 
   await verifyAssets(github, product, target);
-  const changelogPath = join(REPO_ROOT, config.changelogDir, `${product.id}.json`);
-  const previousChangelog = (await Bun.file(changelogPath).exists())
-    ? await Bun.file(changelogPath).text()
-    : undefined;
-  const recorded = await updateChangelog(github, config, githubUrl, product, target.version, eligible);
+  const recorded = await updateChangelog(github, githubUrl, config, root, product, target.version, eligible);
   // Re-read the file so each product's rewrite keeps the others' updates.
-  const raw = (await Bun.file(join(REPO_ROOT, CONFIG_FILE)).json()) as Record<string, unknown>;
+  const raw = (await Bun.file(join(root, CONFIG_FILE)).json()) as Record<string, unknown>;
   const content = renderWithVersion(raw, product.id, target.version);
   parseReleasesConfig(JSON.parse(content));
-  await writeFileAtomic(join(REPO_ROOT, CONFIG_FILE), content);
-  try {
-    if (check !== undefined) {
-      await check.checkDocs(check.docsConfig, product, target.version, check.fetchText, check.fetchBytes);
-    }
-  } catch (error) {
-    // The new release's docs do not sync: keep the old pin and the old changelog entries.
-    const reason = error instanceof Error ? error.message : String(error);
-    const current = JSON.parse(await Bun.file(join(REPO_ROOT, CONFIG_FILE)).text()) as Record<string, unknown>;
-    await writeFileAtomic(join(REPO_ROOT, CONFIG_FILE), renderWithVersion(current, product.id, product.version));
-    if (previousChangelog === undefined) {
-      await rm(changelogPath, { force: true });
-    } else {
-      await writeFileAtomic(changelogPath, previousChangelog);
-    }
-    throw new Error(
-      `docs sync failed at ${product.tagPrefix}${target.version}, kept pin ${product.version}: ${reason}`,
-    );
-  }
+  await writeFileAtomic(join(root, CONFIG_FILE), content);
   console.error(`follow-releases: ${product.id} ${product.version} -> ${target.version}`);
   return { moved: `${product.name} ${product.tagPrefix}${target.version}`, recorded };
 }
 
 /** Exit code when some products failed and the others were followed. */
-const PARTIAL_FAILURE = 2;
-
-/**
- * Checks that the new pin's docs still sync: plans the product's whitelisted pages and extracts its
- * install prompt from the new tag, and, for a product with a screenshot or media manifest, reads and
- * verifies that manifest at the new tag. Throws when any of it fails; nothing in the real checkout is
- * touched, so a failure leaves the previously synced docs — which belong to the old pin — as they are.
- */
-async function checkProductDocs(
-  docsConfig: DocsSyncConfig,
-  product: Product,
-  version: string,
-  fetchText: (repository: string, ref: string, path: string) => Promise<string>,
-  fetchBytes: (repository: string, ref: string, path: string) => Promise<Uint8Array>,
-): Promise<void> {
-  const ref = `${product.tagPrefix}${version}`;
-  const source = docsConfig.sources.find((entry) => entry.product === product.id);
-  if (source !== undefined) {
-    const files = await listRefFiles(product.repository, ref, fetchText);
-    const planned = planPages(source.pages, files);
-    const routes = new Map(planned.map((page) => [page.sourcePath, page.route]));
-    const targets = createLinkTargets({
-      files,
-      routes,
-      repository: product.repository,
-      ref,
-      githubUrl: docsConfig.githubUrl,
-      rawUrl: docsConfig.rawUrl,
-      routePrefix: source.routePrefix,
-    });
-    for (const page of planned) {
-      buildDocPage({
-        sourcePath: page.sourcePath,
-        text: await fetchText(product.repository, ref, page.sourcePath),
-        planned: page,
-        editUrl: `${docsConfig.githubUrl}/${product.repository}/blob/${source.editBranch}/${page.sourcePath}`,
-        targets,
-      });
-    }
-    if (source.installPrompt !== undefined) {
-      extractInstallPrompt(
-        await fetchText(product.repository, ref, source.installPrompt.readme),
-        source.installPrompt.heading,
-      );
-    }
-  }
-  if (product.screenshotManifest !== undefined) {
-    const where = `${product.repository} at ref "${ref}" ${product.screenshotManifest}`;
-    const manifest = parseScreenshotManifest(await fetchText(product.repository, ref, product.screenshotManifest), where);
-    const manifestDir = dirname(product.screenshotManifest);
-    for (const shot of manifest.shots) {
-      const path = manifestDir === '.' ? shot.file : `${manifestDir}/${shot.file}`;
-      verifyShotImage(shot, await fetchBytes(product.repository, ref, path), `${where} ${path}`);
-    }
-  }
-  if (product.mediaManifest !== undefined) {
-    const where = `${product.repository} at ref "${ref}" ${product.mediaManifest}`;
-    const raw = await fetchOptionalText(product.repository, ref, product.mediaManifest, fetchText);
-    if (raw !== undefined) {
-      const manifest = parseMediaManifest(raw, where);
-      const manifestDir = dirname(product.mediaManifest);
-      for (const entry of manifest.files) {
-        const path = manifestDir === '.' ? entry.file : `${manifestDir}/${entry.file}`;
-        verifyMediaFile(entry, await fetchBytes(product.repository, ref, path), `${where} ${path}`);
-      }
-    }
-  }
-}
-
-async function fetchOptionalText(
-  repository: string,
-  ref: string,
-  path: string,
-  fetchText: (repository: string, ref: string, path: string) => Promise<string>,
-): Promise<string | undefined> {
-  try {
-    return await fetchText(repository, ref, path);
-  } catch (error) {
-    if (error instanceof DocsSyncError) {
-      return undefined;
-    }
-    throw error;
-  }
-}
-
-async function listRefFiles(
-  repository: string,
-  ref: string,
-  fetchText: (repository: string, ref: string, path: string) => Promise<string>,
-): Promise<string[]> {
-  try {
-    const child = Bun.spawn(
-      ['gh', 'api', `repos/${repository}/git/trees/${ref}?recursive=1`, '--jq', '.tree[].path'],
-      { stdout: 'pipe', stderr: 'pipe' },
-    );
-    const [stdout, stderr, code] = await Promise.all([
-      new Response(child.stdout).text(),
-      new Response(child.stderr).text(),
-      child.exited,
-    ]);
-    if (code !== 0) {
-      throw new DocsSyncError(`could not list ${repository} at ref "${ref}": ${stderr.trim()}`);
-    }
-    const files = stdout.split('\n').filter((entry) => entry !== '');
-    if (files.length === 0) {
-      throw new DocsSyncError(`could not list ${repository} at ref "${ref}": empty tree`);
-    }
-    return files;
-  } catch (error) {
-    if (error instanceof DocsSyncError) {
-      throw error;
-    }
-    throw new DocsSyncError(
-      `could not list ${repository} at ref "${ref}": ${error instanceof Error ? error.message : String(error)}`,
-    );
-  }
-}
-/** Reads a repository file at a ref through the gh CLI (no Bearer token leaves this machine). */
-async function ghFetchText(repository: string, ref: string, path: string): Promise<string> {
-  return new TextDecoder().decode(await ghFetchBytes(repository, ref, path));
-}
-
-async function ghFetchBytes(repository: string, ref: string, path: string): Promise<Uint8Array> {
-  const child = Bun.spawn(
-    ['gh', 'api', `repos/${repository}/contents/${path}?ref=${ref}`, '--jq', '.content'],
-    { stdout: 'pipe', stderr: 'pipe' },
-  );
-  const [stdout, stderr, code] = await Promise.all([
-    new Response(child.stdout).text(),
-    new Response(child.stderr).text(),
-    child.exited,
-  ]);
-  if (code !== 0) {
-    throw new DocsSyncError(`${repository} at ref "${ref}" has no readable file ${path}: ${stderr.trim()}`);
-  }
-  const base64 = stdout.replace(/\s+/g, '');
-  if (base64.length === 0) {
-    throw new DocsSyncError(`${repository} at ref "${ref}" has an empty file ${path}`);
-  }
-  try {
-    return Buffer.from(base64, 'base64');
-  } catch {
-    throw new DocsSyncError(`${repository} at ref "${ref}" returned unreadable content for ${path}`);
-  }
-}
-
-
-
-/** Appends a per-product table to the workflow run summary, so a failing product is visible in red. */
-export async function writeSummary(outcomes: readonly ProductOutcome[]): Promise<void> {
-  const summaryFile = process.env.GITHUB_STEP_SUMMARY;
-  if (summaryFile === undefined || summaryFile.length === 0) {
-    return;
-  }
-  const lines = ['### follow-releases', '', '| product | result | detail |', '| --- | --- | --- |'];
-  for (const outcome of outcomes) {
-    if (outcome.failed) {
-      lines.push(`| ${outcome.product} | FAILED | ${sanitizeCell(outcome.reason ?? 'unknown error')} |`);
-    } else if (outcome.moved !== undefined) {
-      lines.push(`| ${outcome.product} | moved | ${sanitizeCell(outcome.moved)} |`);
-    } else {
-      lines.push(`| ${outcome.product} | unchanged | already at the newest release |`);
-    }
-  }
-  await appendFile(summaryFile, `${lines.join('\n')}\n`);
-}
+export const PARTIAL_FAILURE = 2;
 
 export function sanitizeCell(text: string): string {
   return text.replace(/\r?\n/g, ' ').replace(/\|/g, '\\|');
@@ -554,32 +347,41 @@ export async function followEach(
   return { outcomes, moved, recorded };
 }
 
-export async function main(): Promise<number> {
-  const args = parseArgs(process.argv.slice(2));
-  const config = parseReleasesConfig(await Bun.file(join(REPO_ROOT, CONFIG_FILE)).json());
-  const github = new GithubClient(config.apiUrl, requireEnv('GH_TOKEN'));
-  const docsConfig = parseDocsSyncConfig(
-    await Bun.file(join(REPO_ROOT, 'docs-sync.config.json')).json(),
-    config.products.map((product) => product.id),
-  );
-  const selected = args.product === undefined ? config.products : [findProduct(config, args.product)];
+export interface RunFollowOptions {
+  readonly root: string;
+  readonly args: CliArgs;
+  readonly config: ReleasesConfig;
+  readonly github: ReleaseFetcher;
+  /** github.com base URL for the changelog links. */
+  readonly githubUrl: string;
+}
 
+/** Follows every selected product on its own and reports one outcome per product. */
+export async function runFollow({ root, args, config, github, githubUrl }: RunFollowOptions): Promise<{
+  outcomes: ProductOutcome[];
+  moved: string[];
+  recorded: number;
+}> {
+  const selected = args.product === undefined ? config.products : [findProduct(config, args.product)];
   const releasesByRepository = new Map<string, GithubRelease[]>();
 
   // One product's broken release must not hold back the others; its failure is reported at the end.
-  const { outcomes, moved, recorded } = await followEach(selected, async (product) => {
+  return followEach(selected, async (product) => {
     let releases = releasesByRepository.get(product.repository);
     if (releases === undefined) {
       releases = await github.listReleases(product.repository);
       releasesByRepository.set(product.repository, releases);
     }
-    return followProduct(github, docsConfig.githubUrl, product, releases, args.version, {
-      docsConfig,
-      checkDocs: checkProductDocs,
-      fetchText: ghFetchText,
-      fetchBytes: ghFetchBytes,
-    });
+    return followProduct(github, config, githubUrl, root, product, releases, args.version);
   });
+}
+
+export async function main(): Promise<number> {
+  const args = parseArgs(process.argv.slice(2));
+  const root = new URL('..', import.meta.url).pathname;
+  const config = parseReleasesConfig(await Bun.file(join(root, CONFIG_FILE)).json());
+  const github = new GithubClient(config.apiUrl, requireEnv('GH_TOKEN'));
+  const { outcomes, moved, recorded } = await runFollow({ root, args, config, github, githubUrl: 'https://github.com' });
 
   console.error(`follow-releases: ${moved.length} pin(s) moved, ${recorded} changelog release(s) recorded`);
   for (const outcome of outcomes) {
@@ -587,8 +389,11 @@ export async function main(): Promise<number> {
       console.error(`follow-releases: FAILED ${outcome.product}: ${outcome.reason}`);
     }
   }
-  await writeSummary(outcomes);
-  console.log(moved.join(', '));
+  // One JSON object per line on stdout; scripts/follow-outcomes.ts turns it into step outputs.
+  // The run summary table is the report job's follow-report.ts, which also sees the verify failures.
+  for (const outcome of outcomes) {
+    console.log(JSON.stringify(outcome));
+  }
   return outcomes.some((outcome) => outcome.failed) ? PARTIAL_FAILURE : 0;
 }
 
