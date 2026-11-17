@@ -108,7 +108,8 @@
       "signerWorkflow": ".github/workflows/release.yml",
       "assets": [
         "autoreview-{version}-x86_64-unknown-linux-musl.tar.gz",
-        "autoreview-{version}-aarch64-unknown-linux-musl.tar.gz"
+        "autoreview-{version}-aarch64-unknown-linux-musl.tar.gz",
+        "autoreview-{version}-aarch64-apple-darwin.tar.gz"
       ]
     }
   ]
