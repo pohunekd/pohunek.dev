@@ -2,7 +2,9 @@
 # Copies the release data collected by follow-releases.ts from an unpacked artifact into this checkout.
 # Usage: take-release-data <artifact directory>. Every entry of the artifact must be releases.config.json
 # or src/data/changelog/<product id>.json, as a regular file; anything else (another path, a symlink,
-# a device, a dotfile) aborts before a single file is copied.
+# a device, a dotfile) aborts before a single file is copied. The artifact may also hold commit-message.txt,
+# the release commit's subject; it is validated (one printable line of at most 200 characters, either
+# "Record ecosystem changelog" or "Follow ..."), never copied, and read by the caller from the artifact directory.
 set -euo pipefail
 
 if [ "$#" -ne 1 ]; then
@@ -17,7 +19,10 @@ if [ ! -d "$source_dir" ] || [ -L "$source_dir" ]; then
   exit 1
 fi
 
-allowed_file='^(releases\.config\.json|src/data/changelog/[a-z][a-z0-9-]*\.json)$'
+allowed_file='^(releases\.config\.json|commit-message\.txt|src/data/changelog/[a-z][a-z0-9-]*\.json)$'
+message_file='commit-message.txt'
+message_pattern='^(Record ecosystem changelog|Follow [[:print:]]+)$'
+message_max_length=200
 allowed_dir='^(src|src/data|src/data/changelog)$'
 
 files=()
@@ -36,7 +41,20 @@ while IFS= read -r -d '' entry; do
       echo "take-release-data: refusing file $relative" >&2
       exit 1
     fi
-    files+=("$relative")
+    if [ "$relative" = "$message_file" ]; then
+      # One line, optionally newline-terminated; $(...) strips the trailing newline.
+      if [ "$(wc -l < "$entry")" -gt 1 ]; then
+        echo "take-release-data: $message_file has more than one line" >&2
+        exit 1
+      fi
+      message="$(cat "$entry")"
+      if [ "${#message}" -gt "$message_max_length" ] || ! [[ "$message" =~ $message_pattern ]]; then
+        echo "take-release-data: $message_file is not a valid commit subject" >&2
+        exit 1
+      fi
+    else
+      files+=("$relative")
+    fi
   else
     echo "take-release-data: refusing special file $relative" >&2
     exit 1

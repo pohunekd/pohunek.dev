@@ -71,4 +71,26 @@ describe('take-release-data', () => {
     rmSync(join(artifact, 'releases.config.json'));
     expect(run().stderr).toContain('no releases.config.json');
   });
+
+  test('validates the commit message and does not copy it', () => {
+    write(artifact, 'commit-message.txt', 'Follow Web control center web-v0.4.1\n');
+    expect(run().code).toBe(0);
+    expect(existsSync(join(root, 'commit-message.txt'))).toBe(false);
+    write(artifact, 'commit-message.txt', 'Record ecosystem changelog\n');
+    expect(run().code).toBe(0);
+  });
+
+  test.each([
+    ['a second line', 'Follow web\nextra\n'],
+    ['another subject', 'Delete everything\n'],
+    ['a control character', 'Follow web\u001b[31m\n'],
+    ['an oversize subject', `Follow ${'x'.repeat(200)}\n`],
+    ['an empty file', ''],
+  ])('refuses a commit message with %s and copies nothing', (_label, content) => {
+    write(artifact, 'commit-message.txt', content);
+    const result = run();
+    expect(result.code).not.toBe(0);
+    expect(result.stderr).toContain('commit-message.txt');
+    expect(readFileSync(join(root, 'releases.config.json'), 'utf8')).toBe('old');
+  });
 });

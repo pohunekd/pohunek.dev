@@ -13,8 +13,10 @@ name: Follow ecosystem releases
 # Trust boundary: only this repository's dependency-free scripts (run with
 # bun --no-install, so a new npm import fails loudly) produce the files that
 # are committed. The job that installs and runs third-party code (verify)
-# uploads no file for publish; it passes on only the ids of the products whose
-# sync failed, and publish validates that list strictly.
+# uploads no file; it passes on only the ids of the products whose sync failed,
+# and finalize validates that list strictly. The only job with a write token
+# (publish) runs no bun and no third-party action except checkout and
+# download-artifact.
 #
 #   collect   read-only token; verifies assets and attestations per product and
 #             writes the data files of the products that passed, uploads them
@@ -28,15 +30,24 @@ name: Follow ecosystem releases
 #             at those pins without --keep-going, so a failure there fails the
 #             job. Third-party build code runs only here. Output: the failed
 #             product ids.
-#   publish   contents: write; checks out the same commit without persisting
-#             the token, applies collect's
-#             artifact (by id, outside the checkout, only the expected regular
-#             files), puts the failed-sync products back on their base state
-#             with scripts/revert-products.ts and commits what is
-#             left; only the final push step holds the token. The push is a fast-forward of that commit, so a main that
-#             moved meanwhile fails the run instead of losing its change; the
-#             next run starts from the new main. Nothing left to commit means
-#             no deploy.
+#   finalize  read-only token; takes collect's files, puts the products whose
+#             sync failed back on their base-commit pin and changelog with
+#             scripts/revert-products.ts, writes the commit subject with
+#             scripts/commit-summary.ts (both dependency-free, run with
+#             bun --no-install) and uploads releases.config.json,
+#             src/data/changelog/ and commit-message.txt as an artifact. It is
+#             the only job besides collect and verify that runs setup-bun or
+#             bun.
+#   publish   contents: write; runs no bun and no third-party action except
+#             checkout and download-artifact. It checks out the same commit
+#             without persisting the token, takes finalize's artifact (by id,
+#             outside the checkout) through scripts/take-release-data, which
+#             copies only the expected regular files and validates the commit
+#             subject, and commits it. Only the final Push step holds the
+#             token and runs nothing but git. The push is a fast-forward of
+#             that commit, so a main that moved meanwhile fails the run
+#             instead of losing its change; the next run starts from the new
+#             main. Nothing left to commit means no deploy.
 #   deploy    actions: write; dispatches deploy.yml when publish committed. A
 #             failed dispatch is retried by re-running this job alone. The
 #             deploy builds from the committed tree, where a product whose
@@ -193,14 +204,14 @@ jobs:
             bun scripts/revert-products.ts "$BASE"
       - run: bun run build
 
-  publish:
+  finalize:
     needs: [collect, verify]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
-      contents: write
+      contents: read
     outputs:
-      committed: ${{ steps.commit.outputs.committed }}
+      final: ${{ steps.upload-final.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -223,12 +234,46 @@ jobs:
           FAILED_SYNC_PRODUCTS: ${{ needs.verify.outputs.failed_sync_products }}
         run: bun --no-install scripts/revert-products.ts "$BASE"
 
-      - name: Commit and push
-        id: commit
-        shell: bash
+      - name: Write the commit subject
         env:
           MOVED_PRODUCTS: ${{ needs.collect.outputs.moved_products }}
           FAILED_SYNC_PRODUCTS: ${{ needs.verify.outputs.failed_sync_products }}
+        run: bun --no-install scripts/commit-summary.ts > commit-message.txt
+
+      - id: upload-final
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ env.DATA_ARTIFACT }}-final
+          path: |
+            releases.config.json
+            src/data/changelog/
+            commit-message.txt
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    needs: [collect, finalize]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    outputs:
+      committed: ${{ steps.commit.outputs.committed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.collect.outputs.base }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          artifact-ids: ${{ needs.finalize.outputs.final }}
+          path: ${{ runner.temp }}/release-data
+      - name: Take the final data files
+        run: scripts/take-release-data "$RUNNER_TEMP/release-data/$DATA_ARTIFACT-final"
+
+      - name: Commit
+        id: commit
+        shell: bash
         run: |
           set -euo pipefail
           if [ -z "$(git status --porcelain)" ]; then
@@ -236,14 +281,14 @@ jobs:
             echo "committed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          summary="$(bun --no-install scripts/commit-summary.ts)"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add releases.config.json src/data/changelog
-          git commit -m "$summary"
+          git commit -F "$RUNNER_TEMP/release-data/$DATA_ARTIFACT-final/commit-message.txt"
           echo "committed=true" >> "$GITHUB_OUTPUT"
 
-      # The write token reaches only this step, which runs nothing but git.
+      # The write token reaches only this step, which runs nothing but git. The job runs no bun and no
+      # third-party action except checkout and download-artifact.
       - name: Push
         if: steps.commit.outputs.committed == 'true'
         shell: bash
