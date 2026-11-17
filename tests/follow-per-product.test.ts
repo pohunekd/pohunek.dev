@@ -4,11 +4,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import {
-  PARTIAL_FAILURE,
-  followEach,
+    followEach,
   followProduct,
   runFollow,
-  sanitizeCell,
   sha256Hex,
   verifyAssets,
   type Followed,
@@ -16,9 +14,9 @@ import {
   type GithubRelease,
   type ReleaseFetcher,
 } from '../scripts/follow-releases.ts';
-import { parseOutcomeLines } from '../scripts/follow-outcomes.ts';
-import { mergeFailures, renderReport } from '../scripts/follow-report.ts';
-import { mergeSyncFailures } from '../scripts/merge-failed-sync.ts';
+import { outputLines, parseOutcomeLines } from '../scripts/follow-outcomes.ts';
+import { mergeFailures, renderReport, sanitizeCell } from '../scripts/follow-report.ts';
+import { syncOutputLines } from '../scripts/failed-sync-outputs.ts';
 import { parseReleasesConfig, type Product } from '../scripts/lib/releases-config.ts';
 
 let scratch: string;
@@ -298,8 +296,7 @@ describe('runFollow drives the real wiring', () => {
         failed: false,
       });
       expect(outcomes.find((outcome) => outcome.product === 'companion')?.failed).toBe(true);
-      expect(PARTIAL_FAILURE).toBe(2);
-      const pinned = parseReleasesConfig(JSON.parse(readFileSync(join(root, 'releases.config.json'), 'utf8')));
+            const pinned = parseReleasesConfig(JSON.parse(readFileSync(join(root, 'releases.config.json'), 'utf8')));
       expect(pinned.products.find((entry) => entry.id === 'web')?.version).toBe('0.4.1');
       expect(pinned.products.find((entry) => entry.id === 'companion')?.version).toBe('0.4.0');
     } finally {
@@ -319,33 +316,39 @@ describe('per-product plumbing', () => {
     ).toEqual({
       failedProducts: ['web'],
       failedReasons: ['boom'],
-      movedProducts: ['pohunek v0.44.0'],
+      movedProducts: [{ product: 'pohunek', moved: 'pohunek v0.44.0' }],
     });
   });
 
-  test('sync failures merge onto the collect failures', () => {
+  test('sync failures become single-line outputs, one entry per product', () => {
     expect(
-      mergeSyncFailures(['web'], ['boom'], ['pohunek v1'], [{ script: 'sync-docs', product: 'android', reason: 'bam' }]),
-    ).toEqual({
-      failedProducts: ['web', 'android'],
-      failedReasons: ['boom', 'bam'],
-      movedProducts: ['pohunek v1'],
-      failed: true,
-    });
-    expect(mergeSyncFailures([], [], [], []).failed).toBe(false);
+      syncOutputLines([
+        { script: 'sync-docs', product: 'web', reason: 'boom\nsecond line' },
+        { script: 'sync-media', product: 'android', reason: 'bam' },
+        { script: 'sync-screenshots', product: 'android', reason: 'bim' },
+      ]),
+    ).toEqual([
+      'failed_sync_products=["web","android"]',
+      'failed_sync_reasons=["sync-docs: boom\\nsecond line","sync-media: bam; sync-screenshots: bim"]',
+      'failed_sync=true',
+    ]);
+    expect(syncOutputLines([])).toContain('failed_sync=false');
   });
 
-  test('report renders one row per moved or failed product', () => {
+  test('report keys rows by product id, a failed product shows once', () => {
     const text = renderReport({
-      collectFailed: ['web'],
-      collectReasons: ['boom'],
-      collectMoved: ['pohunek v0.44.0', 'web v0.5.0'],
-      verifyFailed: ['android'],
-      verifyReasons: ['docs line 1\npipe | here'],
+      collectFailed: [],
+      collectReasons: [],
+      collectMoved: [
+        { product: 'companion', moved: 'Desktop companion v0.1.10' },
+        { product: 'launchers', moved: 'Sway launchers launchers-v0.5.0' },
+      ],
+      verifyFailed: ['companion'],
+      verifyReasons: ['docs broke'],
     });
-    expect(text).toContain('| pohunek | moved | pohunek v0.44.0 |');
-    expect(text).toContain('| web | FAILED | collect: boom |');
-    expect(text).toContain('pipe \\| here');
+    expect(text).toContain('| companion | FAILED | verify: docs broke |');
+    expect(text).toContain('| launchers | moved | Sway launchers launchers-v0.5.0 |');
+    expect(text.match(/\| companion \|/g)).toHaveLength(1);
   });
 
   test('mergeFailures throws on mismatched input lengths', () => {

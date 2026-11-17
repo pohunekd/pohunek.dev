@@ -5,12 +5,13 @@
 // product's old pin while the products that pass still move. The verify job then syncs each moved
 // product's docs on its own (see sync-docs.ts --keep-going).
 // Usage: follow-releases.ts [--product <id> [--version <X.Y.Z>]]. Needs GH_TOKEN (read access) and gh.
-// Prints one line naming the moved pins (empty when none moved) on stdout; progress goes to stderr.
+// Prints one JSON outcome line per product on stdout; progress goes to stderr.
 // Exits 2 when some products failed (the others are still followed), 1 when nothing could run.
 import { createHash } from 'node:crypto';
 import { mkdtemp, rename, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   CHANGELOG_START,
   extractChangelogBlock,
@@ -50,6 +51,7 @@ interface Eligible {
 }
 
 const CONFIG_FILE = 'releases.config.json';
+const DOCS_CONFIG_FILE = 'docs-sync.config.json';
 const SHA256_LINE = /^([0-9a-f]{64}) [ *](\S+)\n?$/;
 
 function parseArgs(argv: readonly string[]): CliArgs {
@@ -315,10 +317,6 @@ export async function followProduct(
 /** Exit code when some products failed and the others were followed. */
 export const PARTIAL_FAILURE = 2;
 
-export function sanitizeCell(text: string): string {
-  return text.replace(/\r?\n/g, ' ').replace(/\|/g, '\\|');
-}
-
 /**
  * Follows one product without touching the others: a failure records {product, reason}, keeps the old
  * pin and lets the remaining products continue. Failures bubble out of followProduct unchanged, so
@@ -376,12 +374,35 @@ export async function runFollow({ root, args, config, github, githubUrl }: RunFo
   });
 }
 
-export async function main(): Promise<number> {
-  const args = parseArgs(process.argv.slice(2));
-  const root = new URL('..', import.meta.url).pathname;
+export interface MainOptions {
+  readonly argv: readonly string[];
+  readonly root: string;
+  /** Replaces the GitHub client; the real one needs GH_TOKEN. */
+  readonly github?: ReleaseFetcher;
+  /** Receives one JSON outcome line per product; stdout by default. */
+  readonly write?: (line: string) => void;
+}
+
+/** Follows the selected products, prints one outcome line each and returns the exit status. */
+export async function main({
+  argv,
+  root,
+  github,
+  write = (line) => console.log(line),
+}: MainOptions): Promise<number> {
+  const args = parseArgs(argv);
   const config = parseReleasesConfig(await Bun.file(join(root, CONFIG_FILE)).json());
-  const github = new GithubClient(config.apiUrl, requireEnv('GH_TOKEN'));
-  const { outcomes, moved, recorded } = await runFollow({ root, args, config, github, githubUrl: 'https://github.com' });
+  const docs = (await Bun.file(join(root, DOCS_CONFIG_FILE)).json()) as { githubUrl?: unknown };
+  if (typeof docs.githubUrl !== 'string' || docs.githubUrl.length === 0) {
+    throw new Error(`${DOCS_CONFIG_FILE} needs a githubUrl`);
+  }
+  const { outcomes, moved, recorded } = await runFollow({
+    root,
+    args,
+    config,
+    github: github ?? new GithubClient(config.apiUrl, requireEnv('GH_TOKEN')),
+    githubUrl: docs.githubUrl,
+  });
 
   console.error(`follow-releases: ${moved.length} pin(s) moved, ${recorded} changelog release(s) recorded`);
   for (const outcome of outcomes) {
@@ -389,17 +410,20 @@ export async function main(): Promise<number> {
       console.error(`follow-releases: FAILED ${outcome.product}: ${outcome.reason}`);
     }
   }
-  // One JSON object per line on stdout; scripts/follow-outcomes.ts turns it into step outputs.
-  // The run summary table is the report job's follow-report.ts, which also sees the verify failures.
+  // One JSON object per line; scripts/follow-outcomes.ts turns it into step outputs and
+  // follow-report.ts (which also sees the sync failures) writes the run summary table.
   for (const outcome of outcomes) {
-    console.log(JSON.stringify(outcome));
+    write(JSON.stringify(outcome));
   }
   return outcomes.some((outcome) => outcome.failed) ? PARTIAL_FAILURE : 0;
 }
 
 if (import.meta.main) {
   try {
-    process.exitCode = await main();
+    process.exitCode = await main({
+      argv: process.argv.slice(2),
+      root: fileURLToPath(new URL('..', import.meta.url)),
+    });
   } catch (error) {
     console.error(`follow-releases: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);

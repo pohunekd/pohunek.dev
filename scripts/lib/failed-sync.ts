@@ -28,3 +28,42 @@ export async function readFailedSync(path: string): Promise<FailedSync[]> {
   }
   return failures;
 }
+
+/** Upper bound for the failed-product list a job output may carry into the publish job. */
+export const MAX_FAILED_PRODUCTS_LENGTH = 4096;
+
+/**
+ * Parses the list of products whose sync failed, as the verify job passes it on: a JSON array of
+ * product ids, each one a known product, none twice. Empty text means no failure. Anything else is
+ * refused, because the publish job acts on this list with write access.
+ */
+export function parseFailedProducts(raw: string, knownIds: readonly string[]): string[] {
+  if (raw.length > MAX_FAILED_PRODUCTS_LENGTH) {
+    throw new Error(`the failed product list is ${raw.length} characters long, more than ${MAX_FAILED_PRODUCTS_LENGTH}`);
+  }
+  if (raw.trim() === '') {
+    return [];
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new Error('the failed product list is not JSON');
+  }
+  if (!Array.isArray(parsed) || !parsed.every((entry) => typeof entry === 'string')) {
+    throw new Error('the failed product list must be a JSON array of product ids');
+  }
+  const ids = parsed as string[];
+  if (ids.length > knownIds.length) {
+    throw new Error(`the failed product list names ${ids.length} products, the config has ${knownIds.length}`);
+  }
+  for (const id of ids) {
+    if (!knownIds.includes(id)) {
+      throw new Error(`the failed product list names unknown product "${id}"`);
+    }
+  }
+  if (new Set(ids).size !== ids.length) {
+    throw new Error('the failed product list names a product twice');
+  }
+  return ids;
+}

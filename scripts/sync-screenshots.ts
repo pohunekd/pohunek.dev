@@ -55,8 +55,8 @@ export function parseArgs(argv: readonly string[]): CliArgs {
   return { source: values.source, ref: values.ref, keepGoing };
 }
 
-async function readJsonFile(relativePath: string): Promise<unknown> {
-  const path = join(REPO_ROOT, relativePath);
+async function readJsonFile(root: string, relativePath: string): Promise<unknown> {
+  const path = join(root, relativePath);
   const file = Bun.file(path);
   if (!(await file.exists())) {
     throw new DocsSyncError(`missing ${relativePath} at ${path}`);
@@ -121,34 +121,35 @@ async function publish(
   await writeFileAtomic(modulePath, moduleSource);
 }
 
-export async function main(): Promise<void> {
-  const args = parseArgs(process.argv.slice(2));
-  const releases = parseReleasesConfig(await readJsonFile('releases.config.json'));
+export async function main(argv: readonly string[] = process.argv.slice(2), root: string = REPO_ROOT): Promise<void> {
+  const args = parseArgs(argv);
+  const releases = parseReleasesConfig(await readJsonFile(root, 'releases.config.json'));
   const docsConfig = parseDocsSyncConfig(
-    await readJsonFile('docs-sync.config.json'),
+    await readJsonFile(root, 'docs-sync.config.json'),
     releases.products.map((product) => product.id),
   );
-  const pin = findProduct(releases, SCREENSHOT_PRODUCT);
-  if (pin.screenshotManifest === undefined) {
-    throw new DocsSyncError(`releases.config.json product "${SCREENSHOT_PRODUCT}" has no screenshotManifest`);
-  }
-  const manifestPath = pin.screenshotManifest;
-  const ref = args.ref ?? tagOf(pin);
-  const where = `${pin.repository} at ref "${ref}"`;
-
-  const cacheRoot = join(REPO_ROOT, CACHE_DIR);
-  const cloneDir = join(cacheRoot, ref.replace(/[^A-Za-z0-9._-]/g, '_'));
-  const source =
-    args.source !== undefined
-      ? await openLocalSource(resolve(args.source), ref)
-      : await cloneSource({
-          repositoryUrl: `${docsConfig.githubUrl}/${pin.repository}.git`,
-          ref,
-          cloneDir,
-        });
-
-  const failedFile = args.keepGoing === true ? join(REPO_ROOT, 'failed-sync.json') : undefined;
+  const failedFile = args.keepGoing === true ? join(root, 'failed-sync.json') : undefined;
+  const cacheRoot = join(root, CACHE_DIR);
+  let cloneDir: string | undefined;
+  // Everything that depends on the product (pin lookup, clone, manifest) sits inside the try, so
+  // under --keep-going any failure of this product is recorded instead of aborting the run.
   try {
+    const pin = findProduct(releases, SCREENSHOT_PRODUCT);
+    if (pin.screenshotManifest === undefined) {
+      throw new DocsSyncError(`releases.config.json product "${SCREENSHOT_PRODUCT}" has no screenshotManifest`);
+    }
+    const manifestPath = pin.screenshotManifest;
+    const ref = args.ref ?? tagOf(pin);
+    const where = `${pin.repository} at ref "${ref}"`;
+    cloneDir = join(cacheRoot, ref.replace(/[^A-Za-z0-9._-]/g, '_'));
+    const source =
+      args.source !== undefined
+        ? await openLocalSource(resolve(args.source), ref)
+        : await cloneSource({
+            repositoryUrl: `${docsConfig.githubUrl}/${pin.repository}.git`,
+            ref,
+            cloneDir,
+          });
     console.error(`sync-screenshots: reading ${source.description}`);
     const manifest = await readManifest(source, manifestPath, where);
     const images = await readImages(source, manifest, manifestPath, where);
@@ -156,8 +157,8 @@ export async function main(): Promise<void> {
       manifest,
       images,
       join(cacheRoot, 'staging'),
-      join(REPO_ROOT, IMAGES_DIR),
-      join(REPO_ROOT, docsConfig.generatedDir, MODULE_PATH),
+      join(root, IMAGES_DIR),
+      join(root, docsConfig.generatedDir, MODULE_PATH),
     );
     for (const shot of manifest.shots) {
       console.error(`  ${IMAGES_DIR}/${shot.id}.png  <- ${shot.file} (${shot.width}x${shot.height})`);
@@ -170,9 +171,8 @@ export async function main(): Promise<void> {
     const reason = error instanceof Error ? error.message : String(error);
     await recordFailedSync(failedFile, { script: 'sync-screenshots', product: SCREENSHOT_PRODUCT, reason });
     console.error(`sync-screenshots: ${SCREENSHOT_PRODUCT}: FAILED ${reason}`);
-    return;
   } finally {
-    if (args.source === undefined) {
+    if (args.source === undefined && cloneDir !== undefined) {
       await rm(cloneDir, { recursive: true, force: true });
     }
   }

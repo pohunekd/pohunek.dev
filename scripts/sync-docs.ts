@@ -56,8 +56,8 @@ export function parseArgs(argv: readonly string[]): CliArgs {
   return { product: values.product, source: values.source, ref: values.ref, keepGoing };
 }
 
-async function readJsonFile(relativePath: string): Promise<unknown> {
-  const path = join(REPO_ROOT, relativePath);
+async function readJsonFile(root: string, relativePath: string): Promise<unknown> {
+  const path = join(root, relativePath);
   const file = Bun.file(path);
   if (!(await file.exists())) {
     throw new DocsSyncError(`missing ${relativePath} at ${path}`);
@@ -121,13 +121,19 @@ async function publish(pages: readonly BuiltPage[], stagingDir: string, outputDi
 }
 
 /** Syncs one product into its own route prefix; the output of every other product is left as it is. */
-async function syncProduct(config: DocsSyncConfig, docs: ProductDocs, pin: Product, args: CliArgs): Promise<void> {
+async function syncProduct(
+  root: string,
+  config: DocsSyncConfig,
+  docs: ProductDocs,
+  pin: Product,
+  args: CliArgs,
+): Promise<void> {
   const ref = args.ref ?? tagOf(pin);
   // Keyed by product as well as ref: two products may release the same tag name.
-  const cacheRoot = join(REPO_ROOT, config.cacheDir, docs.product);
+  const cacheRoot = join(root, config.cacheDir, docs.product);
   const cloneDir = join(cacheRoot, ref.replace(/[^A-Za-z0-9._-]/g, '_'));
   const stagingDir = join(cacheRoot, 'staging');
-  const outputDir = join(REPO_ROOT, config.contentRoot, docs.routePrefix);
+  const outputDir = join(root, config.contentRoot, docs.routePrefix);
 
   const source =
     args.source !== undefined
@@ -146,7 +152,7 @@ async function syncProduct(config: DocsSyncConfig, docs: ProductDocs, pin: Produ
       installPrompt === undefined
         ? undefined
         : {
-            path: join(REPO_ROOT, config.generatedDir, installPrompt.output),
+            path: join(root, config.generatedDir, installPrompt.output),
             text: extractInstallPrompt(await source.readText(installPrompt.readme), installPrompt.heading),
           };
 
@@ -172,11 +178,11 @@ async function syncProduct(config: DocsSyncConfig, docs: ProductDocs, pin: Produ
   }
 }
 
-export async function main(): Promise<void> {
-  const args = parseArgs(process.argv.slice(2));
-  const releases = parseReleasesConfig(await readJsonFile('releases.config.json'));
+export async function main(argv: readonly string[] = process.argv.slice(2), root: string = REPO_ROOT): Promise<void> {
+  const args = parseArgs(argv);
+  const releases = parseReleasesConfig(await readJsonFile(root, 'releases.config.json'));
   const config = parseDocsSyncConfig(
-    await readJsonFile('docs-sync.config.json'),
+    await readJsonFile(root, 'docs-sync.config.json'),
     releases.products.map((product) => product.id),
   );
   const selected =
@@ -184,10 +190,10 @@ export async function main(): Promise<void> {
   if (selected.length === 0) {
     throw new DocsSyncError(`docs-sync.config.json has no source for product "${args.product}"`);
   }
-  const failedFile = args.keepGoing === true ? join(REPO_ROOT, 'failed-sync.json') : undefined;
+  const failedFile = args.keepGoing === true ? join(root, 'failed-sync.json') : undefined;
   for (const docs of selected) {
     try {
-      await syncProduct(config, docs, findProduct(releases, docs.product), args);
+      await syncProduct(root, config, docs, findProduct(releases, docs.product), args);
     } catch (error) {
       if (failedFile === undefined) {
         throw error;
