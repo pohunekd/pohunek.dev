@@ -32,7 +32,7 @@ name: Follow ecosystem releases
 #             product ids.
 #   finalize  read-only token; takes collect's files, puts the products whose
 #             sync failed back on their base-commit pin and changelog with
-#             scripts/revert-products.ts, writes the commit subject with
+#             scripts/revert-products.ts, writes the commit message with
 #             scripts/commit-summary.ts (both dependency-free, run with
 #             bun --no-install) and uploads releases.config.json,
 #             src/data/changelog/ and commit-message.txt as an artifact. It is
@@ -240,7 +240,7 @@ jobs:
           FAILED_SYNC_PRODUCTS: ${{ needs.verify.outputs.failed_sync_products }}
         run: bun --no-install scripts/revert-products.ts "$BASE"
 
-      - name: Write the commit subject
+      - name: Write the commit message
         env:
           MOVED_PRODUCTS: ${{ needs.collect.outputs.moved_products }}
           FAILED_SYNC_PRODUCTS: ${{ needs.verify.outputs.failed_sync_products }}

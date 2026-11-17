@@ -91,11 +91,11 @@ fails the job; that includes a product that did not move but fails at its base p
 products whose sync failed. The `finalize` job (read-only token) takes `collect`'s dependency-free
 artifact, validates that id list strictly (known product ids only, bounded
 size), puts those products back on their base state with the same
-`scripts/revert-products.ts`, writes the commit subject with
+`scripts/revert-products.ts`, writes the commit message with
 `scripts/commit-summary.ts` and uploads the result. The `publish` job, the only
 one with `contents: write`, runs no bun and no third-party action except checkout
 and download-artifact: it takes that artifact through
-`scripts/take-release-data` (expected files only, commit subject validated),
+`scripts/take-release-data` (expected files only, commit message validated),
 commits it, and only its final push step holds the token. The deploy builds from
 the committed tree, where a failed product is on its base pin again. A product
 whose docs failed ships its old pin; the products that passed ship their new

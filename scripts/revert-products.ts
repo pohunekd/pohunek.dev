@@ -2,7 +2,7 @@
 // Puts every product named in FAILED_SYNC_PRODUCTS (a JSON array of product ids) back on its
 // base-commit state: its pin in releases.config.json and its src/data/changelog/<product>.json, both
 // read with `git show <base>:<path>`. Every other product keeps what the working tree holds.
-// The publish job runs this on collect's artifact and the verify job runs it before the build, so both
+// The finalize job runs this on collect's artifact and the verify job runs it before the build, so both
 // see the same tree. It imports no npm package, so it may run where no dependency is installed
 // (`bun --no-install`). Usage: revert-products <base-commit>; run it inside the checkout.
 // The product list is validated against the base commit's config before anything is written.

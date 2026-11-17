@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
-// Prints the release commit's subject line from the products that moved (MOVED_PRODUCTS, the collect
+// Prints the release commit message (a subject and, when the list is long, a body) from the products that moved (MOVED_PRODUCTS, the collect
 // job's JSON array of {product, moved}) minus the products whose sync failed (FAILED_SYNC_PRODUCTS),
-// which the publish job has put back on their base pins. No product left means only changelog entries
+// which the finalize job has put back on their base pins. No product left means only changelog entries
 // were recorded. Imports no npm package.
 import type { MovedProduct } from './follow-outcomes.ts';
 

@@ -92,6 +92,7 @@ describe('take-release-data', () => {
     ['a body without the blank line', 'Follow 2 releases\n- a\n- b\n'],
     ['a body line that is not a release', 'Follow 2 releases\n\nrm -rf\n'],
     ['a body after Record', 'Record ecosystem changelog\n\n- a\n'],
+    ['an oversize body line', `Follow 2 releases\n\n- ${'x'.repeat(200)}\n- b\n`],
     ['an oversize body', `Follow 99 releases\n\n${'- a\n'.repeat(65)}`],
     ['an empty file', ''],
   ])('refuses a commit message with %s and copies nothing', (_label, content) => {

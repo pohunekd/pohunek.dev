@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // Prints the verify job's step outputs from failed-sync.json (one JSON object per line:
 // {script, product, reason}), one single-line key=value pair each:
-//   failed_sync_products  JSON array of product ids; the publish job validates it strictly
+//   failed_sync_products  JSON array of product ids; the finalize job validates it strictly (through revert-products)
 //   failed_sync_reasons   JSON array of reasons in the same order; only the report job shows it
 //   failed_sync           "true" when any product failed
 // The caller redirects stdout to GITHUB_OUTPUT, so nothing else may print here.

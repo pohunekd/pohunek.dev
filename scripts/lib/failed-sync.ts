@@ -29,13 +29,13 @@ export async function readFailedSync(path: string): Promise<FailedSync[]> {
   return failures;
 }
 
-/** Upper bound for the failed-product list a job output may carry into the publish job. */
+/** Upper bound for the failed-product list a job output may carry into the finalize job. */
 export const MAX_FAILED_PRODUCTS_LENGTH = 4096;
 
 /**
  * Parses the list of products whose sync failed, as the verify job passes it on: a JSON array of
  * product ids, each one a known product, none twice. Empty text means no failure. Anything else is
- * refused, because the publish job acts on this list with write access.
+ * refused, because the tree built from this list is what the job with write access commits.
  */
 export function parseFailedProducts(raw: string, knownIds: readonly string[]): string[] {
   if (raw.length > MAX_FAILED_PRODUCTS_LENGTH) {
