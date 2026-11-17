@@ -5,9 +5,23 @@
 // were recorded. Imports no npm package.
 import type { MovedProduct } from './follow-outcomes.ts';
 
+/** Must equal subject_max_length in take-release-data, which refuses a longer subject. */
+export const SUBJECT_MAX_LENGTH = 100;
+
+/**
+ * The commit message: "Follow <releases>" when it fits the subject bound, otherwise "Follow <n> releases"
+ * with the full list as "- <release>" lines in the body.
+ */
 export function commitSummary(moved: readonly MovedProduct[], reverted: readonly string[]): string {
   const kept = moved.filter((entry) => !reverted.includes(entry.product));
-  return kept.length === 0 ? 'Record ecosystem changelog' : `Follow ${kept.map((entry) => entry.moved).join(', ')}`;
+  if (kept.length === 0) {
+    return 'Record ecosystem changelog';
+  }
+  const full = `Follow ${kept.map((entry) => entry.moved).join(', ')}`;
+  if (full.length <= SUBJECT_MAX_LENGTH) {
+    return full;
+  }
+  return `Follow ${kept.length} releases\n\n${kept.map((entry) => `- ${entry.moved}`).join('\n')}`;
 }
 
 export function parseMoved(raw: string): MovedProduct[] {
@@ -19,7 +33,7 @@ export function parseMoved(raw: string): MovedProduct[] {
     if (typeof entry?.product !== 'string' || typeof entry.moved !== 'string') {
       throw new Error('MOVED_PRODUCTS entries need product and moved');
     }
-    return { product: entry.product, moved: entry.moved.replace(/\s+/g, ' ') };
+    return { product: entry.product, moved: entry.moved.replace(/[\s\u0000-\u001f\u007f]+/g, ' ').trim() };
   });
 }
 

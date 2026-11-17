@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-# Copies the release data collected by follow-releases.ts from an unpacked artifact into this checkout.
+# Copies the release data (collect's or finalize's artifact) from an unpacked artifact into this checkout.
 # Usage: take-release-data <artifact directory>. Every entry of the artifact must be releases.config.json
 # or src/data/changelog/<product id>.json, as a regular file; anything else (another path, a symlink,
 # a device, a dotfile) aborts before a single file is copied. The artifact may also hold commit-message.txt,
-# the release commit's subject; it is validated (one printable line of at most 200 characters, either
-# "Record ecosystem changelog" or "Follow ..."), never copied, and read by the caller from the artifact directory.
+# the release commit message; it is validated (a subject of at most 100 printable characters, either
+# "Record ecosystem changelog" or "Follow ...", and for "Follow" optionally a blank line and up to 64
+# "- <release>" lines of at most 200 characters), never copied, and read by the caller from the artifact directory.
 set -euo pipefail
+# Character classes and lengths below are meant for UTF-8 text (product names such as "Šafář").
+export LC_ALL=C.UTF-8
 
 if [ "$#" -ne 1 ]; then
   echo "usage: take-release-data <artifact directory>" >&2
@@ -21,8 +24,12 @@ fi
 
 allowed_file='^(releases\.config\.json|commit-message\.txt|src/data/changelog/[a-z][a-z0-9-]*\.json)$'
 message_file='commit-message.txt'
-message_pattern='^(Record ecosystem changelog|Follow [[:print:]]+)$'
-message_max_length=200
+subject_pattern='^(Record ecosystem changelog|Follow [[:print:]]+)$'
+body_line_pattern='^- [[:print:]]+$'
+# subject_max_length must equal SUBJECT_MAX_LENGTH in commit-summary.ts (a test compares them).
+subject_max_length=100
+body_line_max_length=200
+body_max_lines=64
 allowed_dir='^(src|src/data|src/data/changelog)$'
 
 files=()
@@ -42,15 +49,28 @@ while IFS= read -r -d '' entry; do
       exit 1
     fi
     if [ "$relative" = "$message_file" ]; then
-      # One line, optionally newline-terminated; $(...) strips the trailing newline.
-      if [ "$(wc -l < "$entry")" -gt 1 ]; then
-        echo "take-release-data: $message_file has more than one line" >&2
+      mapfile -t message_lines < "$entry"
+      if [ "${#message_lines[@]}" -eq 0 ] \
+        || [ "${#message_lines[0]}" -gt "$subject_max_length" ] \
+        || ! [[ "${message_lines[0]}" =~ $subject_pattern ]]; then
+        echo "take-release-data: $message_file does not start with a valid commit subject" >&2
         exit 1
       fi
-      message="$(cat "$entry")"
-      if [ "${#message}" -gt "$message_max_length" ] || ! [[ "$message" =~ $message_pattern ]]; then
-        echo "take-release-data: $message_file is not a valid commit subject" >&2
-        exit 1
+      if [ "${#message_lines[@]}" -gt 1 ]; then
+        # A body is a blank line followed by "- <release>" lines, only after a "Follow" subject.
+        if [ "${#message_lines[@]}" -gt "$((body_max_lines + 2))" ] \
+          || [ -n "${message_lines[1]}" ] \
+          || [ "${#message_lines[@]}" -lt 3 ] \
+          || [[ "${message_lines[0]}" != Follow\ * ]]; then
+          echo "take-release-data: $message_file has an invalid body" >&2
+          exit 1
+        fi
+        for body_line in "${message_lines[@]:2}"; do
+          if [ "${#body_line}" -gt "$body_line_max_length" ] || ! [[ "$body_line" =~ $body_line_pattern ]]; then
+            echo "take-release-data: $message_file has an invalid body line" >&2
+            exit 1
+          fi
+        done
       fi
     else
       files+=("$relative")

@@ -93,7 +93,7 @@ artifact, validates that id list strictly (known product ids only, bounded
 size), puts those products back on their base state with the same
 `scripts/revert-products.ts`, writes the commit subject with
 `scripts/commit-summary.ts` and uploads the result. The `publish` job, the only
-one with a write token, runs no bun and no third-party action except checkout
+one with `contents: write`, runs no bun and no third-party action except checkout
 and download-artifact: it takes that artifact through
 `scripts/take-release-data` (expected files only, commit subject validated),
 commits it, and only its final push step holds the token. The deploy builds from
