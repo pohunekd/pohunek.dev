@@ -2,7 +2,7 @@ name: Follow ecosystem releases
 
 # Moves every product pin in releases.config.json to the product's newest
 # release once that release's install assets verify, records the changelog of
-# every new release under src/data/changelog/, syncs each moved product's
+# every new release under src/data/changelog/, syncs every product's
 # docs on its own, checks that the site still tests and builds, pushes the
 # change to main and starts a deploy. One product's failing release or docs
 # sync keeps its old pin and is reported while the products that passed still
@@ -22,17 +22,18 @@ name: Follow ecosystem releases
 #             failing product keeps its old pin and is named in the outputs;
 #             the step exits 2 and the run fails at the end through `report`.
 #   verify    read-only token; takes collect's files, installs dependencies,
-#             syncs each moved product's docs on its own (--keep-going), puts
+#             syncs every product's docs on its own (--keep-going), puts
 #             every product whose sync failed back on its base-commit pin and
 #             changelog, then tests and builds that tree. The build syncs again
 #             at those pins without --keep-going, so a failure there fails the
 #             job. Third-party build code runs only here. Output: the failed
 #             product ids.
-#   publish   contents: write; checks out the same commit, applies collect's
+#   publish   contents: write; checks out the same commit without persisting
+#             the token, applies collect's
 #             artifact (by id, outside the checkout, only the expected regular
 #             files), puts the failed-sync products back on their base state
-#             with scripts/revert-products.ts and commits and pushes what is
-#             left. The push is a fast-forward of that commit, so a main that
+#             with scripts/revert-products.ts and commits what is
+#             left; only the final push step holds the token. The push is a fast-forward of that commit, so a main that
 #             moved meanwhile fails the run instead of losing its change; the
 #             next run starts from the new main. Nothing left to commit means
 #             no deploy.
@@ -204,6 +205,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.collect.outputs.base }}
+          persist-credentials: false
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version-file: .bun-version
@@ -239,9 +241,20 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add releases.config.json src/data/changelog
           git commit -m "$summary"
-          # HEAD is the base commit plus one; a main that moved since then rejects this push.
-          git push origin HEAD:refs/heads/main
           echo "committed=true" >> "$GITHUB_OUTPUT"
+
+      # The write token reaches only this step, which runs nothing but git.
+      - name: Push
+        if: steps.commit.outputs.committed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          echo "::add-mask::$auth"
+          # HEAD is the base commit plus one; a main that moved since then rejects this push.
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin HEAD:refs/heads/main
 
   deploy:
     needs: publish

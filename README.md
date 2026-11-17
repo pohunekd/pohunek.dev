@@ -79,14 +79,14 @@ keeps its old pin (and its old changelog entries) while every product that
 passed still moves; the `collect` job's step outputs name the failed products
 with their reasons, and the run fails at the end through its `report` job.
 
-The `verify` job then syncs each moved product's docs on its own:
+The `verify` job then syncs every product's docs on its own:
 `scripts/sync-docs.ts`, `scripts/sync-screenshots.ts` and
 `scripts/sync-media.ts` run with `--keep-going`, so one product's broken docs
 are recorded in `failed-sync.json` and the other products still sync.
 `scripts/revert-products.ts` puts each failed product back on its base-commit
 pin and changelog, and the job tests and builds that tree. The build syncs
 every product again at those pins without `--keep-going`, so a failure there
-fails the job. Third-party code (`bun install`, the syncs, astro) runs only in
+fails the job; that includes a product that did not move but fails at its base pin, so no product ships in that run. Third-party code (`bun install`, the syncs, astro) runs only in
 `verify`, and `verify` uploads no file: it passes on only the ids of the
 products whose sync failed. The `publish` job commits `collect`'s dependency-free
 artifact, validates that id list strictly (known product ids only, bounded
