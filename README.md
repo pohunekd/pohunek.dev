@@ -150,9 +150,10 @@ Each surface page (`/surfaces/<slug>/`) has its own `og:image`, rendered from
 that surface's hero banner art and the site fonts. The card texts mirror the
 page data, so no preview text lives anywhere else:
 
-- title = `surface.name`, kicker = `surface.platform`, lead = `surface.summary`
-  (all in `src/data/surfaces.ts`, which also carries the `ogImage` path that
-  `src/pages/surfaces/[slug].astro` passes to `MarketingLayout`)
+- title = `surface.name`, kicker = `surface.platform` uppercased, lead =
+  `surface.summary` (all in `src/data/surfaces.ts`, which also carries the
+  `ogImage` path that `src/pages/surfaces/[slug].astro` passes to
+  `MarketingLayout`, emitted as both `og:image` and `twitter:image`)
 - caption and art = the banner entry in `src/data/banners.ts`
   (`src/assets/brand/banner-<slug>.png`)
 
@@ -163,8 +164,13 @@ art, re-render and commit the result:
 bun scripts/generate-surface-og.ts
 ```
 
-The generator wraps the lead and the caption to fit the card and fails when
-a line would overflow; keep the sizes (kicker 22, title 84, lead 34, caption
+The generator draws every text as glyph outlines from the real
+`@fontsource` woff files (via `fontkitten` in `scripts/lib/og-draw.ts`), so
+the PNGs use the site fonts whatever the host has installed; the SVG it
+renders contains no `<text>`. Colours come from `src/styles/tokens.css`.
+It wraps the lead and the caption to fit the card and fails (exit 1) when a
+line would overflow the column or the last caption line would leave no room
+above the URL line; keep the sizes (kicker 22, title 84, lead 34, caption
 24, URL 26 px at 1200x630, nothing smaller than 22 px) so the card stays
 readable at the ~500 px width link previews render at.
 

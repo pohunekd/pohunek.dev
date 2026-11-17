@@ -1,18 +1,20 @@
 import { describe, expect, test } from 'bun:test';
-import { readdirSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 
+import { surfaces } from '../src/data/surfaces.ts';
+
 const ROOT = path.resolve(import.meta.dir, '..');
 
-const EXPECTED = ['android', 'companion', 'omarchy', 'sway', 'tui', 'web'];
+const slugs = surfaces.map((surface) => surface.slug).sort();
 
 describe('surface og images', () => {
 	test('one 1200x630 PNG per surface slug', async () => {
 		const files = readdirSync(path.join(ROOT, 'public/og'))
 			.filter((file) => file.startsWith('surface-'))
 			.sort();
-		expect(files).toEqual(EXPECTED.map((slug) => `surface-${slug}.png`).sort());
+		expect(files).toEqual(slugs.map((slug) => `surface-${slug}.png`));
 		for (const file of files) {
 			const full = path.join(ROOT, 'public/og', file);
 			expect(statSync(full).size).toBeGreaterThan(10_000);
@@ -22,12 +24,18 @@ describe('surface og images', () => {
 		}
 	});
 
-	test('generator and surface data agree on the card set', async () => {
-		const generator = await Bun.file(path.join(ROOT, 'scripts/generate-surface-og.ts')).text();
-		const surfaces = await Bun.file(path.join(ROOT, 'src/data/surfaces.ts')).text();
-		for (const slug of EXPECTED) {
-			expect(generator).toContain(`slug: '${slug}'`);
-			expect(surfaces).toContain(`ogImage: '/og/surface-${slug}.png'`);
+	test('every surface ogImage file exists in public/', () => {
+		for (const surface of surfaces) {
+			expect(surface.ogImage).toStartWith('/og/surface-');
+			expect(existsSync(path.join(ROOT, 'public', surface.ogImage))).toBe(true);
+		}
+	});
+
+	test('no orphan surface-*.png without a surface', () => {
+		const slugSet = new Set(slugs);
+		for (const file of readdirSync(path.join(ROOT, 'public/og'))) {
+			if (!file.startsWith('surface-')) continue;
+			expect(slugSet.has(file.replace(/^surface-/, '').replace(/\.png$/, ''))).toBe(true);
 		}
 	});
 });
