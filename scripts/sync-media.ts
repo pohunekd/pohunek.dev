@@ -2,11 +2,13 @@
 // Pulls the Android demo video at the pinned ref into public/media/android/ (served from this site)
 // and writes the module that surfaces.ts imports. Both outputs are generated and never committed.
 // A ref without a media manifest produces "no video": the directory is removed and the module exports null.
+// With --keep-going a failing sync is reported in failed-sync.json instead of aborting.
 import { mkdir, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
 import { parseDocsSyncConfig } from './lib/docs-config.ts';
 import { findProduct, parseReleasesConfig, tagOf } from './lib/releases-config.ts';
 import { cloneSource, DocsSyncError, openLocalSource, type DocsSource } from './lib/docs-source.ts';
+import { recordFailedSync } from './lib/failed-sync.ts';
 import {
   loadMediaManifest,
   renderMediaModule,
@@ -16,9 +18,10 @@ import {
   type MediaManifest,
 } from './lib/media-manifest.ts';
 
-interface CliArgs {
+export interface CliArgs {
   readonly source?: string;
   readonly ref?: string;
+  readonly keepGoing?: boolean;
 }
 
 const REPO_ROOT = resolve(dirname(import.meta.path), '..');
@@ -29,24 +32,35 @@ const MODULE_PATH = 'android-media.ts';
 const TYPES_MODULE = 'scripts/lib/media-manifest';
 const CACHE_DIR = '.cache/media-sync';
 
-function parseArgs(argv: readonly string[]): CliArgs {
+const USAGE = 'usage: sync-media.ts [--source <checkout>] [--ref <tag>] [--keep-going]';
+
+export function parseArgs(argv: readonly string[]): CliArgs {
+  let keepGoing = false;
+  const rest: string[] = [];
+  for (const arg of argv) {
+    if (arg === '--keep-going') {
+      keepGoing = true;
+    } else {
+      rest.push(arg);
+    }
+  }
   const values: Record<string, string> = {};
-  for (let i = 0; i < argv.length; i += 2) {
-    const flag = argv[i];
-    const value = argv[i + 1];
+  for (let i = 0; i < rest.length; i += 2) {
+    const flag = rest[i];
+    const value = rest[i + 1];
     if (flag !== '--source' && flag !== '--ref') {
-      throw new DocsSyncError(`unknown argument "${flag}"; usage: sync-media.ts [--source <checkout>] [--ref <tag>]`);
+      throw new DocsSyncError(`unknown argument "${flag}"; ${USAGE}`);
     }
     if (value === undefined || value.startsWith('--')) {
       throw new DocsSyncError(`${flag} needs a value`);
     }
     values[flag.slice(2)] = value;
   }
-  return { source: values.source, ref: values.ref };
+  return { source: values.source, ref: values.ref, keepGoing };
 }
 
-async function readJsonFile(relativePath: string): Promise<unknown> {
-  const path = join(REPO_ROOT, relativePath);
+async function readJsonFile(root: string, relativePath: string): Promise<unknown> {
+  const path = join(root, relativePath);
   const file = Bun.file(path);
   if (!(await file.exists())) {
     throw new DocsSyncError(`missing ${relativePath} at ${path}`);
@@ -106,33 +120,35 @@ async function publish(
   await writeFileAtomic(modulePath, moduleSource);
 }
 
-async function main(): Promise<void> {
-  const args = parseArgs(process.argv.slice(2));
-  const releases = parseReleasesConfig(await readJsonFile('releases.config.json'));
+export async function main(argv: readonly string[] = process.argv.slice(2), root: string = REPO_ROOT): Promise<void> {
+  const args = parseArgs(argv);
+  const releases = parseReleasesConfig(await readJsonFile(root, 'releases.config.json'));
   const docsConfig = parseDocsSyncConfig(
-    await readJsonFile('docs-sync.config.json'),
+    await readJsonFile(root, 'docs-sync.config.json'),
     releases.products.map((product) => product.id),
   );
-  const pin = findProduct(releases, MEDIA_PRODUCT);
-  if (pin.mediaManifest === undefined) {
-    throw new DocsSyncError(`releases.config.json product "${MEDIA_PRODUCT}" has no mediaManifest`);
-  }
-  const manifestPath = pin.mediaManifest;
-  const ref = args.ref ?? tagOf(pin);
-  const where = `${pin.repository} at ref "${ref}" ${manifestPath}`;
-
-  const cacheRoot = join(REPO_ROOT, CACHE_DIR);
-  const cloneDir = join(cacheRoot, ref.replace(/[^A-Za-z0-9._-]/g, '_'));
-  const source =
-    args.source !== undefined
-      ? await openLocalSource(resolve(args.source), ref)
-      : await cloneSource({
-          repositoryUrl: `${docsConfig.githubUrl}/${pin.repository}.git`,
-          ref,
-          cloneDir,
-        });
-
+  const failedFile = args.keepGoing === true ? join(root, 'failed-sync.json') : undefined;
+  const cacheRoot = join(root, CACHE_DIR);
+  let cloneDir: string | undefined;
+  // Everything that depends on the product (pin lookup, clone, manifest) sits inside the try, so
+  // under --keep-going any failure of this product is recorded instead of aborting the run.
   try {
+    const pin = findProduct(releases, MEDIA_PRODUCT);
+    if (pin.mediaManifest === undefined) {
+      throw new DocsSyncError(`releases.config.json product "${MEDIA_PRODUCT}" has no mediaManifest`);
+    }
+    const manifestPath = pin.mediaManifest;
+    const ref = args.ref ?? tagOf(pin);
+    const where = `${pin.repository} at ref "${ref}" ${manifestPath}`;
+    cloneDir = join(cacheRoot, ref.replace(/[^A-Za-z0-9._-]/g, '_'));
+    const source =
+      args.source !== undefined
+        ? await openLocalSource(resolve(args.source), ref)
+        : await cloneSource({
+            repositoryUrl: `${docsConfig.githubUrl}/${pin.repository}.git`,
+            ref,
+            cloneDir,
+          });
     console.error(`sync-media: reading ${source.description}`);
     const manifest = await loadMediaManifest(source, manifestPath, where);
     const contents = manifest === null ? new Map<string, Uint8Array>() : await readFiles(source, manifest, manifestPath, where);
@@ -140,8 +156,8 @@ async function main(): Promise<void> {
       manifest === null ? null : toAndroidMedia(manifest),
       contents,
       join(cacheRoot, 'staging'),
-      join(REPO_ROOT, MEDIA_DIR),
-      join(REPO_ROOT, docsConfig.generatedDir, MODULE_PATH),
+      join(root, MEDIA_DIR),
+      join(root, docsConfig.generatedDir, MODULE_PATH),
     );
     if (manifest === null) {
       console.error(`sync-media: ${manifestPath} does not exist at ${ref}, so the page renders without a video`);
@@ -151,20 +167,29 @@ async function main(): Promise<void> {
       console.error(`  ${MEDIA_DIR}/${entry.file}  (${entry.type}, ${entry.bytes} bytes)`);
     }
     console.error(`sync-media: ${manifest.files.length} files (app tree ${manifest.appTree}) at ${ref}`);
+  } catch (error) {
+    if (failedFile === undefined) {
+      throw error;
+    }
+    const reason = error instanceof Error ? error.message : String(error);
+    await recordFailedSync(failedFile, { script: 'sync-media', product: MEDIA_PRODUCT, reason });
+    console.error(`sync-media: ${MEDIA_PRODUCT}: FAILED ${reason}`);
   } finally {
-    if (args.source === undefined) {
+    if (args.source === undefined && cloneDir !== undefined) {
       await rm(cloneDir, { recursive: true, force: true });
     }
   }
 }
 
-try {
-  await main();
-} catch (error) {
-  if (error instanceof DocsSyncError) {
-    console.error(`sync-media: ${error.message}`);
-  } else {
-    console.error(error);
+if (import.meta.main) {
+  try {
+    await main();
+  } catch (error) {
+    if (error instanceof DocsSyncError) {
+      console.error(`sync-media: ${error.message}`);
+    } else {
+      console.error(error);
+    }
+    process.exit(1);
   }
-  process.exit(1);
 }

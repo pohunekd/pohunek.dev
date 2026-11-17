@@ -1,13 +1,17 @@
 #!/usr/bin/env bun
 // Moves every product pin in releases.config.json to the product's newest eligible release once the
-// release's assets verify, and records the changelog of every release up to the pin.
+// release's install assets verify, and records the changelog of every release up to the pin.
+// Every product is followed on its own: one product's failing assets or attestation keep that
+// product's old pin while the products that pass still move. The verify job then syncs each moved
+// product's docs on its own (see sync-docs.ts --keep-going).
 // Usage: follow-releases.ts [--product <id> [--version <X.Y.Z>]]. Needs GH_TOKEN (read access) and gh.
-// Prints one line naming the moved pins (empty when none moved) on stdout; progress goes to stderr.
+// Prints one JSON outcome line per product on stdout; progress goes to stderr.
 // Exits 2 when some products failed (the others are still followed), 1 when nothing could run.
 import { createHash } from 'node:crypto';
 import { mkdtemp, rename, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   CHANGELOG_START,
   extractChangelogBlock,
@@ -18,8 +22,13 @@ import {
   type ChangelogRelease,
   type ProductChangelog,
 } from './lib/changelog.ts';
-import { parseDocsSyncConfig } from './lib/docs-config.ts';
-import { GithubClient, type GithubAsset, type GithubRelease } from './lib/github.ts';
+import {
+  GithubClient,
+  type GithubAsset,
+  type GithubCommit,
+  type GithubPull,
+  type GithubRelease,
+} from './lib/github.ts';
 import {
   assetNames,
   compareVersions,
@@ -31,7 +40,7 @@ import {
   type ReleasesConfig,
 } from './lib/releases-config.ts';
 
-interface CliArgs {
+export interface CliArgs {
   readonly product?: string;
   readonly version?: string;
 }
@@ -41,8 +50,8 @@ interface Eligible {
   readonly release: GithubRelease;
 }
 
-const REPO_ROOT = resolve(dirname(import.meta.path), '..');
 const CONFIG_FILE = 'releases.config.json';
+const DOCS_CONFIG_FILE = 'docs-sync.config.json';
 const SHA256_LINE = /^([0-9a-f]{64}) [ *](\S+)\n?$/;
 
 function parseArgs(argv: readonly string[]): CliArgs {
@@ -91,11 +100,11 @@ function eligibleReleases(product: Product, releases: readonly GithubRelease[]):
     .sort((a, b) => compareVersions(a.version, b.version));
 }
 
-function sha256Hex(bytes: Uint8Array): string {
+export function sha256Hex(bytes: Uint8Array): string {
   return createHash('sha256').update(bytes).digest('hex');
 }
 
-function findAsset(release: GithubRelease, name: string): GithubAsset {
+export function findAsset(release: GithubRelease, name: string): GithubAsset {
   const asset = release.assets.find((candidate) => candidate.name === name);
   if (asset === undefined) {
     throw new Error(`${release.tagName} has no asset ${name}`);
@@ -130,7 +139,7 @@ async function runGhAttestationVerify(path: string, product: Product, tag: strin
 }
 
 /** Every asset the site names exists, matches its .sha256 file and GitHub's digest, and is attested when required. */
-async function verifyAssets(github: GithubClient, product: Product, target: Eligible): Promise<void> {
+export async function verifyAssets(github: ReleaseFetcher, product: Product, target: Eligible): Promise<void> {
   const workDir = await mkdtemp(join(tmpdir(), `follow-releases-${product.id}-`));
   try {
     for (const name of assetNames(product, target.version)) {
@@ -162,9 +171,9 @@ async function verifyAssets(github: GithubClient, product: Product, target: Elig
 }
 
 async function generatedMarkdown(
-  github: GithubClient,
-  product: Product,
+  github: ReleaseFetcher,
   githubUrl: string,
+  product: Product,
   previous: Eligible | undefined,
   current: Eligible,
 ): Promise<string> {
@@ -202,14 +211,15 @@ async function readChangelog(path: string, product: Product): Promise<ProductCha
 
 /** Adds every eligible release up to the pin that the changelog does not hold yet. Recorded releases are kept as they are. */
 async function updateChangelog(
-  github: GithubClient,
-  config: ReleasesConfig,
+  github: ReleaseFetcher,
   githubUrl: string,
+  config: ReleasesConfig,
+  root: string,
   product: Product,
   pinned: string,
   eligible: readonly Eligible[],
 ): Promise<number> {
-  const path = join(REPO_ROOT, config.changelogDir, `${product.id}.json`);
+  const path = join(root, config.changelogDir, `${product.id}.json`);
   const changelog = await readChangelog(path, product);
   const known = new Set(changelog.releases.map((release) => release.tag));
   const included = eligible.filter((entry) => compareVersions(entry.version, pinned) <= 0);
@@ -221,7 +231,7 @@ async function updateChangelog(
     }
     const block = extractChangelogBlock(entry.release.body);
     const markdown =
-      block ?? (await generatedMarkdown(github, product, githubUrl, included[index - 1], entry));
+      block ?? (await generatedMarkdown(github, githubUrl, product, included[index - 1], entry));
     added.push({
       tag: entry.release.tagName,
       version: entry.version,
@@ -241,17 +251,35 @@ async function updateChangelog(
   return added.length;
 }
 
-interface Followed {
+export interface Followed {
   /** `<name> <tag>` when the pin moved. */
   readonly moved?: string;
   readonly recorded: number;
 }
 
+export interface ProductOutcome {
+  /** Product id as used in releases.config.json. */
+  readonly product: string;
+  /** `<name> <tag>` when the pin moved; empty when the product stayed. */
+  readonly moved?: string;
+  readonly failed: boolean;
+  readonly reason?: string;
+}
+
+/** The subset of GithubClient the follow needs; tests pass fakes with no network. */
+export interface ReleaseFetcher {
+  listReleases(repository: string): Promise<GithubRelease[]>;
+  downloadAsset(asset: GithubAsset): Promise<Uint8Array>;
+  compareCommits(repository: string, base: string, head: string): Promise<GithubCommit[]>;
+  getPull(repository: string, number: number): Promise<GithubPull | undefined>;
+}
+
 /** Follows one product: the pin moves only after its assets verify and the changelog up to it is written. */
-async function followProduct(
-  github: GithubClient,
+export async function followProduct(
+  github: ReleaseFetcher,
   config: ReleasesConfig,
   githubUrl: string,
+  root: string,
   product: Product,
   releases: readonly GithubRelease[],
   requestedVersion: string | undefined,
@@ -272,67 +300,132 @@ async function followProduct(
   }
   if (order === 0) {
     console.error(`follow-releases: ${product.id} already at ${product.version}`);
-    return { recorded: await updateChangelog(github, config, githubUrl, product, product.version, eligible) };
+    return { recorded: await updateChangelog(github, githubUrl, config, root, product, product.version, eligible) };
   }
 
   await verifyAssets(github, product, target);
-  const recorded = await updateChangelog(github, config, githubUrl, product, target.version, eligible);
+  const recorded = await updateChangelog(github, githubUrl, config, root, product, target.version, eligible);
   // Re-read the file so each product's rewrite keeps the others' updates.
-  const raw = (await Bun.file(join(REPO_ROOT, CONFIG_FILE)).json()) as Record<string, unknown>;
+  const raw = (await Bun.file(join(root, CONFIG_FILE)).json()) as Record<string, unknown>;
   const content = renderWithVersion(raw, product.id, target.version);
   parseReleasesConfig(JSON.parse(content));
-  await writeFileAtomic(join(REPO_ROOT, CONFIG_FILE), content);
+  await writeFileAtomic(join(root, CONFIG_FILE), content);
   console.error(`follow-releases: ${product.id} ${product.version} -> ${target.version}`);
   return { moved: `${product.name} ${product.tagPrefix}${target.version}`, recorded };
 }
 
 /** Exit code when some products failed and the others were followed. */
-const PARTIAL_FAILURE = 2;
+export const PARTIAL_FAILURE = 2;
 
-async function main(): Promise<number> {
-  const args = parseArgs(process.argv.slice(2));
-  const config = parseReleasesConfig(await Bun.file(join(REPO_ROOT, CONFIG_FILE)).json());
-  const github = new GithubClient(config.apiUrl, requireEnv('GH_TOKEN'));
-  const { githubUrl } = parseDocsSyncConfig(
-    await Bun.file(join(REPO_ROOT, 'docs-sync.config.json')).json(),
-    config.products.map((product) => product.id),
-  );
-  const selected = args.product === undefined ? config.products : [findProduct(config, args.product)];
-
-  const releasesByRepository = new Map<string, GithubRelease[]>();
+/**
+ * Follows one product without touching the others: a failure records {product, reason}, keeps the old
+ * pin and lets the remaining products continue. Failures bubble out of followProduct unchanged, so
+ * nothing about the security checks is weakened for the products that pass.
+ */
+export async function followEach(
+  selected: readonly Product[],
+  run: (product: Product) => Promise<Followed>,
+): Promise<{ outcomes: ProductOutcome[]; moved: string[]; recorded: number }> {
+  const outcomes: ProductOutcome[] = [];
   const moved: string[] = [];
-  const failures: string[] = [];
   let recorded = 0;
-
-  // One product's broken release must not hold back the others; its failure is reported at the end.
   for (const product of selected) {
     try {
-      let releases = releasesByRepository.get(product.repository);
-      if (releases === undefined) {
-        releases = await github.listReleases(product.repository);
-        releasesByRepository.set(product.repository, releases);
-      }
-      const followed = await followProduct(github, config, githubUrl, product, releases, args.version);
+      const followed = await run(product);
       recorded += followed.recorded;
       if (followed.moved !== undefined) {
         moved.push(followed.moved);
       }
+      outcomes.push({ product: product.id, moved: followed.moved, failed: false });
     } catch (error) {
-      failures.push(`${product.id}: ${error instanceof Error ? error.message : String(error)}`);
+      const reason = error instanceof Error ? error.message : String(error);
+      outcomes.push({ product: product.id, failed: true, reason });
     }
   }
-
-  console.error(`follow-releases: ${moved.length} pin(s) moved, ${recorded} changelog release(s) recorded`);
-  for (const failure of failures) {
-    console.error(`follow-releases: FAILED ${failure}`);
-  }
-  console.log(moved.join(', '));
-  return failures.length === 0 ? 0 : PARTIAL_FAILURE;
+  return { outcomes, moved, recorded };
 }
 
-try {
-  process.exitCode = await main();
-} catch (error) {
-  console.error(`follow-releases: ${error instanceof Error ? error.message : String(error)}`);
-  process.exit(1);
+export interface RunFollowOptions {
+  readonly root: string;
+  readonly args: CliArgs;
+  readonly config: ReleasesConfig;
+  readonly github: ReleaseFetcher;
+  /** github.com base URL for the changelog links. */
+  readonly githubUrl: string;
+}
+
+/** Follows every selected product on its own and reports one outcome per product. */
+export async function runFollow({ root, args, config, github, githubUrl }: RunFollowOptions): Promise<{
+  outcomes: ProductOutcome[];
+  moved: string[];
+  recorded: number;
+}> {
+  const selected = args.product === undefined ? config.products : [findProduct(config, args.product)];
+  const releasesByRepository = new Map<string, GithubRelease[]>();
+
+  // One product's broken release must not hold back the others; its failure is reported at the end.
+  return followEach(selected, async (product) => {
+    let releases = releasesByRepository.get(product.repository);
+    if (releases === undefined) {
+      releases = await github.listReleases(product.repository);
+      releasesByRepository.set(product.repository, releases);
+    }
+    return followProduct(github, config, githubUrl, root, product, releases, args.version);
+  });
+}
+
+export interface MainOptions {
+  readonly argv: readonly string[];
+  readonly root: string;
+  /** Replaces the GitHub client; the real one needs GH_TOKEN. */
+  readonly github?: ReleaseFetcher;
+  /** Receives one JSON outcome line per product; stdout by default. */
+  readonly write?: (line: string) => void;
+}
+
+/** Follows the selected products, prints one outcome line each and returns the exit status. */
+export async function main({
+  argv,
+  root,
+  github,
+  write = (line) => console.log(line),
+}: MainOptions): Promise<number> {
+  const args = parseArgs(argv);
+  const config = parseReleasesConfig(await Bun.file(join(root, CONFIG_FILE)).json());
+  const docs = (await Bun.file(join(root, DOCS_CONFIG_FILE)).json()) as { githubUrl?: unknown };
+  if (typeof docs.githubUrl !== 'string' || docs.githubUrl.length === 0) {
+    throw new Error(`${DOCS_CONFIG_FILE} needs a githubUrl`);
+  }
+  const { outcomes, moved, recorded } = await runFollow({
+    root,
+    args,
+    config,
+    github: github ?? new GithubClient(config.apiUrl, requireEnv('GH_TOKEN')),
+    githubUrl: docs.githubUrl,
+  });
+
+  console.error(`follow-releases: ${moved.length} pin(s) moved, ${recorded} changelog release(s) recorded`);
+  for (const outcome of outcomes) {
+    if (outcome.failed) {
+      console.error(`follow-releases: FAILED ${outcome.product}: ${outcome.reason}`);
+    }
+  }
+  // One JSON object per line; scripts/follow-outcomes.ts turns it into step outputs and
+  // follow-report.ts (which also sees the sync failures) writes the run summary table.
+  for (const outcome of outcomes) {
+    write(JSON.stringify(outcome));
+  }
+  return outcomes.some((outcome) => outcome.failed) ? PARTIAL_FAILURE : 0;
+}
+
+if (import.meta.main) {
+  try {
+    process.exitCode = await main({
+      argv: process.argv.slice(2),
+      root: fileURLToPath(new URL('..', import.meta.url)),
+    });
+  } catch (error) {
+    console.error(`follow-releases: ${error instanceof Error ? error.message : String(error)}`);
+    process.exit(1);
+  }
 }

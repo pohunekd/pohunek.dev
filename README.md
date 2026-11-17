@@ -22,6 +22,7 @@ from GitHub Pages.
 | `scripts/sync-screenshots.ts` | Pulls the Android screenshot set at the pinned release |
 | `scripts/sync-media.ts` | Pulls the Android demo video at the pinned release into `public/media/android/`; a release without `docs/media/manifest.json` renders no video |
 | `scripts/follow-releases.ts` | Moves the pins to new releases and records their changelog |
+| `scripts/revert-products.ts` | Puts the products whose docs sync failed back on their base-commit pin and changelog (dependency-free) |
 | `releases.config.json` | Every ecosystem product: repository, tag prefix, pinned version, install assets |
 | `.github/assets/` | README hero of this repository |
 
@@ -62,20 +63,51 @@ screenshots, the surface pages and the install commands all read their versions
 from it; no version is written anywhere else.
 
 `.github/workflows/follow-release.yml` moves the pins on its own every three
-hours. `scripts/follow-releases.ts` finds each product's newest release (a
-pre-release only for a product that follows them), downloads every install
-asset the config names, checks it against its `.sha256` file and GitHub's
-digest and, for an attested product, runs `gh attestation verify`. Only then
-does it move the pin. It also records the changelog of every release up to
-the pin in `src/data/changelog/<product>.json`: the block between
+hours. `scripts/follow-releases.ts` follows every product on its own: it finds
+each product's newest release (a pre-release only for a product that follows
+them), downloads every install asset the config names, checks it against its
+`.sha256` file and GitHub's digest and, for an attested product, runs
+`gh attestation verify`. Only then does it move the pin. The script also
+records the changelog of every release up to the pin in
+`src/data/changelog/<product>.json`: the block between
 `<!-- pohunek-changelog:start -->` and `<!-- pohunek-changelog:end -->` of the
 release body (the ecosystem changelog contract,
 [zajca/pohunek#1588](https://github.com/zajca/pohunek/issues/1588)), or, for a
 release without one, the titles of the pull requests merged since the previous
-release, marked as generated. The workflow then tests and builds the site,
-pushes the data to `main` and starts a deploy; a failed check leaves every pin
-where it was. Run it by hand from the Actions tab to follow a release at once,
-or with a product and a version to pin a newer release.
+release, marked as generated. A product whose assets or attestation fail
+keeps its old pin (and its old changelog entries) while every product that
+passed still moves; the `collect` job's step outputs name the failed products
+with their reasons, and the run fails at the end through its `report` job.
+
+The `verify` job then syncs every product's docs on its own:
+`scripts/sync-docs.ts`, `scripts/sync-screenshots.ts` and
+`scripts/sync-media.ts` run with `--keep-going`, so one product's broken docs
+are recorded in `failed-sync.json` and the other products still sync.
+`scripts/revert-products.ts` puts each failed product back on its base-commit
+pin and changelog, and the job tests and builds that tree. The build syncs
+every product again at those pins without `--keep-going`, so a failure there
+fails the job; that includes a product that did not move but fails at its base pin, so no product ships in that run. Third-party code (`bun install`, the syncs, astro) runs only in
+`verify`, and `verify` uploads no file: it passes on only the ids of the
+products whose sync failed. The `finalize` job (read-only token) takes `collect`'s dependency-free
+artifact, validates that id list strictly (known product ids only, bounded
+size), puts those products back on their base state with the same
+`scripts/revert-products.ts`, writes the commit message with
+`scripts/commit-summary.ts` and uploads the result. The `publish` job, the only
+one with `contents: write`, runs no bun and no third-party action except checkout
+and download-artifact: it takes that artifact through
+`scripts/take-release-data` (expected files only, commit message validated),
+commits it, and only its final push step holds the token. The deploy builds from
+the committed tree, where a failed product is on its base pin again. A product
+whose docs failed ships its old pin; the products that passed ship their new
+pins. When nothing is left to commit, no deploy starts. Run the follow by hand
+from the Actions tab to follow a release at once, or with a product and a
+version to pin a newer release.
+
+A failing product is reported, not retried: the `report` job writes one table
+row per product (`moved` or `FAILED` with the reason from either job) to the
+run summary and fails the run, after the products that passed went through.
+The `collect` and `verify` logs name the same reasons. A step that crashes
+(any failure other than "some product failed") fails its job and the run.
 
 Locally (needs `gh` signed in):
 
@@ -117,7 +149,7 @@ bun scripts/sync-screenshots.ts --source ../pohunek-companion-android --ref main
 bun install
 bun run dev        # syncs docs and screenshots, then starts the dev server
 bun test           # tests for the docs and screenshot sync, the release pins and the changelog
-bun run build      # syncs docs and screenshots, then builds dist/
+bun run build      # syncs docs and screenshots, then builds dist/ (no --keep-going: a broken sync fails the build)
 ```
 
 ## Deploy
