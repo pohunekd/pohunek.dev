@@ -51,6 +51,7 @@ describe('parseReleasesConfig', () => {
     expect(assetNames(autoreview, '0.5.0')).toEqual([
       'autoreview-0.5.0-x86_64-unknown-linux-musl.tar.gz',
       'autoreview-0.5.0-aarch64-unknown-linux-musl.tar.gz',
+      'autoreview-0.5.0-aarch64-apple-darwin.tar.gz',
     ]);
     expect(versionOfTag(autoreview, 'v0.6.0')).toBe('0.6.0');
   });
