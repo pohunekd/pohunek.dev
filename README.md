@@ -15,6 +15,7 @@ from GitHub Pages.
 | `src/pages/` | Landing, why, surfaces, plugins, built on pohunek (`/built-on/`), roadmap, changelog, install, the Šafář review product page (`/autoreview/`) |
 | `src/content/docs/<routePrefix>/` | Generated documentation, one directory per product (gitignored, see below) |
 | `src/data/` | Page data: landing copy, surfaces, products built on pohunek (`built-on.ts`, one entry per product), roadmap, page banners |
+| `scripts/generate-surface-og.ts` | Renders one 1200x630 link preview PNG per surface page into `public/og/` from the surface data and the site fonts |
 | `src/data/changelog/` | Recorded changelog of every product release (written by `scripts/follow-releases.ts`) |
 | `src/config/agents.mjs` | `llms.txt`, `robots.txt` and `/.well-known/security.txt` settings |
 | `src/styles/` | Design tokens and styles, see [DESIGN.md](DESIGN.md) |
@@ -142,6 +143,30 @@ To try a checkout or a branch before it is tagged:
 ```bash
 bun scripts/sync-screenshots.ts --source ../pohunek-companion-android --ref main
 ```
+
+## Link preview images
+
+Each surface page (`/surfaces/<slug>/`) has its own `og:image`, rendered from
+that surface's hero banner art and the site fonts. The card texts mirror the
+page data, so no preview text lives anywhere else:
+
+- title = `surface.name`, kicker = `surface.platform`, lead = `surface.summary`
+  (all in `src/data/surfaces.ts`, which also carries the `ogImage` path that
+  `src/pages/surfaces/[slug].astro` passes to `MarketingLayout`)
+- caption and art = the banner entry in `src/data/banners.ts`
+  (`src/assets/brand/banner-<slug>.png`)
+
+After changing a surface name, summary, platform, banner caption or banner
+art, re-render and commit the result:
+
+```bash
+bun scripts/generate-surface-og.ts
+```
+
+The generator wraps the lead and the caption to fit the card and fails when
+a line would overflow; keep the sizes (kicker 22, title 84, lead 34, caption
+24, URL 26 px at 1200x630, nothing smaller than 22 px) so the card stays
+readable at the ~500 px width link previews render at.
 
 ## Develop
 

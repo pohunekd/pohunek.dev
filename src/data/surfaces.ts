@@ -46,6 +46,8 @@ export interface Surface {
 	/** Latest verified release tag, when one exists. */
 	release?: string;
 	icon: IconName;
+	/** Link preview image, a 1200x630 file under public/, rendered by scripts/generate-surface-og.ts. */
+	ogImage: string;
 	/** Real screenshots only; surfaces without captures leave this empty. */
 	screenshots: readonly SurfaceScreenshot[];
 	/** Demo video served from this site; absent when the pinned release carries none. */
@@ -68,6 +70,7 @@ export const surfaces: readonly Surface[] = [
 		repoUrl: companionRepo,
 		release: pinnedTag('companion'),
 		icon: 'tiles',
+		ogImage: '/og/surface-companion.png',
 		screenshots: [
 			{
 				image: companionSidebar,
@@ -123,6 +126,7 @@ export const surfaces: readonly Surface[] = [
 		repoUrl: `https://github.com/${product('android').repository}`,
 		release: pinnedTag('android'),
 		icon: 'phone',
+		ogImage: '/og/surface-android.png',
 		screenshots: androidScreenshots,
 		media: androidMedia ?? undefined,
 	},
@@ -137,6 +141,7 @@ export const surfaces: readonly Surface[] = [
 		repoUrl: omarchyRepo,
 		release: pinnedTag('omarchy'),
 		icon: 'bell',
+		ogImage: '/og/surface-omarchy.png',
 		screenshots: [
 			{
 				image: omarchyList,
@@ -186,6 +191,7 @@ export const surfaces: readonly Surface[] = [
 		repoUrl: workRepo,
 		release: pinnedTag('plugin'),
 		icon: 'terminal',
+		ogImage: '/og/surface-tui.png',
 		screenshots: [],
 	},
 	{
@@ -199,6 +205,7 @@ export const surfaces: readonly Surface[] = [
 		repoUrl: workRepo,
 		release: pinnedTag('launchers'),
 		icon: 'window',
+		ogImage: '/og/surface-sway.png',
 		screenshots: [],
 	},
 	{
@@ -212,6 +219,7 @@ export const surfaces: readonly Surface[] = [
 		repoUrl: workRepo,
 		release: pinnedTag('web'),
 		icon: 'globe',
+		ogImage: '/og/surface-web.png',
 		screenshots: [],
 	},
 ];
