@@ -158,9 +158,11 @@ page data, so no preview text lives anywhere else:
   (`src/assets/brand/banner-<slug>.png`)
 
 After changing a surface name, summary, platform, banner caption or banner
-art, re-render and commit the result:
+art, re-render and commit the result. The generator reads the synced data,
+so run the sync (or a build) first:
 
 ```bash
+bun run build
 bun scripts/generate-surface-og.ts
 ```
 

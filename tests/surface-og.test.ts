@@ -3,18 +3,20 @@ import { existsSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 
-import { surfaces } from '../src/data/surfaces.ts';
+// surface-slugs.ts has no imports of generated or asset files, so this
+// test runs before the sync scripts write src/data/generated/*.
+import { surfaceOgImage, surfaceSlugs } from '../src/data/surface-slugs.ts';
 
 const ROOT = path.resolve(import.meta.dir, '..');
 
-const slugs = surfaces.map((surface) => surface.slug).sort();
+const slugs = [...surfaceSlugs];
 
 describe('surface og images', () => {
 	test('one 1200x630 PNG per surface slug', async () => {
 		const files = readdirSync(path.join(ROOT, 'public/og'))
 			.filter((file) => file.startsWith('surface-'))
 			.sort();
-		expect(files).toEqual(slugs.map((slug) => `surface-${slug}.png`));
+		expect(files).toEqual(slugs.map((slug) => `surface-${slug}.png`).sort());
 		for (const file of files) {
 			const full = path.join(ROOT, 'public/og', file);
 			expect(statSync(full).size).toBeGreaterThan(10_000);
@@ -24,10 +26,20 @@ describe('surface og images', () => {
 		}
 	});
 
-	test('every surface ogImage is its own card and exists in public/', () => {
-		for (const surface of surfaces) {
-			expect(surface.ogImage).toBe(`/og/surface-${surface.slug}.png`);
-			expect(existsSync(path.join(ROOT, 'public', surface.ogImage))).toBe(true);
+	test('every surface ogImage is its own card and exists in public/', async () => {
+		// surfaces.ts cannot be imported here: it pulls in generated
+		// files that only exist after the sync scripts run. Read it as
+		// text instead and check each entry's ogImage against its slug.
+		const source = await Bun.file(path.join(ROOT, 'src/data/surfaces.ts')).text();
+		const entries = [...source.matchAll(/slug: '(?<slug>[^']+)',[\s\S]*?ogImage: surfaceOgImage\('(?<og>[^']+)'\)/g)];
+		expect(entries.map((entry) => entry.groups?.slug).sort()).toEqual([...slugs].sort());
+		for (const entry of entries) {
+			expect(entry.groups?.og).toBe(entry.groups?.slug);
+		}
+		for (const slug of slugs) {
+			const ogImage = surfaceOgImage(slug);
+			expect(ogImage).toBe(`/og/surface-${slug}.png`);
+			expect(existsSync(path.join(ROOT, 'public', ogImage))).toBe(true);
 		}
 	});
 
