@@ -77,8 +77,10 @@ const CAPTION_GAP = 56;
 const CAPTION_FIXED_Y = LEAD_FIRST_Y + 3 * LEAD_STEP;
 const CAPTION_STEP = 30;
 const URL_Y = 585;
-/** Baselines end this far above the URL cap line, keeping the gap clear. */
-const URL_CLEARANCE = 24;
+/** y of the separator rule drawn above the URL. */
+const RULE_Y = URL_Y - 42;
+/** Clear space between the lowest caption ink and the separator rule, so a descender can never strike through it. */
+const RULE_CLEARANCE = 8;
 const PLATE = { x: 700, y: 242, w: 442, h: 310, pad: 12 };
 /** Right edge of the text column; the plate starts 52 px further right. */
 const TEXT_MAX_X = 648;
@@ -115,9 +117,10 @@ function cardForSlug(fonts: SiteFonts, slug: string): Card {
 }
 
 /**
- * Guard both axes before rendering: every line stays inside its column and
- * the last text baseline stays clear of the URL line. Throws on failure so
- * the run exits non-zero instead of shipping a broken card.
+ * Guard both axes before rendering: every line stays inside its column, and
+ * the lowest caption ink (last baseline plus the caption font's descender
+ * at its size) stays RULE_CLEARANCE above the separator rule. Throws on
+ * failure so the run exits non-zero instead of shipping a broken card.
  */
 function assertCardFits(fonts: SiteFonts, card: Card): void {
 	const maxInk = TEXT_MAX_X - TEXT_X;
@@ -158,10 +161,12 @@ function assertCardFits(fonts: SiteFonts, card: Card): void {
 	if (captionRight > maxRight) {
 		throw new Error(`${card.slug}: caption reaches past the text column`);
 	}
+	const captionSize = 24;
 	const lastBaseline = captionFirstY + (card.caption.length - 1) * CAPTION_STEP;
-	if (lastBaseline + URL_CLEARANCE > URL_Y) {
+	const lowestInk = lastBaseline + fonts.KarlaItalic.descenderPx(captionSize);
+	if (lowestInk + RULE_CLEARANCE > RULE_Y) {
 		throw new Error(
-			`${card.slug}: last caption baseline ${lastBaseline} leaves no room before the URL line at ${URL_Y}`,
+			`${card.slug}: caption ink reaches y=${lowestInk.toFixed(1)}, no room for the separator rule at y=${RULE_Y}`,
 		);
 	}
 	if (PLATE.x + PLATE.w > WIDTH || PLATE.y + PLATE.h > HEIGHT) {
@@ -204,7 +209,7 @@ function overlaySvg(fonts: SiteFonts, card: Card): string {
 	return (
 		`<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}">` +
 		`<rect x="${PLATE.x}" y="${PLATE.y}" width="${PLATE.w}" height="${PLATE.h}" fill="none" stroke="${RULE_STRONG}" stroke-width="2"/>` +
-		`<line x1="${TEXT_X}" y1="${URL_Y - 42}" x2="${TEXT_X + (TEXT_MAX_X - TEXT_X)}" y2="${URL_Y - 42}" stroke="${RULE}" stroke-width="1"/>` +
+		`<line x1="${TEXT_X}" y1="${RULE_Y}" x2="${TEXT_X + (TEXT_MAX_X - TEXT_X)}" y2="${RULE_Y}" stroke="${RULE}" stroke-width="1"/>` +
 		`<g>${lines.join('')}</g></svg>`
 	);
 }

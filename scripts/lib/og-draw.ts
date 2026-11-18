@@ -35,6 +35,8 @@ export interface TextSpec {
 
 interface SiteFont {
 	unitsPerEm: number;
+	/** How far glyphs descend below the baseline, in px at the given size. */
+	descenderPx: (size: number) => number;
 	advance: (text: string) => number;
 	paths: (text: string) => Array<{ d: string; advance: number }>;
 	hasGlyph: (char: string) => boolean;
@@ -51,6 +53,7 @@ function openFont(file: string): SiteFont {
 	const font: any = create(readFileSync(absolute));
 	return {
 		unitsPerEm: font.unitsPerEm as number,
+		descenderPx: (size: number): number => ((-(font.descent as number) / font.unitsPerEm) as number) * size,
 		advance: (text: string): number => {
 			let total = 0;
 			for (const glyph of font.glyphsForString(text)) {

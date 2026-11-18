@@ -169,10 +169,11 @@ The generator draws every text as glyph outlines from the real
 the PNGs use the site fonts whatever the host has installed; the SVG it
 renders contains no `<text>`. Colours come from `src/styles/tokens.css`.
 It wraps the lead and the caption to fit the card and fails (exit 1) when a
-line would overflow the column or the last caption line would leave no room
-above the URL line; keep the sizes (kicker 22, title 84, lead 34, caption
-24, URL 26 px at 1200x630, nothing smaller than 22 px) so the card stays
-readable at the ~500 px width link previews render at.
+line would overflow the column or the lowest caption ink (last baseline plus
+the caption font's descender) would leave no room for the separator rule
+above the URL; keep the sizes (kicker 22, title 84, lead 34, caption 24, URL
+26 px at 1200x630, nothing smaller than 22 px) so the card stays readable at
+the ~500 px width link previews render at.
 
 ## Develop
 

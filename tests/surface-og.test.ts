@@ -24,9 +24,9 @@ describe('surface og images', () => {
 		}
 	});
 
-	test('every surface ogImage file exists in public/', () => {
+	test('every surface ogImage is its own card and exists in public/', () => {
 		for (const surface of surfaces) {
-			expect(surface.ogImage).toStartWith('/og/surface-');
+			expect(surface.ogImage).toBe(`/og/surface-${surface.slug}.png`);
 			expect(existsSync(path.join(ROOT, 'public', surface.ogImage))).toBe(true);
 		}
 	});
