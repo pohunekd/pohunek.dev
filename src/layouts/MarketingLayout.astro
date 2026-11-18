@@ -21,6 +21,7 @@ interface Props {
 const { title, description = site.description, ogImage = '/og.png' } = Astro.props;
 const fullTitle = title === site.name ? `${site.name} · ${site.tagline}` : `${title} · ${site.name}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const absoluteImage = new URL(ogImage, Astro.site);
 ---
 
 <!doctype html>
@@ -36,8 +37,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content={canonical} />
-		<meta property="og:image" content={new URL(ogImage, Astro.site)} />
+		<meta property="og:image" content={absoluteImage} />
 		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:image" content={absoluteImage} />
 		<meta name="theme-color" content="#fcf9f2" />
 		<script is:inline>
 			// Same key and fallback as Starlight, so marketing pages and docs share one theme choice.

@@ -21,6 +21,7 @@ import { androidMedia } from './generated/android-media';
 import type { AndroidMedia } from '../../scripts/lib/media-manifest';
 import { isPrerelease } from '../../scripts/lib/releases-config';
 import { pinnedTag, product } from './ecosystem';
+import { surfaceOgImage, surfaceSlugs, type SurfaceSlug } from './surface-slugs';
 
 export interface SurfaceScreenshot {
 	image: ImageMetadata;
@@ -31,7 +32,7 @@ export interface SurfaceScreenshot {
 }
 
 export interface Surface {
-	slug: string;
+	slug: SurfaceSlug;
 	name: string;
 	/** One sentence for cards. */
 	summary: string;
@@ -46,6 +47,8 @@ export interface Surface {
 	/** Latest verified release tag, when one exists. */
 	release?: string;
 	icon: IconName;
+	/** Link preview image, a 1200x630 file under public/, rendered by scripts/generate-surface-og.ts. */
+	ogImage: string;
 	/** Real screenshots only; surfaces without captures leave this empty. */
 	screenshots: readonly SurfaceScreenshot[];
 	/** Demo video served from this site; absent when the pinned release carries none. */
@@ -68,6 +71,7 @@ export const surfaces: readonly Surface[] = [
 		repoUrl: companionRepo,
 		release: pinnedTag('companion'),
 		icon: 'tiles',
+		ogImage: surfaceOgImage('companion'),
 		screenshots: [
 			{
 				image: companionSidebar,
@@ -123,6 +127,7 @@ export const surfaces: readonly Surface[] = [
 		repoUrl: `https://github.com/${product('android').repository}`,
 		release: pinnedTag('android'),
 		icon: 'phone',
+		ogImage: surfaceOgImage('android'),
 		screenshots: androidScreenshots,
 		media: androidMedia ?? undefined,
 	},
@@ -137,6 +142,7 @@ export const surfaces: readonly Surface[] = [
 		repoUrl: omarchyRepo,
 		release: pinnedTag('omarchy'),
 		icon: 'bell',
+		ogImage: surfaceOgImage('omarchy'),
 		screenshots: [
 			{
 				image: omarchyList,
@@ -186,6 +192,7 @@ export const surfaces: readonly Surface[] = [
 		repoUrl: workRepo,
 		release: pinnedTag('plugin'),
 		icon: 'terminal',
+		ogImage: surfaceOgImage('tui'),
 		screenshots: [],
 	},
 	{
@@ -199,6 +206,7 @@ export const surfaces: readonly Surface[] = [
 		repoUrl: workRepo,
 		release: pinnedTag('launchers'),
 		icon: 'window',
+		ogImage: surfaceOgImage('sway'),
 		screenshots: [],
 	},
 	{
@@ -212,9 +220,16 @@ export const surfaces: readonly Surface[] = [
 		repoUrl: workRepo,
 		release: pinnedTag('web'),
 		icon: 'globe',
+		ogImage: surfaceOgImage('web'),
 		screenshots: [],
 	},
 ];
+
+/** Every slug in surface-slugs.ts has exactly one surface entry. */
+const slugSet = new Set<string>(surfaceSlugs);
+if (surfaces.length !== slugSet.size || !surfaces.every((surface) => slugSet.has(surface.slug))) {
+	throw new Error('surfaces.ts and surface-slugs.ts disagree on the surface set');
+}
 
 export function getSurface(slug: string): Surface {
 	const surface = surfaces.find((item) => item.slug === slug);
