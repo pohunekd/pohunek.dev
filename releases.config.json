@@ -102,7 +102,7 @@
       "name": "Šafář review",
       "repository": "pohunekd/autoreview",
       "tagPrefix": "v",
-      "version": "0.7.0",
+      "version": "0.8.0",
       "prerelease": false,
       "attested": true,
       "signerWorkflow": ".github/workflows/release.yml",
