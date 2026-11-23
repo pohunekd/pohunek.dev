@@ -23,8 +23,8 @@ interface Detail {
 	/** Longer paragraph under the hero. */
 	body: string;
 	features: readonly { title: string; text: string }[];
-	/** Install routes: a heading, an optional sentence of context, and shell lines. */
-	install: { title: string; intro?: string; lines: readonly string[] }[];
+	/** Install routes: a heading, an optional sentence of context, copyable lines (shell unless boxTitle says otherwise) and an optional link to the full steps. */
+	install: { title: string; intro?: string; lines: readonly string[]; boxTitle?: string; link?: { href: string; label: string } }[];
 	notes?: readonly string[];
 	/** A dedicated site for the surface, linked next to the source button. */
 	homepage?: string;
@@ -258,6 +258,16 @@ const details: Record<string, Detail> = {
 					'apksigner verify --print-certs pohunek-companion-$v.apk',
 				],
 			},
+			{
+				title: 'Updates with Obtainium',
+				intro: `Obtainium installs and updates apps straight from GitHub releases, with no store involved. In Obtainium tap Add and paste this URL into App source URL.${isPrerelease(product('android').version) ? ' While only pre-releases exist, turn on Include prereleases before adding it, or Obtainium finds no release.' : ''} It picks the APK asset; check the signing certificate against the release notes as above.`,
+				boxTitle: 'App source URL',
+				lines: ['https://github.com/pohunekd/pohunek-companion-android'],
+				link: {
+					href: 'https://github.com/pohunekd/pohunek-companion-android/blob/main/docs/release.md#install-and-update-with-obtainium',
+					label: 'Full Obtainium steps in the app repository',
+				},
+			},
 		],
 		notes: [
 			'Requirements: Android 13 or newer, the official NetBird app on the phone, and a Pohunek daemon reachable over the overlay. The app does not run a daemon, and the daemon has no authentication of its own: the NetBird overlay is the security boundary.',
@@ -416,7 +426,12 @@ const repoLabel = surface.repoUrl.replace('https://github.com/', '');
 						<div class="install-block">
 							<h3>{block.title}</h3>
 							{block.intro && <p class="muted">{block.intro}</p>}
-							<CopyBox title="shell" text={block.lines.join('\n')} />
+							<CopyBox title={block.boxTitle ?? 'shell'} text={block.lines.join('\n')} />
+							{block.link && (
+								<p>
+									<a class="text-link" href={block.link.href}>{block.link.label}</a>
+								</p>
+							)}
 						</div>
 					))}
 				</div>
