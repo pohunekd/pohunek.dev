@@ -7,10 +7,12 @@ import Icon from '../components/Icon.astro';
 import StatusBadge from '../components/StatusBadge.astro';
 import { site } from '../config/site';
 import { getSurface } from '../data/surfaces';
+import { indexDay, pendingPlugins, pluginIndex } from '../data/plugins';
 
 const work = getSurface('tui');
+const indexRepo = 'https://github.com/pohunekd/pohunek-plugin-index';
 
-const runtimes = [
+const builtIn = [
 	{ name: 'Codex', status: 'shipped' as const, note: 'official runtime package' },
 	{ name: 'Claude Code', status: 'shipped' as const, note: 'official runtime package' },
 	{ name: 'Hermes', status: 'shipped' as const, note: 'official runtime package' },
@@ -20,6 +22,7 @@ const runtimes = [
 ];
 
 const runtimeCommands = `pohunek plugin list
+pohunek plugin install pohunek.runtime.vibe
 pohunek plugin install ./acme-pi-1.0.0.tar.zst --sha256 sha256:<64 hex>
 pohunek plugin inspect acme.pi
 pohunek plugin update acme.pi ./acme-pi-1.1.0.tar.zst --sha256 sha256:<64 hex> --yes
@@ -45,11 +48,127 @@ pohunek plugin doctor`;
 	<section class="container section">
 		<div class="section-head">
 			<span class="eyebrow">Runtime packages</span>
-			<h2>Agents the daemon can run</h2>
+			<h2>Agents the daemon can install by id</h2>
 			<p class="muted">
-				Each package is a signed, content-addressed archive installed per host. Official packages come from the signed
-				runtime catalog that ships with each release. Any other agent CLI can be added as a runtime package with a TOML
-				runtime and detection manifest, without recompiling pohunek.
+				Every row below is rendered at build time from the signed official plugin index, the same document
+				<code>pohunek plugin install</code> verifies. Admitting a package to
+				<a class="text-link" href="https://github.com/pohunekd/pohunek-plugin-index">pohunek-plugin-index</a> puts it
+				here, so a new plugin appears without a page edit.
+			</p>
+		</div>
+		<div class="table-wrap">
+			<table class="ledger">
+				<thead>
+					<tr><th>Plugin</th><th>Runtime</th><th>Tier</th><th>Description</th><th>Source</th></tr>
+				</thead>
+				<tbody>
+					{
+						pluginIndex.runtime.map((plugin) => (
+							<tr>
+								<td>
+									{plugin.name}
+									<span class="cell-note">{plugin.packageId} {plugin.version}</span>
+								</td>
+								<td><code>{plugin.runtimeId}</code></td>
+								<td>{plugin.tier}</td>
+								<td>{plugin.description}</td>
+								<td><a class="text-link" href={plugin.repository}>{plugin.repositoryLabel}</a></td>
+							</tr>
+						))
+					}
+				</tbody>
+			</table>
+		</div>
+		<p class="index-note">
+			{
+				pluginIndex.stale ? (
+					<>
+						The live index could not be read at build time, so this table is the committed snapshot fetched{' '}
+						{indexDay(pluginIndex.fetchedAt)}. The index itself was signed {indexDay(pluginIndex.asOf)}.
+					</>
+				) : (
+					<>
+						Generated at build time from the signed plugin index signed {indexDay(pluginIndex.asOf)} and rendered{' '}
+						{indexDay(pluginIndex.fetchedAt)}.
+					</>
+				)
+			}
+			{' '}The source is <a class="text-link" href={indexRepo}>pohunek-plugin-index</a>.
+		</p>
+	</section>
+
+	<section class="container section">
+		<div class="section-head">
+			<span class="eyebrow">Context packages</span>
+			<h2>Knowledge the assistant reads</h2>
+			<p class="muted">
+				The assistant knowledge no longer ships inside the pohunek binaries. It is the context package behind
+				<code>pohunek assistant</code>, installed by digest. Until it is installed, the command answers
+				<code>assistant_package_missing</code> and names the step to take.
+			</p>
+		</div>
+		<div class="table-wrap">
+			<table class="ledger">
+				<thead>
+					<tr><th>Package</th><th>Tier</th><th>Description</th><th>Source</th></tr>
+				</thead>
+				<tbody>
+					{
+						pluginIndex.context.map((plugin) => (
+							<tr>
+								<td>
+									{plugin.name}
+									<span class="cell-note">{plugin.packageId} {plugin.version}</span>
+								</td>
+								<td>{plugin.tier}</td>
+								<td>{plugin.description}</td>
+								<td><a class="text-link" href={plugin.repository}>{plugin.repositoryLabel}</a></td>
+							</tr>
+						))
+					}
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+	<section class="container section">
+		<div class="section-head">
+			<span class="eyebrow">In progress</span>
+			<h2>Official plugins not admitted yet</h2>
+			<p class="muted">
+				These official plugin repositories are not in the index yet, so they cannot be installed by id. Each row moves into
+				the runtime table above when its admission lands.
+			</p>
+		</div>
+		<div class="table-wrap">
+			<table class="ledger">
+				<thead>
+					<tr><th>Plugin</th><th>Runtime</th><th>Tier</th><th>Description</th><th>Source</th></tr>
+				</thead>
+				<tbody>
+					{
+						pendingPlugins.map((plugin) => (
+							<tr>
+								<td>{plugin.name}</td>
+								<td><code>{plugin.runtime}</code></td>
+								<td>{plugin.tier}</td>
+								<td>{plugin.description}</td>
+								<td><a class="text-link" href={plugin.repository}>{plugin.repositoryLabel}</a></td>
+							</tr>
+						))
+					}
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+	<section class="container section">
+		<div class="section-head">
+			<span class="eyebrow">Built in</span>
+			<h2>Runtimes that ship with the release</h2>
+			<p class="muted">
+				These runtimes are part of the release catalog instead of the plugin index. The four official agent runtimes
+				stay in the core release until each moves to its own plugin repository.
 			</p>
 		</div>
 		<div class="table-wrap">
@@ -59,7 +178,7 @@ pohunek plugin doctor`;
 				</thead>
 				<tbody>
 					{
-						runtimes.map((runtime) => (
+						builtIn.map((runtime) => (
 							<tr>
 								<td>{runtime.name}</td>
 								<td><StatusBadge status={runtime.status} /></td>
@@ -72,19 +191,6 @@ pohunek plugin doctor`;
 		</div>
 		<div class="stack">
 			<CopyBox title="pohunek plugin" text={runtimeCommands} />
-		</div>
-	</section>
-
-	<section class="container section">
-		<div class="section-head">
-			<span class="eyebrow">Context packages</span>
-			<h2>Knowledge the assistant reads</h2>
-			<p class="muted">
-				The assistant knowledge no longer ships inside the pohunek binaries. It is the context package
-				<code>pohunekd/plugin-assistant</code>, installed by digest and available from the first core release after this
-				change. Until it is installed, <code>pohunek assistant</code> answers <code>assistant_package_missing</code> and
-				names the step to take.
-			</p>
 		</div>
 	</section>
 
@@ -146,6 +252,18 @@ pohunek plugin doctor`;
 		gap: 0.9rem;
 		align-content: start;
 		margin-top: 1rem;
+	}
+	.cell-note {
+		display: block;
+		margin-top: 0.15rem;
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: var(--ink-faint);
+	}
+	.index-note {
+		margin-top: 0.8rem;
+		font-size: 0.85rem;
+		color: var(--ink-muted);
 	}
 	.card.featured {
 		max-width: 48rem;

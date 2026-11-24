@@ -1,0 +1,107 @@
+{
+  "source": "https://github.com/pohunekd/pohunek-plugin-index/releases/latest/download/official-index-v2.json",
+  "fetched_at": "2026-11-24T12:38:46.640Z",
+  "document": {
+    "schema_version": 2,
+    "index": {
+      "schema_version": 2,
+      "scope": "official",
+      "sequence": 1795521773,
+      "expires_at": 1796126573,
+      "entries": [
+        {
+          "package_id": "pohunek.context.assistant",
+          "kind": "context",
+          "version": "0.44.1",
+          "digest": "sha256:7e9e25fed4a02e5e034f337b734a5ffac391e575bf9da3b3de78e47dd5bd195e",
+          "url": "https://github.com/pohunekd/plugin-assistant/releases/download/v0.44.1/pohunek.context.assistant-0.44.1.tar.zst",
+          "platforms": [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-apple-darwin"
+          ],
+          "core": ">=0.44.0, <0.45.0"
+        },
+        {
+          "package_id": "pohunek.runtime.agy",
+          "kind": "runtime",
+          "runtime_id": "agy",
+          "version": "0.1.0",
+          "digest": "sha256:9330c02eb6079586fb8c6717cb964d585e968e31ab68378f5feba63f3fb19d56",
+          "url": "https://github.com/pohunekd/plugin-antigravity/releases/download/v0.1.0/pohunek.runtime.agy-0.1.0.tar.zst",
+          "platforms": [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-apple-darwin"
+          ],
+          "core": ">=0.44.0"
+        },
+        {
+          "package_id": "pohunek.runtime.muse",
+          "kind": "runtime",
+          "runtime_id": "muse",
+          "version": "0.1.0",
+          "digest": "sha256:c7d8954a20bd1f4c3e1d3adc701cc76012caffc125fef09f6ec749263199a4f1",
+          "url": "https://github.com/pohunekd/plugin-muse-code/releases/download/v0.1.0/pohunek.runtime.muse-0.1.0.tar.zst",
+          "platforms": [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-apple-darwin"
+          ],
+          "core": ">=0.40.0"
+        },
+        {
+          "package_id": "pohunek.runtime.muse",
+          "kind": "runtime",
+          "runtime_id": "muse",
+          "version": "0.2.0",
+          "digest": "sha256:c768bb36aa230bb55cc0ad71a16fc604abcdb98858124893e8cc81c2bac8d09f",
+          "url": "https://github.com/pohunekd/plugin-muse-code/releases/download/v0.2.0/pohunek.runtime.muse-0.2.0.tar.zst",
+          "platforms": [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-apple-darwin"
+          ],
+          "core": ">=0.41.0"
+        },
+        {
+          "package_id": "pohunek.runtime.vibe",
+          "kind": "runtime",
+          "runtime_id": "vibe",
+          "version": "0.1.0",
+          "digest": "sha256:22a60e3829819568560dfe718e0ac3730035408805fefd5de72cc34e766d5a61",
+          "url": "https://github.com/pohunekd/plugin-mistral-vibe/releases/download/v0.1.0/pohunek.runtime.vibe-0.1.0.tar.zst",
+          "platforms": [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-apple-darwin"
+          ],
+          "core": ">=0.44.0"
+        }
+      ]
+    },
+    "key_records": [
+      {
+        "key_id": "bb1a79bbe92e8bae3c8e195d7593385208e595d1a85b54e33fb4fa37c4cda91c",
+        "public_key": "f6c2d18e4787c3e1c49f787bf81d24b8cf94574048221ab6bbaf2b642542c832",
+        "scope": "official",
+        "not_before": 1794818629,
+        "not_after": 1826354629,
+        "endorsed_by": "f52cf66e089130ee817e18db5b52db21ee6b002c29615f47d80b168931ba89fe",
+        "signature": "8b18c0e7f6fe9ad4936fbf8213c1a8092e4c86324bf788f34da5d0e9169339ee8177089728869f4dbe45e29b65ded1aa2820e71c987842d67b733bb2ed3dc207"
+      }
+    ],
+    "signatures": [
+      {
+        "key_id": "bb1a79bbe92e8bae3c8e195d7593385208e595d1a85b54e33fb4fa37c4cda91c",
+        "signature": "5c7b02b221bbbf6b1d46bb7ac6e3cb328588df629c21f3c55773cab6d8772a8860d04e63cd4e9bd28a1716643d6a7298189e7a22ed23f7d8436d243228025402"
+      }
+    ],
+    "revocations": {
+      "revocations": {
+        "schema_version": 1,
+        "sequence": 1,
+        "revoked_key_ids": []
+      },
+      "signature": {
+        "key_id": "f52cf66e089130ee817e18db5b52db21ee6b002c29615f47d80b168931ba89fe",
+        "signature": "cd7914f1d1d2c05d6bab9854a3b55ea53d52397bcfb42296db57d2c98d592b0af7fedfe15b76ca2235c4fc5534e5a25db407b782e1d8e4ce280d1e35759b0e06"
+      }
+    }
+  }
+}

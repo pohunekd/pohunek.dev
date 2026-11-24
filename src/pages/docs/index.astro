@@ -40,6 +40,14 @@ import { banners } from '../../data/banners';
 		<LinkCard title="Protocol" href="/docs/protocol/" description="The versioned wire protocol behind the CLI and SDKs." />
 	</CardGrid>
 
+	<h2>Plugins</h2>
+	<p>
+		The <a href="/plugins/">plugin list</a> is not kept by hand: it is rendered at build time from the signed
+		official plugin index, the same document <code>pohunek plugin install</code> verifies, so it shows what the index
+		admits today. <a href="/docs/guides/plugin-repositories/">Plugin repositories</a> explains how a plugin is
+		proposed, admitted and released.
+	</p>
+
 	<h2>When something breaks</h2>
 	<CardGrid>
 		<LinkCard title="Debug the daemon" href="/docs/runbooks/debug-daemon/" description="Find out why the daemon does not start or answer." />
