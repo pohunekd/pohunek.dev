@@ -2,6 +2,15 @@
   "product": "companion",
   "releases": [
     {
+      "tag": "v0.1.10",
+      "version": "0.1.10",
+      "publishedAt": "2026-11-24T06:59:39Z",
+      "prerelease": false,
+      "url": "https://github.com/pohunekd/pohunek-companion/releases/tag/v0.1.10",
+      "source": "release-notes",
+      "markdown": "### Fixed\n\n- The sub-session chip in a session row can be clicked again: the row stays put while the hover actions appear, and chips sit right after the session name. ([#255](https://github.com/pohunekd/pohunek-companion/issues/255))\n- The changelog check refuses only a link to the fragment's own issue or pull request in the folded repository, so a link to another repository's issue with the same number is accepted. ([#259](https://github.com/pohunekd/pohunek-companion/issues/259))\n- A click on a project or state chip in the sidebar is no longer lost when a session update arrives at the same moment. ([#287](https://github.com/pohunekd/pohunek-companion/issues/287))"
+    },
+    {
       "tag": "v0.1.9",
       "version": "0.1.9",
       "publishedAt": "2026-11-15T07:50:37Z",
