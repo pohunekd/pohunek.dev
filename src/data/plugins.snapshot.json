@@ -1,13 +1,13 @@
 {
   "source": "https://github.com/pohunekd/pohunek-plugin-index/releases/latest/download/official-index-v2.json",
-  "fetched_at": "2026-11-24T12:38:46.640Z",
+  "fetched_at": "2026-11-24T16:51:03.985Z",
   "document": {
     "schema_version": 2,
     "index": {
       "schema_version": 2,
       "scope": "official",
-      "sequence": 1795521773,
-      "expires_at": 1796126573,
+      "sequence": 1795527827,
+      "expires_at": 1796132627,
       "entries": [
         {
           "package_id": "pohunek.context.assistant",
@@ -89,7 +89,7 @@
     "signatures": [
       {
         "key_id": "bb1a79bbe92e8bae3c8e195d7593385208e595d1a85b54e33fb4fa37c4cda91c",
-        "signature": "5c7b02b221bbbf6b1d46bb7ac6e3cb328588df629c21f3c55773cab6d8772a8860d04e63cd4e9bd28a1716643d6a7298189e7a22ed23f7d8436d243228025402"
+        "signature": "1fc7ae3f83e60a4ca097c7e97cf9977b5070fd8e1666019b223f3891e43fee9e57de5b32792b7687cf325c661e179f4545650fafe2605fa853e648ccd928470d"
       }
     ],
     "revocations": {

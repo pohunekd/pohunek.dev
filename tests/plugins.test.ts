@@ -9,8 +9,10 @@ import {
   newestEntries,
   parsePluginIndex,
   parsePluginSnapshot,
+  pendingNotAdmitted,
   renderPluginViewModule,
   repositoryOfArchive,
+  type PendingPlugin,
   type PluginIndexEntry,
 } from '../scripts/lib/plugins.ts';
 import { pluginPresentation } from '../scripts/lib/plugin-presentation.ts';
@@ -229,6 +231,45 @@ describe('the rendered rows', () => {
     const view = viewOf(indexDocument(), true);
     expect(view.stale).toBe(true);
     expect(view.asOf).toBe('2026-11-24T12:02:53.000Z');
+  });
+});
+
+const clineRow: PendingPlugin = {
+  packageId: 'pohunek.runtime.cline',
+  name: 'Cline',
+  runtime: 'cline',
+  tier: 'official',
+  description: 'Cline CLI. Not admitted to the index yet.',
+  repository: 'https://github.com/pohunekd/plugin-cline',
+  repositoryLabel: 'pohunekd/plugin-cline',
+};
+
+const clineEntry = entry({
+  package_id: 'pohunek.runtime.cline',
+  runtime_id: 'cline',
+  url: 'https://github.com/pohunekd/plugin-cline/releases/download/v0.1.0/pohunek.runtime.cline-0.1.0.tar.zst',
+});
+
+describe('pending rows against the index', () => {
+  test('keeps a pending row the index does not admit', () => {
+    expect(pendingNotAdmitted([clineRow], viewOf())).toEqual([clineRow]);
+  });
+
+  test('drops a pending row once the runtime package is admitted', () => {
+    const view = viewOf(indexDocument([entry(), contextEntry, agyEntry, museNewer, clineEntry]));
+    // The index row is the only Cline row; the pending table must not repeat it.
+    expect(view.runtime.map((row) => row.name)).toContain('Cline');
+    expect(pendingNotAdmitted([clineRow], view)).toEqual([]);
+  });
+
+  test('drops a pending row whose package id matches a context entry', () => {
+    const contextPending: PendingPlugin = { ...clineRow, packageId: 'pohunek.context.assistant' };
+    expect(pendingNotAdmitted([contextPending], viewOf())).toEqual([]);
+  });
+
+  test('leaves an empty list when every pending row is admitted, so the page hides the section', () => {
+    const view = viewOf(indexDocument([entry(), contextEntry, agyEntry, museNewer, clineEntry]));
+    expect(pendingNotAdmitted([clineRow], view)).toHaveLength(0);
   });
 });
 

@@ -4,26 +4,20 @@
  *
  * The installable list is never edited here. `scripts/sync-plugins.ts` renders
  * `src/data/generated/plugins.ts` from the index at build time, so a newly admitted plugin appears
- * without a page edit. `pendingPlugins` is the site's own short list of official plugin repositories
- * whose package is not admitted to the index yet; each row moves out of it when its admission lands.
+ * without a page edit. `officialPending` is the site's own short list of official plugin repositories
+ * whose package is not admitted to the index yet; `pendingPlugins` drops every row the index already
+ * admits, so an admission never shows the plugin twice and an empty list hides the section.
  */
-import type { PluginRow } from '../../scripts/lib/plugins.ts';
+import { pendingNotAdmitted, type PendingPlugin } from '../../scripts/lib/plugins.ts';
 import { pluginIndexView } from './generated/plugins';
 
 export const pluginIndex = pluginIndexView;
 
-/** An official plugin repository whose package is not installable by id yet. */
-export interface PendingPlugin {
-  readonly name: string;
-  readonly runtime: string;
-  readonly tier: PluginRow['tier'];
-  readonly description: string;
-  readonly repository: string;
-  readonly repositoryLabel: string;
-}
+export type { PendingPlugin };
 
-export const pendingPlugins: readonly PendingPlugin[] = [
+const officialPending: readonly PendingPlugin[] = [
   {
+    packageId: 'pohunek.runtime.cline',
     name: 'Cline',
     runtime: 'cline',
     tier: 'official',
@@ -32,6 +26,9 @@ export const pendingPlugins: readonly PendingPlugin[] = [
     repositoryLabel: 'pohunekd/plugin-cline',
   },
 ];
+
+/** The pending rows the index does not admit yet; the page hides the section when this is empty. */
+export const pendingPlugins = pendingNotAdmitted(officialPending, pluginIndex);
 
 /** The UTC day of an ISO timestamp, for the "as of" note under the tables. */
 export function indexDay(iso: string): string {

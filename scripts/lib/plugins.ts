@@ -69,6 +69,33 @@ export interface PluginPresentation {
   readonly description: string;
 }
 
+/**
+ * An official plugin repository whose package is not installable by id yet: the site's own list of
+ * work in progress, which the page shows only while the index does not admit the package.
+ */
+export interface PendingPlugin {
+  readonly packageId: string;
+  readonly name: string;
+  readonly runtime: string;
+  readonly tier: PluginRow['tier'];
+  readonly description: string;
+  readonly repository: string;
+  readonly repositoryLabel: string;
+}
+
+/**
+ * Drops the pending rows the index already admits, in either kind, so an admission removes its row
+ * from the "not admitted yet" table instead of showing the plugin twice. An empty result hides the
+ * whole section.
+ */
+export function pendingNotAdmitted(
+  pending: readonly PendingPlugin[],
+  view: PluginIndexView,
+): readonly PendingPlugin[] {
+  const admitted = new Set([...view.runtime, ...view.context].map((row) => row.packageId));
+  return pending.filter((row) => !admitted.has(row.packageId));
+}
+
 export type PluginPresentationMap = Readonly<Record<string, PluginPresentation>>;
 
 /** A committed copy of the raw index document, used when the build cannot fetch the live index. */
