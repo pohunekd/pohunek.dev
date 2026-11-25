@@ -21,7 +21,7 @@
       "name": "Desktop companion",
       "repository": "pohunekd/pohunek-companion",
       "tagPrefix": "v",
-      "version": "0.1.9",
+      "version": "0.1.10",
       "prerelease": false,
       "attested": true,
       "signerWorkflow": ".github/workflows/release.yml",
@@ -35,7 +35,7 @@
       "name": "Android companion",
       "repository": "pohunekd/pohunek-companion-android",
       "tagPrefix": "v",
-      "version": "0.1.0-pre.14",
+      "version": "0.1.0-pre.15",
       "prerelease": true,
       "attested": false,
       "assets": [
