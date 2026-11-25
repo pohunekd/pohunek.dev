@@ -126,10 +126,48 @@ describe('parsePluginIndex', () => {
     expect(() => parsePluginIndex(indexDocument([entry(), entry()]), WHERE)).toThrow('appears twice');
   });
 
-  test('rejects a kind that does not match the package id', () => {
+  test('requires the package id prefix to match the kind', () => {
     expect(() => parsePluginIndex(indexDocument([entry({ kind: 'context' })]), WHERE)).toThrow(
-      'does not match kind "context"',
+      'a context package_id is "pohunek.context." plus a tail',
     );
+    expect(() =>
+      parsePluginIndex(
+        indexDocument([entry({ package_id: 'pohunek.context.notes', kind: 'runtime', runtime_id: 'notes' })]),
+        WHERE,
+      ),
+    ).toThrow('a runtime package_id must not start with "pohunek.context."');
+  });
+
+  test("accepts the protocol character set, including '_' and '.' in a tail", () => {
+    const index = parsePluginIndex(
+      indexDocument([
+        entry({
+          package_id: 'pohunek.runtime.foo_bar',
+          runtime_id: 'foo_bar',
+          url: 'https://github.com/pohunekd/plugin-foo-bar/releases/download/v0.1.0/pohunek.runtime.foo_bar-0.1.0.tar.zst',
+        }),
+        entry({
+          package_id: 'pohunek.context.agent_notes',
+          kind: 'context',
+          runtime_id: undefined,
+          url: 'https://github.com/pohunekd/plugin-agent-notes/releases/download/v0.1.0/pohunek.context.agent_notes-0.1.0.tar.zst',
+        }),
+      ]),
+      WHERE,
+    );
+    // The old regex refused `_` and aborted the whole index on one such id.
+    expect(index.entries.map((candidate) => candidate.packageId)).toEqual([
+      'pohunek.runtime.foo_bar',
+      'pohunek.context.agent_notes',
+    ]);
+  });
+
+  test('rejects ids outside the protocol alphabet or with a forbidden shape', () => {
+    const bad = (packageId: string, runtimeId = 'vibe') =>
+      parsePluginIndex(indexDocument([entry({ package_id: packageId, runtime_id: runtimeId })]), WHERE);
+    expect(() => bad('pohunek.runtime.Vibe')).toThrow('must be lowercase ASCII letters');
+    expect(() => bad('pohunek.runtime..vibe')).toThrow("must not contain '..'");
+    expect(() => bad(`pohunek.runtime.${'a'.repeat(120)}`, 'a'.repeat(120))).toThrow('is longer than 128 bytes');
   });
 
   test('rejects a runtime id that does not match the package id', () => {

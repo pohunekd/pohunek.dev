@@ -105,7 +105,21 @@ export interface PluginSnapshot {
   readonly document: unknown;
 }
 
-const PACKAGE_ID = /^pohunek\.(runtime|context)\.[a-z0-9][a-z0-9-]*$/;
+/** Protocol package-id ceiling, `MAX_PACKAGE_ID_BYTES`; the id is ASCII, so these are bytes. */
+const MAX_PACKAGE_ID_BYTES = 128;
+
+/** Protocol runtime-id ceiling, `MAX_AGENT_RUNTIME_ID_BYTES`. */
+const MAX_RUNTIME_ID_BYTES = 64;
+
+/** The protocol identifier alphabet shared by `PackageId` and `RuntimeId`. */
+const IDENTIFIER = /^[a-z0-9._-]+$/;
+
+/** A context package id is this prefix plus a non-empty tail. */
+const CONTEXT_PREFIX = 'pohunek.context.';
+
+/** An official runtime package id is this prefix plus its runtime id. */
+const RUNTIME_PREFIX = 'pohunek.runtime.';
+
 const VERSION = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
 
@@ -121,6 +135,29 @@ function stringAt(value: unknown, field: string, where: string): string {
     throw new Error(`${where}: ${field} must be a non-empty string`);
   }
   return value;
+}
+
+/**
+ * Validates an id with the protocol's `PackageId`/`RuntimeId` rules: lowercase ASCII letters,
+ * digits, `.`, `_` and `-`; no leading `.` or `-`; no `..`; at most `max` bytes. Keeping this
+ * identical to the core's `validate_identifier` means an admitted id never makes the page drop the
+ * whole index.
+ */
+function identifierAt(value: unknown, field: string, where: string, max: number): string {
+  const text = stringAt(value, field, where);
+  if (!IDENTIFIER.test(text)) {
+    throw new Error(`${where}: ${field} must be lowercase ASCII letters, digits, '.', '_' or '-': ${text}`);
+  }
+  if (text.length > max) {
+    throw new Error(`${where}: ${field} is longer than ${max} bytes: ${text}`);
+  }
+  if (text.startsWith('.') || text.startsWith('-')) {
+    throw new Error(`${where}: ${field} must not start with '.' or '-': ${text}`);
+  }
+  if (text.includes('..')) {
+    throw new Error(`${where}: ${field} must not contain '..': ${text}`);
+  }
+  return text;
 }
 
 function integerAt(value: unknown, field: string, where: string): number {
@@ -153,17 +190,17 @@ function httpsUrlAt(value: unknown, field: string, where: string): string {
 
 function parseEntry(value: unknown, where: string): PluginIndexEntry {
   const entry = objectAt(value, where);
-  const packageId = stringAt(entry.package_id, 'package_id', where);
-  const match = PACKAGE_ID.exec(packageId);
-  if (match === null) {
-    throw new Error(`${where}: package_id is not an official package id: ${packageId}`);
-  }
+  const packageId = identifierAt(entry.package_id, 'package_id', where, MAX_PACKAGE_ID_BYTES);
   const kind = stringAt(entry.kind, 'kind', where);
   if (kind !== 'runtime' && kind !== 'context') {
     throw new Error(`${where}: kind must be "runtime" or "context", got "${kind}"`);
   }
-  if (match[1] !== kind) {
-    throw new Error(`${where}: package_id ${packageId} does not match kind "${kind}"`);
+  if (kind === 'context') {
+    if (!packageId.startsWith(CONTEXT_PREFIX) || packageId.length === CONTEXT_PREFIX.length) {
+      throw new Error(`${where}: a context package_id is "${CONTEXT_PREFIX}" plus a tail: ${packageId}`);
+    }
+  } else if (packageId.startsWith(CONTEXT_PREFIX)) {
+    throw new Error(`${where}: a runtime package_id must not start with "${CONTEXT_PREFIX}": ${packageId}`);
   }
   const version = stringAt(entry.version, 'version', where);
   if (!VERSION.test(version)) {
@@ -171,8 +208,8 @@ function parseEntry(value: unknown, where: string): PluginIndexEntry {
   }
   let runtimeId: string | null = null;
   if (kind === 'runtime') {
-    const id = stringAt(entry.runtime_id, 'runtime_id', where);
-    if (`pohunek.runtime.${id}` !== packageId) {
+    const id = identifierAt(entry.runtime_id, 'runtime_id', where, MAX_RUNTIME_ID_BYTES);
+    if (`${RUNTIME_PREFIX}${id}` !== packageId) {
       throw new Error(`${where}: runtime_id "${id}" does not match package_id ${packageId}`);
     }
     runtimeId = id;
