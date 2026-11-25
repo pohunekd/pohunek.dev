@@ -22,6 +22,9 @@ from GitHub Pages.
 | `scripts/sync-docs.ts` | Pulls each product's docs at its pinned release |
 | `scripts/sync-screenshots.ts` | Pulls the Android screenshot set at the pinned release |
 | `scripts/sync-media.ts` | Pulls the Android demo video at the pinned release into `public/media/android/`; a release without `docs/media/manifest.json` renders no video |
+| `scripts/sync-plugins.ts` | Renders the `/plugins/` tables from the signed official plugin index at build time |
+| `src/data/plugins.snapshot.json` | The committed index copy the page falls back to when the build cannot fetch the live index |
+| `src/data/plugins.ts` | The `/plugins/` page data: the generated index view plus official plugin repositories that are not admitted yet |
 | `scripts/follow-releases.ts` | Moves the pins to new releases and records their changelog |
 | `scripts/revert-products.ts` | Puts the products whose docs sync failed back on their base-commit pin and changelog (dependency-free) |
 | `releases.config.json` | Every ecosystem product: repository, tag prefix, pinned version, install assets |
@@ -122,6 +125,30 @@ product, `/changelog.xml` is an Atom feed of the newest releases and
 `/changelog.txt` the whole changelog as Markdown for agents. Release bodies
 come from other repositories: raw HTML is dropped, links keep only http(s)
 targets and images become links.
+
+## Plugin list
+
+`/plugins/` is not edited by hand. `scripts/sync-plugins.ts` runs in `bun run build` and
+fetches the signed official plugin index (`official-index-v2.json`, the document
+`pohunek plugin install` verifies). It keeps the newest admitted version of every package
+and writes `src/data/generated/plugins.ts`, which `src/pages/plugins.astro` imports, so a
+package admitted to the index appears without a page edit. The human name and the one-line
+description come from `scripts/lib/plugin-presentation.ts`; a package without an entry there
+still renders, named after its plugin repository, with a neutral description.
+
+When the fetch fails, the script renders the committed copy `src/data/plugins.snapshot.json`
+and the page says which day the snapshot was fetched and which day the index was signed, so
+a broken network never produces an empty table. When neither the live index nor the snapshot
+can be read, the build fails. Refresh the snapshot on purpose with:
+
+```bash
+bun scripts/sync-plugins.ts --update-snapshot
+```
+
+`--index <file>` renders a local document without the network, and `bun test` covers the
+generator with a fixture index. `src/data/plugins.ts` also lists the official plugin
+repositories whose package is not admitted to the index yet (Cline); such a row moves into
+the generated table when its admission lands.
 
 ## Android screenshots
 
