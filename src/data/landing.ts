@@ -1,4 +1,7 @@
 import type { IconName } from '../components/icons';
+import { coreAdmits } from '../../scripts/lib/plugins';
+import { product } from './ecosystem';
+import { pendingPlugins, pluginIndex } from './plugins';
 import type { Status } from './status';
 
 interface Tenet {
@@ -14,6 +17,8 @@ interface AgentStep {
 
 interface Agent {
 	name: string;
+	/** Runtime id, set where the list must not show the same runtime twice. */
+	runtime?: string;
 	status: Status;
 	note: string;
 }
@@ -70,13 +75,32 @@ const agentSteps: AgentStep[] = [
 	},
 ];
 
+/** The official runtime packages every core release ships and installs offline, plus the built-in shell. */
+const bundledAgents: Agent[] = [
+	{ name: 'Codex', runtime: 'codex', status: 'shipped', note: 'official' },
+	{ name: 'Claude Code', runtime: 'claude', status: 'shipped', note: 'official' },
+	{ name: 'Hermes', runtime: 'hermes', status: 'shipped', note: 'official' },
+	{ name: 'Pi', runtime: 'pi', status: 'shipped', note: 'official' },
+	{ name: 'shell', runtime: 'shell', status: 'shipped', note: 'built in' },
+];
+
+const bundledRuntimes = new Set(bundledAgents.map((agent) => agent.runtime));
+const pinnedCore = product('pohunek').version;
+
+/** Agents without a package or an adapter yet. */
+const plannedAgents: Agent[] = [{ name: 'OpenCode', status: 'planned', note: '2.x' }];
+
+/**
+ * Bundled runtimes first, then every runtime package of the signed official plugin index and the
+ * official plugin repositories awaiting admission, so an admitted plugin appears without an edit here.
+ */
 const agents: Agent[] = [
-	{ name: 'Codex', status: 'shipped', note: 'official' },
-	{ name: 'Claude Code', status: 'shipped', note: 'official' },
-	{ name: 'Hermes', status: 'shipped', note: 'official' },
-	{ name: 'Pi', status: 'shipped', note: 'official' },
-	{ name: 'shell', status: 'shipped', note: 'built in' },
-	{ name: 'OpenCode', status: 'planned', note: '2.x' },
+	...bundledAgents,
+	...pluginIndex.runtime
+		.filter((plugin) => !bundledRuntimes.has(plugin.runtimeId ?? '') && coreAdmits(plugin.core, pinnedCore))
+		.map((plugin): Agent => ({ name: plugin.name, status: 'shipped', note: 'plugin' })),
+	...pendingPlugins.map((plugin): Agent => ({ name: plugin.name, status: 'in-progress', note: 'plugin, pending' })),
+	...plannedAgents,
 ];
 
 const hosts: Host[] = [

@@ -275,6 +275,33 @@ export function parsePluginSnapshot(raw: unknown, where: string): PluginSnapshot
   return { source, fetchedAt, document: root.document };
 }
 
+/**
+ * Whether an index entry's `core` range (comma-separated comparators such as `>=0.44.0, <0.45.0`)
+ * admits a core version. A comparator the function does not know admits nothing, so a plugin is
+ * never shown as available on a core the index does not state it for.
+ */
+export function coreAdmits(range: string, version: string): boolean {
+  return range.split(',').every((part) => {
+    const match = /^\s*(>=|<=|>|<|=)?\s*(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\s*$/.exec(part);
+    if (match === null) {
+      return false;
+    }
+    const order = compareVersions(version, match[2]);
+    switch (match[1] ?? '=') {
+      case '>=':
+        return order >= 0;
+      case '<=':
+        return order <= 0;
+      case '>':
+        return order > 0;
+      case '<':
+        return order < 0;
+      default:
+        return order === 0;
+    }
+  });
+}
+
 /** Orders two release versions; a pre-release sorts before the stable release of the same X.Y.Z. */
 export function compareVersions(left: string, right: string): number {
   const split = (version: string): { numbers: number[]; pre: string | null } => {

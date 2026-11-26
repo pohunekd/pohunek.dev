@@ -5,9 +5,24 @@ import MarketingLayout from '../layouts/MarketingLayout.astro';
 import StatusBadge from '../components/StatusBadge.astro';
 import { site } from '../config/site';
 import { surfaces } from '../data/surfaces';
-import { roadmapTracks } from '../data/roadmap';
+import { nextMilestone, roadmapAsOf, roadmapRelease, roadmapTracks } from '../data/roadmap';
+import { timeline } from '../data/changelog';
+import { splitRelease } from '../lib/release-sections';
+import { product } from '../data/ecosystem';
 
 const issueUrl = (number: number): string => `${site.issuesUrl}/${number}`;
+const milestoneUrl = `${site.repoUrl}/milestone/${nextMilestone.number}`;
+
+const dateFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
+
+/** The newest core releases, summarized from the recorded changelog so the list follows each release. */
+const recentReleases = timeline([product('pohunek')])
+	.slice(0, 5)
+	.map(({ release }) => ({
+		release,
+		summary: splitRelease(release.markdown, release.source).summary,
+		date: dateFormat.format(new Date(release.publishedAt)),
+	}));
 ---
 
 <MarketingLayout
@@ -19,11 +34,71 @@ const issueUrl = (number: number): string => `${site.issuesUrl}/${number}`;
 			<span class="eyebrow">Roadmap</span>
 			<h1>Tracks and their state</h1>
 			<p class="lead">
-				Each track links to its epic on GitHub. Progress counts come from the epic's child issues at the time of writing.
-				pohunek is pre-1.0 and experimental, so wire shapes and config files may change between releases.
+				Each track links to its epic on GitHub. Progress counts come from the epic's child issues on {roadmapAsOf}, after
+				pohunek {roadmapRelease}. pohunek is pre-1.0 and experimental, so wire shapes and config files may change between
+				releases.
 			</p>
 		</header>
 		<Banner banner={banners.roadmap} />
+	</section>
+
+	<section class="container section">
+		<div class="section-head">
+			<span class="eyebrow">Next release</span>
+			<h2>
+				Milestone <a href={milestoneUrl}>{nextMilestone.title}</a>
+			</h2>
+			<p class="lead">
+				{nextMilestone.progress.done} of {nextMilestone.progress.total} issues closed on {roadmapAsOf}. What is still
+				open in it:
+			</p>
+			<div
+				class="progress"
+				aria-label={`${nextMilestone.progress.done} of ${nextMilestone.progress.total} issues closed`}
+			>
+				<progress value={nextMilestone.progress.done} max={nextMilestone.progress.total} />
+				<span class="mono">{nextMilestone.progress.done}/{nextMilestone.progress.total}</span>
+			</div>
+		</div>
+		<ul class="epics">
+			{
+				nextMilestone.epics.map((epic) => (
+					<li>
+						<a class="text-link" href={issueUrl(epic.issue)}>
+							#{epic.issue} {epic.title}
+						</a>
+						<span class="muted">{epic.outcome}</span>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	<section class="container section">
+		<div class="section-head">
+			<span class="eyebrow">Shipped</span>
+			<h2>Recent core releases</h2>
+		</div>
+		<div class="table-wrap">
+			<table class="ledger releases">
+				<thead>
+					<tr><th>Release</th><th>What it brought</th></tr>
+				</thead>
+				<tbody>
+					{
+						recentReleases.map(({ release, summary, date }) => (
+							<tr>
+								<td>
+									<a href={`/changelog/pohunek/#pohunek-${release.version}`}>{release.tag}</a>
+									<span class="mono date">{date}</span>
+								</td>
+								<td>{summary}</td>
+							</tr>
+						))
+					}
+				</tbody>
+			</table>
+		</div>
 	</section>
 
 	<section class="container section">
@@ -108,6 +183,34 @@ const issueUrl = (number: number): string => `${site.issuesUrl}/${number}`;
 		flex: 1;
 		height: 0.6rem;
 		accent-color: var(--leather);
+	}
+	table.ledger.releases {
+		min-width: 0;
+	}
+	.releases .date {
+		display: block;
+		margin-top: 0.2rem;
+		font-size: 0.75rem;
+		font-weight: 400;
+		color: var(--ink-faint);
+		white-space: nowrap;
+	}
+	.releases td:first-child {
+		width: 9rem;
+	}
+	.epics {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 0.9rem;
+	}
+	.epics li {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		padding-top: 0.9rem;
+		border-top: 1px solid var(--rule);
 	}
 	.issue-links {
 		display: flex;

@@ -28,7 +28,7 @@ from GitHub Pages.
 | `scripts/follow-releases.ts` | Moves the pins to new releases and records their changelog |
 | `scripts/revert-products.ts` | Puts the products whose docs sync failed back on their base-commit pin and changelog (dependency-free) |
 | `releases.config.json` | Every ecosystem product: repository, tag prefix, pinned version, install assets |
-| `.github/assets/` | README hero of this repository |
+| `.github/assets/` | README hero of this repository and the screenshots of pull request #49 (`pr-roadmap-changelog/`) |
 
 The documentation is never edited here. `docs-sync.config.json` lists one
 source per product: `scripts/sync-docs.ts` takes its whitelisted files from the
@@ -121,8 +121,11 @@ GH_TOKEN="$(gh auth token)" bun run follow-releases --product web --version 0.3.
 ```
 
 `/changelog/` lists every release newest first, `/changelog/<product>/` one
-product, `/changelog.xml` is an Atom feed of the newest releases and
-`/changelog.txt` the whole changelog as Markdown for agents. Release bodies
+product. The newest release is open and older ones show a summary line that
+opens the notes; the `Full changelog` section of a release is collapsed inside
+them (`src/lib/release-sections.ts` splits the body). `/changelog.xml` is an
+Atom feed of the newest releases and `/changelog.txt` the whole changelog as
+Markdown for agents. Release bodies
 come from other repositories: raw HTML is dropped, links keep only http(s)
 targets and images become links.
 
