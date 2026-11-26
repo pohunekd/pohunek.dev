@@ -77,7 +77,13 @@ const rows = entries.map((entry, index) => {
 <script>
 	// A link to a release (#product-version) opens its notes, since a closed <details> hides the target.
 	function openLinkedRelease(): void {
-		const id = decodeURIComponent(location.hash.slice(1));
+		let id: string;
+		try {
+			id = decodeURIComponent(location.hash.slice(1));
+		} catch {
+			// A malformed escape in the fragment names no release.
+			return;
+		}
 		const entry = id === '' ? null : document.getElementById(id);
 		const notes = entry?.querySelector<HTMLDetailsElement>('details.changelog-notes');
 		if (notes !== null && notes !== undefined) {

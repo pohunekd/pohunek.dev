@@ -5,6 +5,7 @@ import { afterEach, describe, expect, test } from 'bun:test';
 import {
   buildPluginView,
   compareVersions,
+  coreAdmits,
   derivedName,
   newestEntries,
   parsePluginIndex,
@@ -469,6 +470,20 @@ describe('the committed snapshot', () => {
     expect(() =>
       parsePluginSnapshot({ source: 'https://example.test/index.json', fetched_at: 'yesterday', document: indexDocument() }, 'snapshot'),
     ).toThrow('fetched_at must be an ISO 8601 UTC timestamp');
+  });
+});
+
+describe('coreAdmits', () => {
+  test('applies every comparator of the range', () => {
+    expect(coreAdmits('>=0.44.0', '0.45.0')).toBe(true);
+    expect(coreAdmits('>=0.44.0, <0.45.0', '0.45.0')).toBe(false);
+    expect(coreAdmits('>=0.44.0, <0.45.0', '0.44.1')).toBe(true);
+    expect(coreAdmits('>=0.46.0', '0.45.0')).toBe(false);
+  });
+
+  test('admits nothing for a comparator it does not know', () => {
+    expect(coreAdmits('^0.44.0', '0.44.1')).toBe(false);
+    expect(coreAdmits('*', '0.44.1')).toBe(false);
   });
 });
 

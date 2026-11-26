@@ -22,7 +22,7 @@ export interface RoadmapMilestone {
 	number: number;
 	title: string;
 	progress: { done: number; total: number };
-	/** Epics of the milestone, with the outcome each one delivers. */
+	/** Open epics and work areas of the milestone, with the outcome each one delivers; closed epics belong to the tracks. */
 	epics: readonly { issue: number; title: string; outcome: string }[];
 }
 
@@ -38,7 +38,7 @@ export const roadmapRelease = 'v0.45.0';
 export const nextMilestone: RoadmapMilestone = {
 	number: 21,
 	title: '0.46',
-	progress: { done: 3, total: 56 },
+	progress: { done: 5, total: 58 },
 	epics: [
 		{
 			issue: 1609,
@@ -46,14 +46,10 @@ export const nextMilestone: RoadmapMilestone = {
 			outcome: 'Plugins are admitted through the signed index without waiting for a core release; the official runtimes follow.',
 		},
 		{
-			issue: 2167,
-			title: 'Session inheritance',
-			outcome: 'Finished sub-sessions clean up on their own, and a herd of sessions can be listed and removed as one tree.',
-		},
-		{
-			issue: 2150,
-			title: 'Parameterized agent profiles',
-			outcome: 'Fewer profiles that cover more cases: options with defaults, audience-aware pickers and presets.',
+			issue: 2536,
+			title: 'Attach and terminal fidelity',
+			outcome:
+				'Offset-based reattach (#2536), synchronized output (#2534), an explicit attach owner (#2533) and a libghostty screen-model spike (#2538).',
 		},
 		{
 			issue: 2159,
@@ -115,7 +111,7 @@ export const roadmapTracks: readonly RoadmapTrack[] = [
 	},
 	{
 		title: 'macOS',
-		goal: 'Native Apple Silicon hosts with launchd-owned durable workers.',
+		goal: 'Native Apple Silicon hosts with launchd-owned durable workers. The acceptance gate (#105) is still open as follow-up work.',
 		status: 'shipped',
 		statusNote: 'supported',
 		issues: [{ number: 94 }, { number: 105 }],
