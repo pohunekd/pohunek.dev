@@ -1,5 +1,7 @@
 ---
-import type { TimelineEntry } from '../data/changelog';
+import { BODY_HEADING_DEPTH, type TimelineEntry } from '../data/changelog';
+import { renderReleaseMarkdown } from '../lib/release-markdown';
+import { splitRelease } from '../lib/release-sections';
 
 interface Props {
 	entries: readonly TimelineEntry[];
@@ -10,12 +12,25 @@ interface Props {
 const { entries, showProduct } = Astro.props;
 
 const dateFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
+
+/** Only the newest release starts open; the rest show one summary line until opened. */
+const rows = entries.map((entry, index) => {
+	const sections = splitRelease(entry.release.markdown, entry.release.source);
+	return {
+		...entry,
+		id: `${entry.product.id}-${entry.release.version}`,
+		sections,
+		open: index === 0,
+		leadHtml: renderReleaseMarkdown(sections.lead, BODY_HEADING_DEPTH),
+		fullHtml: sections.full === undefined ? undefined : renderReleaseMarkdown(sections.full, BODY_HEADING_DEPTH + 1),
+	};
+});
 ---
 
 <ol class="changelog">
 	{
-		entries.map(({ product, release, html }) => (
-			<li class="changelog-entry" id={`${product.id}-${release.version}`}>
+		rows.map(({ product, release, id, sections, open, leadHtml, fullHtml }) => (
+			<li class="changelog-entry" id={id}>
 				<header class="changelog-head">
 					<h3>
 						{showProduct && <span class="changelog-product">{product.name}</span>}
@@ -23,6 +38,7 @@ const dateFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'shor
 					</h3>
 					<div class="changelog-meta">
 						<time datetime={release.publishedAt}>{dateFormat.format(new Date(release.publishedAt))}</time>
+						<a class="changelog-anchor" href={`#${id}`} aria-label={`Link to ${product.name} ${release.tag}`}>#</a>
 						{release.prerelease && <span class="badge" data-status="in-progress">Pre-release</span>}
 						{release.source === 'generated' && (
 							<span class="badge" data-status="experimental" title="Generated from the titles of the merged pull requests; not curated.">
@@ -31,11 +47,47 @@ const dateFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'shor
 						)}
 					</div>
 				</header>
-				<div class="changelog-body" set:html={html} />
+				<details class="changelog-notes" open={open}>
+					<summary>
+						<span class="changelog-summary">{sections.summary}</span>
+						<span class="changelog-toggle mono">
+							<span class="when-closed">Read notes</span>
+							<span class="when-open">Hide notes</span>
+						</span>
+					</summary>
+					<div class="changelog-body" set:html={leadHtml} />
+					{
+						fullHtml !== undefined && (
+							<details class="changelog-full">
+								<summary>
+									<span class="mono">
+										Full changelog{sections.fullCount > 0 && ` · ${sections.fullCount} entries`}
+									</span>
+								</summary>
+								<div class="changelog-body" set:html={fullHtml} />
+							</details>
+						)
+					}
+				</details>
 			</li>
 		))
 	}
 </ol>
+
+<script>
+	// A link to a release (#product-version) opens its notes, since a closed <details> hides the target.
+	function openLinkedRelease(): void {
+		const id = decodeURIComponent(location.hash.slice(1));
+		const entry = id === '' ? null : document.getElementById(id);
+		const notes = entry?.querySelector<HTMLDetailsElement>('details.changelog-notes');
+		if (notes !== null && notes !== undefined) {
+			notes.open = true;
+			entry?.scrollIntoView();
+		}
+	}
+	openLinkedRelease();
+	window.addEventListener('hashchange', openLinkedRelease);
+</script>
 
 <style>
 	.changelog {
@@ -88,6 +140,75 @@ const dateFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'shor
 		font-size: 0.75rem;
 		color: var(--ink-faint);
 	}
+	.changelog-anchor {
+		color: var(--ink-faint);
+		text-decoration: none;
+	}
+	.changelog-anchor:hover {
+		color: var(--leather);
+	}
+	.changelog-notes {
+		min-width: 0;
+	}
+	.changelog-notes > summary,
+	.changelog-full > summary {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+		cursor: pointer;
+		list-style: none;
+		color: var(--ink);
+	}
+	.changelog-notes > summary::-webkit-details-marker,
+	.changelog-full > summary::-webkit-details-marker {
+		display: none;
+	}
+	.changelog-summary {
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+	.changelog-toggle,
+	.changelog-full > summary {
+		font-size: 0.75rem;
+		color: var(--leather);
+	}
+	.changelog-toggle {
+		flex: none;
+		white-space: nowrap;
+	}
+	.changelog-toggle::before,
+	.changelog-full > summary .mono::before {
+		content: '+ ' / '';
+	}
+	.changelog-notes[open] > summary .changelog-toggle::before,
+	.changelog-full[open] > summary .mono::before {
+		content: '− ' / '';
+	}
+	.changelog-notes:not([open]) .when-open,
+	.changelog-notes[open] .when-closed {
+		display: none;
+	}
+	/* The opened notes start with the same text as the summary line. */
+	.changelog-notes[open] > summary .changelog-summary {
+		display: none;
+	}
+	.changelog-notes[open] > summary {
+		justify-content: flex-end;
+		margin-bottom: 0.9rem;
+	}
+	.changelog-full {
+		margin-top: 1.4rem;
+		padding-top: 0.9rem;
+		border-top: 1px solid var(--rule);
+	}
+	.changelog-full > summary {
+		justify-content: flex-start;
+		margin-bottom: 0;
+	}
+	.changelog-full[open] > summary {
+		margin-bottom: 0.9rem;
+	}
 	.changelog-body {
 		min-width: 0;
 		color: var(--ink-muted);
@@ -110,8 +231,24 @@ const dateFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'shor
 	.changelog-body :global(p) {
 		margin: 0;
 	}
+	.changelog-body :global(p + p) {
+		margin-top: 0.7rem;
+	}
 	.changelog-body :global(code) {
 		font-family: var(--font-mono);
 		font-size: 0.85em;
+		overflow-wrap: break-word;
+		box-decoration-break: clone;
+		-webkit-box-decoration-break: clone;
+	}
+	.changelog-notes > summary:hover .changelog-toggle,
+	.changelog-full > summary:hover {
+		color: var(--ink-strong);
+		text-decoration: underline;
+	}
+	.changelog-notes > summary:focus-visible,
+	.changelog-full > summary:focus-visible {
+		outline: 2px solid var(--leather);
+		outline-offset: 4px;
 	}
 </style>

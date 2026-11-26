@@ -36,7 +36,7 @@ function loadChangelogs(): Map<string, ProductChangelog> {
 const changelogs = loadChangelogs();
 
 /** Release headings are h3 on the changelog pages, so body headings sit one level below. */
-const BODY_HEADING_DEPTH = 4;
+export const BODY_HEADING_DEPTH = 4;
 
 /** Every recorded release of the given products, newest publication first. */
 export function timeline(products: readonly Product[] = ecosystem.products): TimelineEntry[] {
